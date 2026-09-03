@@ -1,4 +1,4 @@
-const CACHE_NAME = "armario-cache-v1";
+const CACHE_NAME = "armario-cache-v2";
 const ASSETS = [
   "./index.html",
   "./manifest.json",
@@ -22,15 +22,14 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
+// Red primero, caché como respaldo solo si no hay conexión: así cualquier
+// actualización que subas se ve en cuanto se reabre la app, sin reinstalar nada.
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      if (cached) return cached;
-      return fetch(event.request).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-        return res;
-      }).catch(() => cached);
-    })
+    fetch(event.request).then((res) => {
+      const copy = res.clone();
+      caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+      return res;
+    }).catch(() => caches.match(event.request))
   );
 });

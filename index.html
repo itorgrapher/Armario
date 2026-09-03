@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Armario</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -226,11 +226,20 @@
 <style>
   @media (max-width: 720px) {
     .app-shell { flex-direction: column; }
-    .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; overflow-x: auto; padding: 12px; }
-    .sidebar-footer { display: none; }
-    .nav-list { flex-direction: row; }
+    .sidebar {
+      position: fixed; bottom: 0; left: 0; right: 0; top: auto; width: 100%; height: auto;
+      flex-direction: row; padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+      box-shadow: 0 -2px 14px rgba(0,0,0,0.18); z-index: 50;
+    }
     .brand { display: none; }
-    .wrap { padding: 22px 16px 60px; }
+    .sidebar-footer { display: none; }
+    .nav-list { flex-direction: row; width: 100%; justify-content: space-around; gap: 2px; }
+    .nav-item {
+      flex-direction: column; gap: 3px; padding: 7px 2px; font-size: 10px; line-height: 1.15;
+      text-align: center; flex: 1;
+    }
+    .nav-item svg { width: 20px; height: 20px; }
+    .wrap { padding: 22px 16px calc(80px + env(safe-area-inset-bottom)); }
   }
 </style>
 </head>
@@ -402,6 +411,10 @@
       Prenda versátil
     </label>
 
+    <label class="field">Temporada
+      <div class="formality-options" id="modalSeason"></div>
+    </label>
+
     <label class="field">Color
       <div class="color-options" id="modalColors"></div>
     </label>
@@ -439,25 +452,57 @@ const COLORS = [
 ];
 const colorById = Object.fromEntries(COLORS.map(c => [c.id, c]));
 const NEUTRALS = new Set(["blanco","negro","gris","beige","azul_marino","marron"]);
-const PAIRS = [
-  ["azul_claro","beige"],["azul_claro","blanco"],["azul_claro","gris"],
-  ["verde","beige"],["verde","blanco"],["verde","marron"],
-  ["rojo","blanco"],["rojo","negro"],["rojo","beige"],
-  ["rosa","gris"],["rosa","blanco"],["rosa","azul_marino"],
-  ["amarillo","azul_marino"],["amarillo","gris"],["amarillo","blanco"],
-  ["naranja","azul_marino"],["naranja","beige"],
-  ["morado","gris"],["morado","blanco"],
-];
-const pairKey = (a,b) => [a,b].sort().join("|");
-const PAIR_SET = new Set(PAIRS.map(([a,b]) => pairKey(a,b)));
-function colorCompatible(a,b) {
-  if (a === b) return true;
+
+// Teoría del color real: convierte cada hex a su matiz (0-360°) y compara por
+// el círculo cromático (análogos y complementarios), en vez de una lista fija.
+function hexToHue(hex) {
+  const r = parseInt(hex.slice(1, 3), 16) / 255;
+  const g = parseInt(hex.slice(3, 5), 16) / 255;
+  const b = parseInt(hex.slice(5, 7), 16) / 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  const d = max - min;
+  if (d === 0) return null;
+  let h;
+  if (max === r) h = ((g - b) / d) % 6;
+  else if (max === g) h = (b - r) / d + 2;
+  else h = (r - g) / d + 4;
+  h *= 60;
+  return h < 0 ? h + 360 : h;
+}
+const COLOR_HUES = Object.fromEntries(
+  COLORS.filter(c => c.hex !== "pattern").map(c => [c.id, hexToHue(c.hex)])
+);
+function hueDiff(h1, h2) {
+  const d = Math.abs(h1 - h2) % 360;
+  return d > 180 ? 360 - d : d;
+}
+function colorCompatible(a, b) {
+  if (a === "estampado" && b === "estampado") return false; // dos estampados distintos nunca combinan
   if (a === "estampado" || b === "estampado") {
     const other = a === "estampado" ? b : a;
     return NEUTRALS.has(other);
   }
+  if (a === b) return true;
   if (NEUTRALS.has(a) || NEUTRALS.has(b)) return true;
-  return PAIR_SET.has(pairKey(a,b));
+  const hueA = COLOR_HUES[a], hueB = COLOR_HUES[b];
+  if (hueA == null || hueB == null) return true;
+  const diff = hueDiff(hueA, hueB);
+  return diff <= 45 || diff >= 150;
+}
+function tooManyLoudColors(colorsArr) {
+  const loud = colorsArr.filter(c => !NEUTRALS.has(c) && c !== "estampado");
+  return new Set(loud).size > 2;
+}
+
+const SEASONS = [
+  { id: "verano", label: "Verano" },
+  { id: "entretiempo", label: "Entretiempo" },
+  { id: "invierno", label: "Invierno" },
+];
+function seasonCompatible(a, b) {
+  const sa = a.season || "entretiempo", sb = b.season || "entretiempo";
+  if (sa === "entretiempo" || sb === "entretiempo") return true;
+  return sa === sb;
 }
 
 const FORMALITY_LABELS = { 1: "Deporte", 2: "Casual", 3: "Trabajo", 4: "Evento", 5: "Etiqueta" };
@@ -476,7 +521,8 @@ function styleCompatible(a, b) {
 function evaluatePair(a, b) {
   const colorOk = colorCompatible(a.color, b.color);
   const styleOk = styleCompatible(a, b);
-  return { colorOk, styleOk, ok: colorOk && styleOk };
+  const seasonOk = seasonCompatible(a, b);
+  return { colorOk, styleOk, seasonOk, ok: colorOk && styleOk && seasonOk };
 }
 function evaluateOutfit(top, bottom, shoes) {
   const tb = evaluatePair(top, bottom);
@@ -487,7 +533,8 @@ function evaluateOutfit(top, bottom, shoes) {
     { catA: "top", catB: "shoes", ...ts },
     { catA: "bottom", catB: "shoes", ...bs },
   ];
-  return { ok: pairs.every(p => p.ok), pairs };
+  const tooManyColors = tooManyLoudColors([top.color, bottom.color, shoes.color]);
+  return { ok: pairs.every(p => p.ok) && !tooManyColors, pairs, tooManyColors };
 }
 function fitsContext(g, target) {
   const tol = 1 + (g.versatile ? 1 : 0);
@@ -499,21 +546,36 @@ function describe(g) {
 }
 const CAT_LABEL = { top: "superior", bottom: "inferior", shoes: "calzado" };
 function factsText(evalRes) {
-  return evalRes.pairs.map(p =>
-    `- ${CAT_LABEL[p.catA]} / ${CAT_LABEL[p.catB]}: color compatible=${p.colorOk ? "sí" : "no"}, nivel de formalidad compatible=${p.styleOk ? "sí" : "no"}`
-  ).join("\n");
+  const lines = evalRes.pairs.map(p =>
+    `- ${CAT_LABEL[p.catA]} / ${CAT_LABEL[p.catB]}: color compatible=${p.colorOk ? "sí" : "no"}, nivel de formalidad compatible=${p.styleOk ? "sí" : "no"}, temporada compatible=${p.seasonOk ? "sí" : "no"}`
+  );
+  if (evalRes.tooManyColors) lines.push("- El conjunto tiene más de 2 colores llamativos a la vez (recargado).");
+  return lines.join("\n");
 }
+function colorFailReason(colorA, colorB) {
+  if (!colorA || !colorB) return null;
+  if (colorA === "estampado" && colorB === "estampado") return "dos estampados distintos casi nunca funcionan juntos";
+  if (colorA === "estampado" || colorB === "estampado") return "un estampado pide un compañero de color liso y neutro";
+  return "esos dos colores no terminan de casar";
+}
+const CAT_TEXT = { top: "la parte de arriba", bottom: "la parte de abajo", shoes: "el calzado" };
 function localOutfitText(top, bottom, shoes, evalRes) {
   const fails = evalRes.pairs.filter(p => !p.ok);
   if (evalRes.ok) {
-    return `${describe(top)} + ${describe(bottom)} + ${describe(shoes)}: el color y el nivel de formalidad son compatibles entre las tres piezas.`;
+    const c1 = colorById[top.color].label.toLowerCase();
+    const c2 = colorById[bottom.color].label.toLowerCase();
+    const c3 = colorById[shoes.color].label.toLowerCase();
+    return `Buena combinación: el ${c1}, el ${c2} y el ${c3} casan bien entre sí, y las tres prendas comparten un registro parecido de formalidad y temporada.`;
   }
+  const catToGarment = { top, bottom, shoes };
   const parts = fails.map(p => {
     const reasons = [];
-    if (!p.colorOk) reasons.push("el color no combina");
-    if (!p.styleOk) reasons.push("el nivel de formalidad no coincide");
-    return `${CAT_LABEL[p.catA]} y ${CAT_LABEL[p.catB]} no combinan: ${reasons.join(" y ")}`;
+    if (!p.colorOk) reasons.push(colorFailReason(catToGarment[p.catA].color, catToGarment[p.catB].color));
+    if (!p.styleOk) reasons.push("van en registros de formalidad demasiado distintos");
+    if (!p.seasonOk) reasons.push("una es de verano y la otra de invierno, no pegan en la misma época");
+    return `${CAT_TEXT[p.catA]} y ${CAT_TEXT[p.catB]} no terminan de casar: ${reasons.join(" y ")}`;
   });
+  if (evalRes.tooManyColors) parts.push("Además, hay demasiados colores llamativos a la vez — el conjunto queda recargado");
   return parts.join(". ") + ".";
 }
 
@@ -552,7 +614,7 @@ function saveOutfits(list) {
   catch (e) { console.error("No se pudieron guardar los outfits", e); }
 }
 function snapshotGarment(g) {
-  return { id: g.id, image: g.image, category: g.category, color: g.color, name: g.name || "", formality: g.formality, versatile: g.versatile };
+  return { id: g.id, image: g.image, category: g.category, color: g.color, name: g.name || "", formality: g.formality, versatile: g.versatile, season: g.season || "entretiempo" };
 }
 function addOutfit({ top, bottom, shoes, label, color, text, name }) {
   const entry = {
@@ -628,7 +690,7 @@ function frameHTML(g, index, opts = {}) {
           <div class="frame-meta">
             ${swatchHTML(g.color)}<span class="frame-label" title="${title}">${title}</span>
           </div>
-          <div class="frame-sub">${cat ? cat.label : g.category} · Niv. ${g.formality || 2}${g.versatile ? " · versátil" : ""}</div>
+          <div class="frame-sub">${cat ? cat.label : g.category} · Niv. ${g.formality || 2}${g.versatile ? " · versátil" : ""}${g.season && g.season !== "entretiempo" ? ` · ${SEASONS.find(s => s.id === g.season).label}` : ""}</div>
         </div>
       </div>
       ${opts.selectable ? `<button class="select-check ${isSelected ? "checked" : ""}" data-select="${g.id}">${isSelected ? "✓" : ""}</button>` : ""}
@@ -785,7 +847,7 @@ function outfitCardHTML(g, category) {
         <div class="frame-img"><img src="${g.image}" alt="${g.name || g.category}"></div>
         <div class="frame-body">
           <div class="frame-meta">${swatchHTML(g.color)}<span class="frame-label" title="${title}">${title}</span></div>
-          <div class="frame-sub">${cat ? cat.label : g.category} · Niv. ${g.formality || 2}${g.versatile ? " · versátil" : ""}</div>
+          <div class="frame-sub">${cat ? cat.label : g.category} · Niv. ${g.formality || 2}${g.versatile ? " · versátil" : ""}${g.season && g.season !== "entretiempo" ? ` · ${SEASONS.find(s => s.id === g.season).label}` : ""}</div>
         </div>
       </div>
       <button class="lock-btn ${isLocked ? "locked" : ""}" data-lock-cat="${category}" title="${isLocked ? "Desbloquear" : "Bloquear esta prenda"}">${lockIconSVG(isLocked)}</button>
@@ -805,6 +867,8 @@ function outfitBadges(top, bottom, shoes, ctxLabel) {
   const avg = Math.round(((top.formality||2) + (bottom.formality||2) + (shoes.formality||2)) / 3);
   const badges = [FORMALITY_LABELS[avg] || "Casual"];
   if (top.versatile || bottom.versatile || shoes.versatile) badges.push("Versátil incluido");
+  const seasons = [top.season, bottom.season, shoes.season].filter(s => s && s !== "entretiempo");
+  if (seasons.length) badges.push(SEASONS.find(s => s.id === seasons[0]).label);
   if (ctxLabel) badges.push(ctxLabel);
   return badges;
 }
@@ -1012,22 +1076,28 @@ function evaluateSelection(items) {
       pairs.push({ a: items[i], b: items[j], ...evaluatePair(items[i], items[j]) });
     }
   }
-  return { ok: pairs.length > 0 && pairs.every(p => p.ok), pairs };
+  const tooManyColors = tooManyLoudColors(items.map(i => i.color));
+  return { ok: pairs.length > 0 && pairs.every(p => p.ok) && !tooManyColors, pairs, tooManyColors };
 }
 function combineCheckFactsText(evalRes) {
-  return evalRes.pairs.map(p =>
-    `- ${describe(p.a)} / ${describe(p.b)}: color compatible=${p.colorOk ? "sí" : "no"}, nivel de formalidad compatible=${p.styleOk ? "sí" : "no"}`
-  ).join("\n");
+  const lines = evalRes.pairs.map(p =>
+    `- ${describe(p.a)} / ${describe(p.b)}: color compatible=${p.colorOk ? "sí" : "no"}, nivel de formalidad compatible=${p.styleOk ? "sí" : "no"}, temporada compatible=${p.seasonOk ? "sí" : "no"}`
+  );
+  if (evalRes.tooManyColors) lines.push("- El conjunto tiene más de 2 colores llamativos a la vez (recargado).");
+  return lines.join("\n");
 }
 function localCombineCheckText(evalRes) {
-  if (evalRes.ok) return "Todas las prendas seleccionadas son compatibles entre sí en color y nivel de formalidad.";
+  if (evalRes.ok) return "¡Buena elección! Todas las prendas que has elegido combinan bien entre sí, tanto en color como en estilo y temporada.";
   const fails = evalRes.pairs.filter(p => !p.ok);
-  return fails.map(p => {
+  const parts = fails.map(p => {
     const reasons = [];
-    if (!p.colorOk) reasons.push("el color no combina");
-    if (!p.styleOk) reasons.push("el nivel de formalidad no coincide");
-    return `${describe(p.a)} y ${describe(p.b)} no combinan: ${reasons.join(" y ")}`;
-  }).join(". ") + ".";
+    if (!p.colorOk) reasons.push(colorFailReason(p.a.color, p.b.color));
+    if (!p.styleOk) reasons.push("van en registros de formalidad demasiado distintos");
+    if (!p.seasonOk) reasons.push("una es de verano y la otra de invierno, no pegan en la misma época");
+    return `${describe(p.a)} y ${describe(p.b)} no terminan de casar: ${reasons.join(" y ")}`;
+  });
+  if (evalRes.tooManyColors) parts.push("Además, hay demasiados colores llamativos a la vez — el conjunto queda recargado");
+  return parts.join(". ") + ".";
 }
 
 async function renderCombineCheck() {
@@ -1207,10 +1277,19 @@ function renderModalColors() {
     btn.addEventListener("click", () => { pending.color = btn.dataset.color; renderModalColors(); });
   });
 }
+function renderModalSeason() {
+  const el = document.getElementById("modalSeason");
+  el.innerHTML = SEASONS.map(s => `
+    <button class="formality-btn ${pending.season === s.id ? "selected" : ""}" data-season="${s.id}">${s.label}</button>
+  `).join("");
+  el.querySelectorAll("[data-season]").forEach(btn => {
+    btn.addEventListener("click", () => { pending.season = btn.dataset.season; renderModalSeason(); });
+  });
+}
 function openModal(image, rawFile, opts = {}) {
   editingId = null;
   candidateMode = !!opts.candidate;
-  pending = { image, category: "top", color: "blanco", name: "", rawFile, formality: 2, versatile: false };
+  pending = { image, category: "top", color: "blanco", name: "", rawFile, formality: 2, versatile: false, season: "entretiempo" };
   document.getElementById("modalTitle").textContent = candidateMode ? "Evaluar prenda" : "Nueva prenda";
   document.getElementById("modalConfirm").textContent = candidateMode ? "Ver compatibilidad" : "Añadir al armario";
   document.getElementById("modalPreview").src = image;
@@ -1219,13 +1298,14 @@ function openModal(image, rawFile, opts = {}) {
   document.getElementById("modalVersatile").checked = false;
   renderModalColors();
   renderModalFormality();
+  renderModalSeason();
   document.getElementById("modalBackdrop").classList.add("open");
 }
 
 function openEditModal(garment) {
   editingId = garment.id;
   candidateMode = false;
-  pending = { image: garment.image, category: garment.category, color: garment.color, name: garment.name || "", rawFile: null, formality: garment.formality || 2, versatile: !!garment.versatile };
+  pending = { image: garment.image, category: garment.category, color: garment.color, name: garment.name || "", rawFile: null, formality: garment.formality || 2, versatile: !!garment.versatile, season: garment.season || "entretiempo" };
   document.getElementById("modalTitle").textContent = "Editar prenda";
   document.getElementById("modalConfirm").textContent = "Guardar cambios";
   document.getElementById("modalPreview").src = garment.image;
@@ -1234,6 +1314,7 @@ function openEditModal(garment) {
   document.getElementById("modalVersatile").checked = !!garment.versatile;
   renderModalColors();
   renderModalFormality();
+  renderModalSeason();
   document.getElementById("modalBackdrop").classList.add("open");
 }
 function closeModal() { document.getElementById("modalBackdrop").classList.remove("open"); pending = null; editingId = null; candidateMode = false; }
