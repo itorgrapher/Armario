@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Armario</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="theme-color" content="#17171A">
+<style>
+  :root {
+    --sidebar-bg: #17171A;
+    --sidebar-text: #C7C7CC;
+    --sidebar-text-dim: #8A8A90;
+    --sidebar-active: #2A2A2E;
+    --bg: #F4F4F2;
+    --paper: #FFFFFF;
+    --ink: #1B1B18;
+    --ink-soft: #6B6B68;
+    --line: rgba(27,27,24,0.08);
+    --line-strong: rgba(27,27,24,0.14);
+    --accent: #2F4858;
+    --gold: #B08D57;
+    --danger: #C0392B;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --shadow: 0 1px 2px rgba(20,20,15,0.04), 0 8px 24px rgba(20,20,15,0.06);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", sans-serif;
+  }
+  .app-shell { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 220px; flex-shrink: 0; background: var(--sidebar-bg); color: var(--sidebar-text);
+    display: flex; flex-direction: column; padding: 22px 14px; position: sticky; top: 0; height: 100vh;
+  }
+  .brand {
+    font-family: ui-serif, Georgia, serif; font-size: 19px; font-weight: 700; color: #fff;
+    letter-spacing: 0.04em; padding: 0 8px 24px; display: flex; align-items: center; gap: 6px;
+  }
+  .brand .spark { color: var(--gold); }
+  .nav-list { display: flex; flex-direction: column; gap: 3px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 11px; padding: 10px 12px; border-radius: var(--radius-sm);
+    background: none; border: none; color: var(--sidebar-text); font-size: 13.5px; font-weight: 500;
+    cursor: pointer; font-family: inherit; text-align: left; width: 100%;
+  }
+  .nav-item svg { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.85; }
+  .nav-item:hover { background: rgba(255,255,255,0.05); }
+  .nav-item.nav-active { background: var(--sidebar-active); color: #fff; }
+  .nav-item.nav-active svg { opacity: 1; }
+  .sidebar-footer { margin-top: auto; }
+  .sidebar-note {
+    background: rgba(255,255,255,0.05); border-radius: var(--radius-sm); padding: 14px;
+    font-size: 12px; color: var(--sidebar-text-dim); line-height: 1.5; margin-bottom: 10px;
+  }
+  .sidebar-note strong { display: block; color: #fff; font-size: 13px; margin-bottom: 4px; font-weight: 600; }
+
+  .main { flex: 1; min-width: 0; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 32px 70px; }
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  h1 { font-family: ui-serif, Georgia, "Times New Roman", serif; font-size: 30px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
+  h2 { font-family: ui-sans-serif, -apple-system, sans-serif; font-size: 16px; font-weight: 700; margin: 0; }
+  p.sub { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-soft); max-width: 460px; line-height: 1.5; }
+
+  .settings { margin: 0 0 22px; font-size: 12.5px; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .settings input {
+    font-family: ui-monospace, monospace; font-size: 12px; padding: 7px 10px; border-radius: 8px;
+    border: 1px solid var(--line-strong); background: #fff; width: 130px;
+  }
+  .settings-status { font-size: 11.5px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; border-radius: 999px;
+    border: none; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit;
+    transition: transform 80ms ease, box-shadow 80ms ease;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background: var(--ink); color: #fff; }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-outline { background: #fff; color: var(--ink); border: 1px solid var(--line-strong); box-shadow: var(--shadow); }
+  .btn-outline.toggle-active { background: var(--ink); color: #fff; border-color: var(--ink); box-shadow: none; }
+  .btn-disabled { background: #D8D8D3 !important; cursor: not-allowed !important; color: #fff !important; box-shadow: none !important; }
+  .btn-text { background: none; border: none; color: var(--accent); font-size: 12.5px; font-weight: 600; cursor: pointer; padding: 0; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; }
+
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 22px; }
+  .tab {
+    background: #fff; border: 1px solid var(--line-strong); padding: 8px 16px; border-radius: 999px;
+    font-size: 13px; color: var(--ink-soft); cursor: pointer; font-family: inherit; font-weight: 500;
+  }
+  .tab.active { background: var(--ink); color: #fff; border-color: var(--ink); font-weight: 600; }
+
+  .search-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .search-row input[type="text"] { flex: 1; min-width: 180px; margin-top: 0; }
+  .search-row select { width: auto; min-width: 140px; }
+  .color-filter-row { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; margin-bottom: 18px; }
+  .color-filter-chip {
+    padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line-strong); background: #fff;
+    font-size: 11.5px; font-weight: 600; color: var(--ink-soft); cursor: pointer; font-family: inherit;
+  }
+  .color-filter-chip.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .color-filter-swatch {
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--line-strong); cursor: pointer;
+    padding: 0; flex-shrink: 0;
+  }
+  .color-filter-swatch.active { border-color: var(--accent); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin-bottom: 26px; }
+  .frame { position: relative; height: 100%; }
+  .frame-inner { border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; height: 100%; display: flex; flex-direction: column; }
+  .frame-inner.selected { outline: 2px solid var(--accent); }
+  .frame-img { width: 100%; aspect-ratio: 1; overflow: hidden; background: #EFEFEC; flex-shrink: 0; }
+  .frame-img:only-child { flex: 1; aspect-ratio: auto; }
+  .frame-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .frame-body { padding: 10px 12px 12px; flex: 1; display: flex; flex-direction: column; justify-content: flex-start; min-height: 64px; }
+  .frame-meta { display: flex; align-items: flex-start; gap: 6px; }
+  .swatch { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--line-strong); flex-shrink: 0; display: inline-block; margin-top: 2px; }
+  .frame-label { font-size: 12.5px; color: var(--ink); font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .frame-sub { font-size: 11px; color: var(--ink-soft); margin-top: 4px; line-height: 1.3; }
+  .del-btn {
+    position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%;
+    border: none; background: rgba(255,255,255,0.92); display: flex; align-items: center;
+    justify-content: center; cursor: pointer; color: var(--danger); font-size: 12px; line-height: 1;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  .edit-btn {
+    position: absolute; top: 8px; right: 38px; width: 24px; height: 24px; border-radius: 50%;
+    border: none; background: rgba(255,255,255,0.92); display: flex; align-items: center;
+    justify-content: center; cursor: pointer; color: var(--ink-soft); font-size: 12px; line-height: 1;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  .select-check {
+    position: absolute; top: 8px; left: 8px; width: 22px; height: 22px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.9); background: rgba(20,20,15,0.25); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 700;
+  }
+  .select-check.checked { background: var(--accent); border-color: var(--accent); }
+  .lock-btn {
+    position: absolute; top: 8px; left: 8px; width: 24px; height: 24px; border-radius: 50%;
+    border: none; background: rgba(255,255,255,0.92); display: flex; align-items: center;
+    justify-content: center; cursor: pointer; color: var(--ink-soft); box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+  }
+  .lock-btn.locked { background: var(--accent); color: #fff; }
+  .outfit-details summary {
+    cursor: pointer; font-size: 12.5px; font-weight: 600; color: var(--accent);
+    list-style: none; display: inline-flex; align-items: center; gap: 5px; user-select: none;
+  }
+  .outfit-details summary::-webkit-details-marker { display: none; }
+  .outfit-details summary::after { content: "▾"; font-size: 10px; }
+  .outfit-details[open] summary::after { content: "▴"; }
+  .add-card {
+    border: 1.5px dashed var(--line-strong); border-radius: var(--radius); display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 6px; aspect-ratio: 0.82; cursor: pointer;
+    color: var(--ink-soft); font-size: 12.5px; background: rgba(255,255,255,0.4); text-align: center;
+  }
+  .add-card .plus { font-size: 22px; color: var(--ink); line-height: 1; }
+  .add-card:hover { background: #fff; border-color: var(--ink-soft); }
+
+  .empty { border: 1.5px dashed var(--line-strong); border-radius: var(--radius); padding: 36px 20px; text-align: center; color: var(--ink-soft); font-size: 13.5px; background: rgba(255,255,255,0.4); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; align-items: center; }
+  .hint { width: 100%; margin-top: 4px; font-size: 12.5px; color: var(--ink-soft); }
+  .section { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 20px; margin-bottom: 22px; }
+  .section-plain { padding: 0; margin-bottom: 22px; }
+
+  .verdict-box { background: #F6F5F1; border-radius: var(--radius-sm); padding: 16px; }
+  .verdict-label { font-size: 12.5px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .verdict-text { font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+  .fallback-note { margin-top: 8px; font-size: 11.5px; color: var(--ink-soft); }
+  .badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+  .badge {
+    background: #fff; border: 1px solid var(--line-strong); border-radius: 999px; padding: 4px 12px;
+    font-size: 11px; font-weight: 600; color: var(--ink-soft);
+  }
+
+  .picker-row { margin-bottom: 16px; }
+  .picker-label { font-size: 12px; color: var(--ink-soft); margin-bottom: 8px; font-weight: 600; }
+  .picker-scroll { display: flex; gap: 10px; flex-wrap: wrap; }
+  .picker-item { flex-shrink: 0; width: 78px; cursor: pointer; border: 2px solid transparent; border-radius: var(--radius-sm); padding: 3px; }
+  .picker-item.selected { border-color: var(--accent); }
+  .picker-item .frame-img { border-radius: 8px; }
+  .picker-item .frame-meta { justify-content: center; padding: 4px 0 0; }
+
+  .modal-backdrop {
+    position: fixed; inset: 0; background: rgba(20,20,15,0.45); display: none;
+    align-items: center; justify-content: center; z-index: 50; overflow-y: auto; padding: 20px;
+  }
+  .modal-backdrop.open { display: flex; }
+  .modal {
+    background: #fff; width: 100%; max-width: 460px; padding: 24px; border-radius: var(--radius);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .modal-close { background: none; border: none; cursor: pointer; color: var(--ink-soft); font-size: 18px; }
+  .modal-body { display: flex; gap: 14px; margin-bottom: 16px; }
+  .modal-preview { width: 84px; height: 84px; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--line-strong); }
+  select {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--line-strong); border-radius: 8px; background: #fff;
+    font-size: 13px; color: var(--ink); font-family: inherit;
+  }
+  label.field { font-size: 12px; color: var(--ink-soft); display: block; margin-bottom: 16px; }
+  .color-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .color-btn {
+    display: flex; align-items: center; gap: 5px; padding: 6px 11px; border: 1px solid var(--line-strong); border-radius: 999px;
+    background: transparent; font-size: 11.5px; cursor: pointer; color: var(--ink); font-family: inherit;
+  }
+  .color-btn.selected { border-color: var(--accent); background: #EFF4F5; color: var(--accent); }
+  .formality-options { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .formality-btn {
+    padding: 7px 11px; border: 1px solid var(--line-strong); border-radius: 999px; background: transparent; font-size: 11px;
+    cursor: pointer; color: var(--ink); font-family: inherit;
+  }
+  .formality-btn.selected { border-color: var(--accent); background: #EFF4F5; color: var(--accent); font-weight: 600; }
+  input[type="text"] {
+    width: 100%; margin-top: 4px; padding: 9px 12px; border: 1px solid var(--line-strong); border-radius: 8px; font-size: 13px;
+  }
+  .error-msg { margin-top: 8px; font-size: 12.5px; color: var(--danger); }
+  .ai-status { font-size: 11.5px; margin: -10px 0 14px; }
+  .swap-card { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 8px; margin-top: 8px; background: #fff; }
+  .swap-card img { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+</style>
+<style>
+  @media (max-width: 720px) {
+    .app-shell { flex-direction: column; }
+    .sidebar { width: 100%; height: auto; position: relative; flex-direction: row; overflow-x: auto; padding: 12px; }
+    .sidebar-footer { display: none; }
+    .nav-list { flex-direction: row; }
+    .brand { display: none; }
+    .wrap { padding: 22px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><span>ARMARIO</span><span class="spark">✨</span></div>
+    <nav class="nav-list">
+      <button class="nav-item nav-active" id="viewTabWardrobe">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+        Mi armario
+      </button>
+      <button class="nav-item" id="viewTabOutfits">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.2" r="1.3"/><path d="M12 5.5V7"/><path d="M12 7 4.7 12.1a1.8 1.8 0 0 0 1 3.3h12.6a1.8 1.8 0 0 0 1-3.3z"/><path d="M4.5 18.5h15"/></svg>
+        Outfits
+      </button>
+      <button class="nav-item" id="viewTabShop">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H4.5a1 1 0 0 0-1 1.11l1 9A2 2 0 0 0 6.48 17H16.5a2 2 0 0 0 2-1.83l.85-9.06A1 1 0 0 0 18.35 5H9Z"/><path d="M9 5a3 3 0 0 1 6 0"/><circle cx="9" cy="10" r=".6" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r=".6" fill="currentColor" stroke="none"/></svg>
+        ¿Me lo compro?
+      </button>
+      <button class="nav-item" id="viewTabSettings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Configuración
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-note">
+        <strong>Tu estilo, a tu manera</strong>
+        Tu armario virtual con estilista integrado, siempre a mano.
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+  <div class="wrap">
+  <div class="page-head">
+    <div>
+      <h1 id="pageTitle">Mi armario</h1>
+      <p class="sub" id="pageSubtitle">Gestiona tu ropa y crea combinaciones que realmente vayan con tu estilo.</p>
+    </div>
+    <div id="pageAction" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+      <input type="text" id="searchInput" placeholder="Buscar por nombre…" style="margin-top:0; width:220px;">
+      <input type="file" id="fileInput" accept="image/*" style="display:none;">
+      <button class="btn btn-primary" id="uploadBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Subir prenda</button>
+      <div class="error-msg" id="uploadError" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div id="viewWardrobe">
+  <div class="color-filter-row" id="colorFilterRow" style="display:none;">
+    <select id="contextFilterSelect" style="margin-right:4px;"><option value="">Cualquier ocasión</option></select>
+    <button class="color-filter-chip active" data-color-filter="">Todos</button>
+  </div>
+
+  <div class="tabs" id="tabs" style="display:none;"></div>
+
+  <div class="empty" id="emptyState" style="display:none;">Aún no has subido ninguna prenda. Empieza subiendo la foto de una prenda cualquiera.</div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="section" id="contextSection" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap;">
+      <div id="occasionBlock" style="min-width:220px;">
+        <h2 style="margin-bottom:8px;">Sugerir por ocasión</h2>
+        <select id="contextSelect" style="max-width:280px;">
+          <option value="any">Elige una ocasión…</option>
+        </select>
+        <div class="hint" id="contextHint" style="display:none;"></div>
+      </div>
+      <div class="row" id="actionsRow" style="margin-bottom:0;">
+        <button class="btn btn-accent" id="generateOutfitBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg> Generar outfit</button>
+        <button class="btn btn-outline" id="builderToggleBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="11" height="11" rx="2"/><rect x="10" y="10" width="11" height="11" rx="2"/></svg> Crear mi propio outfit</button>
+        <button class="btn btn-outline" id="matchToggleBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.2" r="1.3"/><path d="M12 5.5V7"/><path d="M12 7 4.7 12.1a1.8 1.8 0 0 0 1 3.3h12.6a1.8 1.8 0 0 0 1-3.3z"/><path d="M4.5 18.5h15"/></svg> ¿Qué combina con esto?</button>
+        <button class="btn btn-outline" id="combineCheckToggleBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg> ¿Combinan?</button>
+        <div class="hint" id="actionsHint" style="display:none;">Necesitas al menos una prenda de cada categoría para usar estas opciones.</div>
+        <div class="hint" id="selectionHint" style="display:none; color:var(--accent); font-weight:600;"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="section" id="suggestionSection" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+      <h2>Outfit sugerido</h2>
+      <button class="btn-text" id="againBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg> Otra combinación</button>
+    </div>
+    <p class="sub" style="margin-bottom:12px;">Toca el candado de una prenda para bloquearla antes de regenerar.</p>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:14px;" id="suggestionGrid"></div>
+    <div class="verdict-box" id="suggestionExplain" style="margin-bottom:12px;"></div>
+    <button class="btn btn-outline" id="suggestionSaveBtn" style="display:none;">Guardar outfit</button>
+  </div>
+
+  <div class="section" id="builderSection" style="display:none;">
+    <h2 style="margin-bottom:4px;">Crea tu combinación</h2>
+    <p class="sub" style="margin-bottom:14px;">Elige una prenda de cada categoría.</p>
+    <div id="pickerContainer"></div>
+    <button class="btn btn-primary btn-disabled" id="checkManualBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg> ¿Combina?</button>
+    <div id="manualResult" style="margin-top:16px;"></div>
+  </div>
+
+  <div class="section" id="matchSection" style="display:none;">
+    <h2 style="margin-bottom:4px;">¿Qué combina con esto?</h2>
+    <p class="sub" style="margin-bottom:14px;">Marca en tu armario las prendas que quieres comprobar.</p>
+    <div id="matchResults"></div>
+  </div>
+
+  <div class="section" id="combineCheckSection" style="display:none;">
+    <h2 style="margin-bottom:4px;">¿Combinan?</h2>
+    <p class="sub" style="margin-bottom:14px;">Comprueba si las prendas seleccionadas combinan entre sí.</p>
+    <div id="combineCheckResults"></div>
+  </div>
+  </div>
+
+  <div id="viewOutfits" style="display:none;">
+    <div id="outfitsEmpty" class="empty" style="display:none;">Aún no has guardado ningún outfit. ¡Crea uno y guárdalo para que aparezca!</div>
+    <div id="outfitsList"></div>
+  </div>
+
+  <div id="viewShop" style="display:none;">
+    <div id="shopUploadSection" class="empty">
+      <input type="file" id="shopFileInput" accept="image/*" style="display:none;">
+      <p style="margin: 0 0 12px; color: var(--ink); font-weight: 600;">Sube una foto de la prenda que estás pensando comprar</p>
+      <p class="sub" style="margin: 0 auto 16px; text-align:center;">Sube una foto o captura de pantalla — no se guarda en tu armario hasta que tú decidas.</p>
+      <button class="btn btn-primary" id="shopUploadBtn" style="margin: 0 auto;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Subir foto de la prenda</button>
+    </div>
+    <div id="shopResult"></div>
+  </div>
+
+  <div id="viewSettings" style="display:none;">
+    <h2 style="font-size:15px; margin-bottom:8px;">Copia de seguridad</h2>
+    <p class="sub" style="margin-bottom:12px;">¡No pierdas tu armario! Exporta el archivo antes de borrar los datos de navegación o cambiar de dispositivo.</p>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+      <input type="file" id="backupFileInput" accept="application/json" style="display:none;">
+      <button class="btn btn-outline" id="exportBackupBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Hacer copia de seguridad</button>
+      <button class="btn btn-outline" id="importBackupBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg> Cargar copia de seguridad</button>
+    </div>
+    <div class="ai-status" id="backupStatus" style="display:none;"></div>
+  </div>
+  </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <h2 style="font-size:17px;" id="modalTitle">Nueva prenda</h2>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <img class="modal-preview" id="modalPreview" src="" alt="Vista previa">
+      <div style="flex:1;">
+        <label class="field" style="margin-bottom:0;">Tipo de prenda
+          <select id="modalCategory">
+            <option value="top">Superior</option>
+            <option value="bottom">Inferior</option>
+            <option value="shoes">Calzado</option>
+            <option value="outer">Abrigo</option>
+            <option value="accessory">Complementos</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <label class="field">¿Para qué ocasión la llevarías?
+      <div class="formality-options" id="modalFormality"></div>
+    </label>
+    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-soft); margin-bottom:16px;">
+      <input type="checkbox" id="modalVersatile">
+      Prenda versátil
+    </label>
+
+    <label class="field">Color
+      <div class="color-options" id="modalColors"></div>
+    </label>
+    <label class="field">Nombre
+      <input type="text" id="modalName" placeholder="p. ej. camiseta lino blanca">
+    </label>
+    <button class="btn btn-primary" id="modalConfirm" style="width:100%;">Añadir al armario</button>
+  </div>
+</div>
+
+<script>
+/* ---------------- Data ---------------- */
+const CATEGORIES = [
+  { id: "top", label: "Superior" },
+  { id: "bottom", label: "Inferior" },
+  { id: "shoes", label: "Calzado" },
+  { id: "outer", label: "Abrigo" },
+  { id: "accessory", label: "Complementos" },
+];
+const COLORS = [
+  { id: "blanco", label: "Blanco", hex: "#FFFFFF" },
+  { id: "negro", label: "Negro", hex: "#151515" },
+  { id: "gris", label: "Gris", hex: "#9B9B93" },
+  { id: "azul_marino", label: "Azul marino", hex: "#23324D" },
+  { id: "azul_claro", label: "Azul claro", hex: "#7FA6C9" },
+  { id: "beige", label: "Beige", hex: "#D8C9A3" },
+  { id: "marron", label: "Marrón", hex: "#6B4A34" },
+  { id: "verde", label: "Verde", hex: "#4B6B4B" },
+  { id: "rojo", label: "Rojo", hex: "#9C3B3B" },
+  { id: "rosa", label: "Rosa", hex: "#D08FA0" },
+  { id: "amarillo", label: "Amarillo", hex: "#D9B44A" },
+  { id: "naranja", label: "Naranja", hex: "#C97A3D" },
+  { id: "morado", label: "Morado", hex: "#6B4E71" },
+  { id: "estampado", label: "Estampado", hex: "pattern" },
+];
+const colorById = Object.fromEntries(COLORS.map(c => [c.id, c]));
+const NEUTRALS = new Set(["blanco","negro","gris","beige","azul_marino","marron"]);
+const PAIRS = [
+  ["azul_claro","beige"],["azul_claro","blanco"],["azul_claro","gris"],
+  ["verde","beige"],["verde","blanco"],["verde","marron"],
+  ["rojo","blanco"],["rojo","negro"],["rojo","beige"],
+  ["rosa","gris"],["rosa","blanco"],["rosa","azul_marino"],
+  ["amarillo","azul_marino"],["amarillo","gris"],["amarillo","blanco"],
+  ["naranja","azul_marino"],["naranja","beige"],
+  ["morado","gris"],["morado","blanco"],
+];
+const pairKey = (a,b) => [a,b].sort().join("|");
+const PAIR_SET = new Set(PAIRS.map(([a,b]) => pairKey(a,b)));
+function colorCompatible(a,b) {
+  if (a === b) return true;
+  if (a === "estampado" || b === "estampado") {
+    const other = a === "estampado" ? b : a;
+    return NEUTRALS.has(other);
+  }
+  if (NEUTRALS.has(a) || NEUTRALS.has(b)) return true;
+  return PAIR_SET.has(pairKey(a,b));
+}
+
+const FORMALITY_LABELS = { 1: "Deporte", 2: "Casual", 3: "Trabajo", 4: "Evento", 5: "Etiqueta" };
+const CONTEXTS = [
+  { id: "deporte", label: "Deporte", target: 1 },
+  { id: "casual", label: "Casual", target: 2 },
+  { id: "trabajo", label: "Trabajo", target: 3 },
+  { id: "evento", label: "Evento", target: 4 },
+  { id: "formal", label: "Etiqueta", target: 5 },
+];
+
+function styleCompatible(a, b) {
+  const tol = 1 + ((a.versatile || b.versatile) ? 1 : 0);
+  return Math.abs((a.formality || 2) - (b.formality || 2)) <= tol;
+}
+function evaluatePair(a, b) {
+  const colorOk = colorCompatible(a.color, b.color);
+  const styleOk = styleCompatible(a, b);
+  return { colorOk, styleOk, ok: colorOk && styleOk };
+}
+function evaluateOutfit(top, bottom, shoes) {
+  const tb = evaluatePair(top, bottom);
+  const ts = evaluatePair(top, shoes);
+  const bs = evaluatePair(bottom, shoes);
+  const pairs = [
+    { catA: "top", catB: "bottom", ...tb },
+    { catA: "top", catB: "shoes", ...ts },
+    { catA: "bottom", catB: "shoes", ...bs },
+  ];
+  return { ok: pairs.every(p => p.ok), pairs };
+}
+function fitsContext(g, target) {
+  const tol = 1 + (g.versatile ? 1 : 0);
+  return Math.abs((g.formality || 2) - target) <= tol;
+}
+function describe(g) {
+  const cat = CATEGORIES.find(c => c.id === g.category);
+  return `${cat ? cat.label : g.category} de color ${colorById[g.color].label.toLowerCase()}${g.name ? ` (${g.name})` : ""}`;
+}
+const CAT_LABEL = { top: "superior", bottom: "inferior", shoes: "calzado" };
+function factsText(evalRes) {
+  return evalRes.pairs.map(p =>
+    `- ${CAT_LABEL[p.catA]} / ${CAT_LABEL[p.catB]}: color compatible=${p.colorOk ? "sí" : "no"}, nivel de formalidad compatible=${p.styleOk ? "sí" : "no"}`
+  ).join("\n");
+}
+function localOutfitText(top, bottom, shoes, evalRes) {
+  const fails = evalRes.pairs.filter(p => !p.ok);
+  if (evalRes.ok) {
+    return `${describe(top)} + ${describe(bottom)} + ${describe(shoes)}: el color y el nivel de formalidad son compatibles entre las tres piezas.`;
+  }
+  const parts = fails.map(p => {
+    const reasons = [];
+    if (!p.colorOk) reasons.push("el color no combina");
+    if (!p.styleOk) reasons.push("el nivel de formalidad no coincide");
+    return `${CAT_LABEL[p.catA]} y ${CAT_LABEL[p.catB]} no combinan: ${reasons.join(" y ")}`;
+  });
+  return parts.join(". ") + ".";
+}
+
+// Comprueba que el texto redactado por la IA no contradiga el veredicto ya calculado por reglas.
+function textAgreesWithVerdict(text, ok) {
+  const head = text.toLowerCase().slice(0, 180);
+  const negative = /\bno (combina|funciona|pega|casa)/.test(head);
+  const positive = /(s[ií] (combina|funciona)|combina (bien|perfectamente|de maravilla)|buena combinaci[oó]n|funciona (bien|perfectamente))/.test(head);
+  if (ok && negative && !positive) return false;
+  if (!ok && positive && !negative) return false;
+  return true;
+}
+
+/* ---------------- Storage (localStorage, this file runs outside Claude.ai) ---------------- */
+const STORAGE_KEY = "armario_wardrobe_v2";
+function loadGarments() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+function saveGarments(list) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+  catch (e) { console.error("No se pudo guardar (¿demasiadas imágenes para localStorage?)", e); }
+}
+
+const OUTFITS_KEY = "armario_outfits_v1";
+function loadOutfits() {
+  try {
+    const raw = localStorage.getItem(OUTFITS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+function saveOutfits(list) {
+  try { localStorage.setItem(OUTFITS_KEY, JSON.stringify(list)); }
+  catch (e) { console.error("No se pudieron guardar los outfits", e); }
+}
+function snapshotGarment(g) {
+  return { id: g.id, image: g.image, category: g.category, color: g.color, name: g.name || "", formality: g.formality, versatile: g.versatile };
+}
+function addOutfit({ top, bottom, shoes, label, color, text, name }) {
+  const entry = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+    date: new Date().toISOString(),
+    top: snapshotGarment(top), bottom: snapshotGarment(bottom), shoes: snapshotGarment(shoes),
+    label, color, text, name: (name || "Outfit sin nombre").slice(0, 40),
+  };
+  outfits.unshift(entry);
+  saveOutfits(outfits);
+  return entry;
+}
+
+
+/* ---------------- App state ---------------- */
+let shopCandidate = null;
+let candidateMode = false;
+
+let garments = loadGarments();
+let outfits = loadOutfits();
+let filter = "all";
+let pending = null;
+let editingId = null;
+let manualPicks = { top: null, bottom: null, shoes: null };
+let selectedForMatch = new Set();
+let lockedPieces = { top: null, bottom: null, shoes: null };
+let currentSuggestionOutfit = null;
+let searchQuery = "";
+let colorFilterValue = "";
+let contextFilterValue = "";
+/* ---------------- Image resize ---------------- */
+function resizeImage(file, maxDim = 480, quality = 0.75) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("No se pudo leer la imagen"));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("Imagen no válida"));
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > height && width > maxDim) { height = Math.round(height * maxDim / width); width = maxDim; }
+        else if (height > maxDim) { width = Math.round(width * maxDim / height); height = maxDim; }
+        const canvas = document.createElement("canvas");
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#fff"; ctx.fillRect(0,0,width,height);
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", quality));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+/* ---------------- Rendering helpers ---------------- */
+function swatchHTML(colorId, size = 14) {
+  const c = colorById[colorId];
+  const bg = c.hex === "pattern"
+    ? "repeating-linear-gradient(45deg, #C9C2AE, #C9C2AE 2px, #8C8465 2px, #8C8465 4px)"
+    : c.hex;
+  return `<span class="swatch" style="width:${size}px;height:${size}px;background:${bg};" title="${c.label}"></span>`;
+}
+
+function frameHTML(g, index, opts = {}) {
+  const cat = CATEGORIES.find(c => c.id === g.category);
+  const title = g.name ? g.name.charAt(0).toUpperCase() + g.name.slice(1) : (cat ? cat.label : g.category);
+  const isSelected = opts.selectable && selectedForMatch.has(g.id);
+  return `
+    <div class="frame" data-id="${g.id}">
+      <div class="frame-inner ${isSelected ? "selected" : ""}">
+        <div class="frame-img"><img src="${g.image}" alt="${g.name || g.category}"></div>
+        <div class="frame-body">
+          <div class="frame-meta">
+            ${swatchHTML(g.color)}<span class="frame-label" title="${title}">${title}</span>
+          </div>
+          <div class="frame-sub">${cat ? cat.label : g.category} · Niv. ${g.formality || 2}${g.versatile ? " · versátil" : ""}</div>
+        </div>
+      </div>
+      ${opts.selectable ? `<button class="select-check ${isSelected ? "checked" : ""}" data-select="${g.id}">${isSelected ? "✓" : ""}</button>` : ""}
+      ${opts.editable ? `<button class="edit-btn" data-edit="${g.id}">✎</button>` : ""}
+      ${opts.deletable ? `<button class="del-btn" data-del="${g.id}">✕</button>` : ""}
+    </div>`;
+}
+function addCardHTML(id = "addCardTrigger", title = "Añadir prenda") {
+  return `
+    <div class="add-card" id="${id}">
+      <span class="plus">+</span>
+      <span>${title}</span>
+    </div>`;
+}
+
+function renderTabs() {
+  const tabsEl = document.getElementById("tabs");
+  if (garments.length === 0) { tabsEl.style.display = "none"; return; }
+  tabsEl.style.display = "flex";
+  const counts = CATEGORIES.reduce((acc,c) => { acc[c.id] = garments.filter(g=>g.category===c.id).length; return acc; }, {});
+  let html = `<button class="tab ${filter==='all'?'active':''}" data-filter="all">Todo (${garments.length})</button>`;
+  CATEGORIES.forEach(c => {
+    html += `<button class="tab ${filter===c.id?'active':''}" data-filter="${c.id}">${c.label} (${counts[c.id]})</button>`;
+  });
+  tabsEl.innerHTML = html;
+  tabsEl.querySelectorAll(".tab").forEach(btn => btn.addEventListener("click", () => { filter = btn.dataset.filter; renderAll(); }));
+}
+
+function matchesSearch(g) {
+  if (!searchQuery) return true;
+  const cat = CATEGORIES.find(c => c.id === g.category);
+  const haystack = `${g.name || ""} ${cat ? cat.label : ""} ${colorById[g.color].label}`.toLowerCase();
+  return haystack.includes(searchQuery);
+}
+function matchesColorFilter(g) { return !colorFilterValue || g.color === colorFilterValue; }
+function matchesContextFilter(g) {
+  if (!contextFilterValue) return true;
+  const ctx = CONTEXTS.find(c => c.id === contextFilterValue);
+  return fitsContext(g, ctx.target);
+}
+
+function renderGrid() {
+  const gridEl = document.getElementById("grid");
+  const emptyEl = document.getElementById("emptyState");
+  const colorRow = document.getElementById("colorFilterRow");
+  colorRow.style.display = garments.length > 0 ? "flex" : "none";
+  let list = filter === "all" ? garments : garments.filter(g => g.category === filter);
+  list = list.filter(g => matchesSearch(g) && matchesColorFilter(g) && matchesContextFilter(g));
+  emptyEl.style.display = garments.length === 0 ? "block" : "none";
+  gridEl.innerHTML = list.map(g => frameHTML(g, garments.indexOf(g), { deletable: true, editable: true, selectable: true })).join("") + (garments.length > 0 ? addCardHTML() : "");
+
+  gridEl.querySelectorAll("[data-del]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      garments = garments.filter(g => g.id !== btn.dataset.del);
+      selectedForMatch.delete(btn.dataset.del);
+      saveGarments(garments);
+      document.getElementById("suggestionSection").style.display = "none";
+      renderAll();
+    });
+  });
+  gridEl.querySelectorAll("[data-edit]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const garment = garments.find(g => g.id === btn.dataset.edit);
+      if (garment) openEditModal(garment);
+    });
+  });
+  gridEl.querySelectorAll("[data-select]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.select;
+      if (selectedForMatch.has(id)) selectedForMatch.delete(id); else selectedForMatch.add(id);
+      renderGrid();
+      updateSelectionHint();
+    });
+  });
+  const addCard = document.getElementById("addCardTrigger");
+  if (addCard) addCard.addEventListener("click", () => document.getElementById("fileInput").click());
+}
+
+function counts() {
+  return CATEGORIES.reduce((acc,c) => { acc[c.id] = garments.filter(g=>g.category===c.id).length; return acc; }, {});
+}
+function canSuggest() { const c = counts(); return c.top > 0 && c.bottom > 0 && c.shoes > 0; }
+
+function updateSelectionHint() {
+  const hintEl = document.getElementById("selectionHint");
+  const n = selectedForMatch.size;
+  if (n === 0) { hintEl.style.display = "none"; return; }
+  hintEl.style.display = "block";
+  hintEl.textContent = `${n} prenda${n > 1 ? "s" : ""} seleccionada${n > 1 ? "s" : ""} para "¿Qué combina con esto?"`;
+}
+
+function renderActions() {
+  const row = document.getElementById("actionsRow");
+  const hint = document.getElementById("actionsHint");
+  const contextSection = document.getElementById("contextSection");
+  const occasionBlock = document.getElementById("occasionBlock");
+  const generateBtn = document.getElementById("generateOutfitBtn");
+  const builderBtn = document.getElementById("builderToggleBtn");
+  const matchBtn = document.getElementById("matchToggleBtn");
+  if (garments.length === 0) { contextSection.style.display = "none"; return; }
+  const ok = canSuggest();
+  contextSection.style.display = "block";
+  occasionBlock.style.display = ok ? "block" : "none";
+  row.style.display = "flex";
+  hint.style.display = ok ? "none" : "block";
+  generateBtn.disabled = !ok;
+  generateBtn.classList.toggle("btn-disabled", !ok);
+  builderBtn.disabled = !ok;
+  builderBtn.style.cursor = ok ? "pointer" : "not-allowed";
+  matchBtn.disabled = false;
+  matchBtn.style.cursor = "pointer";
+  updateSelectionHint();
+}
+
+/* ---------------- Suggest by context ---------------- */
+function buildOutfit(contextId, locked = {}) {
+  let pool = garments;
+  if (contextId && contextId !== "any") {
+    const ctx = CONTEXTS.find(c => c.id === contextId);
+    pool = garments.filter(g => fitsContext(g, ctx.target));
+  }
+  const poolFor = (cat) => locked[cat] ? [locked[cat]] : pool.filter(g => g.category === cat);
+  const tops = poolFor("top");
+  const bottoms = poolFor("bottom");
+  const shoesList = poolFor("shoes");
+  if (!tops.length || !bottoms.length || !shoesList.length) return { outfit: null };
+
+  const combos = [];
+  tops.forEach(t => bottoms.forEach(b => shoesList.forEach(s => {
+    const evalRes = evaluateOutfit(t, b, s);
+    combos.push({ top: t, bottom: b, shoes: s, evalRes });
+  })));
+  const valid = combos.filter(c => c.evalRes.ok);
+  if (valid.length) return { outfit: valid[Math.floor(Math.random() * valid.length)], approximate: false };
+  combos.sort((a, b) => a.evalRes.pairs.filter(p=>!p.ok).length - b.evalRes.pairs.filter(p=>!p.ok).length);
+  return combos.length ? { outfit: combos[0], approximate: true } : { outfit: null };
+}
+
+function lockIconSVG(locked) {
+  return locked
+    ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`
+    : `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.6-1.8"/></svg>`;
+}
+function outfitCardHTML(g, category) {
+  const cat = CATEGORIES.find(c => c.id === g.category);
+  const title = g.name ? g.name.charAt(0).toUpperCase() + g.name.slice(1) : (cat ? cat.label : g.category);
+  const isLocked = !!lockedPieces[category];
+  return `
+    <div class="frame">
+      <div class="frame-inner">
+        <div class="frame-img"><img src="${g.image}" alt="${g.name || g.category}"></div>
+        <div class="frame-body">
+          <div class="frame-meta">${swatchHTML(g.color)}<span class="frame-label" title="${title}">${title}</span></div>
+          <div class="frame-sub">${cat ? cat.label : g.category} · Niv. ${g.formality || 2}${g.versatile ? " · versátil" : ""}</div>
+        </div>
+      </div>
+      <button class="lock-btn ${isLocked ? "locked" : ""}" data-lock-cat="${category}" title="${isLocked ? "Desbloquear" : "Bloquear esta prenda"}">${lockIconSVG(isLocked)}</button>
+    </div>`;
+}
+
+function localOutfitName(top, bottom, shoes) {
+  const avg = Math.round(((top.formality||2) + (bottom.formality||2) + (shoes.formality||2)) / 3);
+  const styleWord = (FORMALITY_LABELS[avg] || "Casual").split(" ")[0].split("/")[0];
+  return `${styleWord} en ${colorById[top.color].label.toLowerCase()}`;
+}
+async function generateOutfitName(top, bottom, shoes) {
+  return localOutfitName(top, bottom, shoes);
+}
+
+function outfitBadges(top, bottom, shoes, ctxLabel) {
+  const avg = Math.round(((top.formality||2) + (bottom.formality||2) + (shoes.formality||2)) / 3);
+  const badges = [FORMALITY_LABELS[avg] || "Casual"];
+  if (top.versatile || bottom.versatile || shoes.versatile) badges.push("Versátil incluido");
+  if (ctxLabel) badges.push(ctxLabel);
+  return badges;
+}
+function badgeRowHTML(badges) {
+  return `<div class="badge-row">${badges.map(b => `<span class="badge">${b}</span>`).join("")}</div>`;
+}
+
+async function handleSuggest(contextId) {
+  closeOutfitPanels("suggestionSection");
+  const { outfit, approximate } = buildOutfit(contextId, lockedPieces);
+  const section = document.getElementById("suggestionSection");
+  const gridEl = document.getElementById("suggestionGrid");
+  const explainEl = document.getElementById("suggestionExplain");
+  const saveBtn = document.getElementById("suggestionSaveBtn");
+  const hintEl = document.getElementById("contextHint");
+
+  if (!outfit) {
+    hintEl.style.display = "block";
+    hintEl.textContent = contextId && contextId !== "any"
+      ? "No hay suficientes prendas de tu armario etiquetadas para esa ocasión."
+      : "Necesitas al menos una prenda de cada categoría en tu armario.";
+    section.style.display = "none";
+    return;
+  }
+  currentSuggestionOutfit = outfit;
+  hintEl.style.display = "none";
+  section.style.display = "block";
+  saveBtn.style.display = "none";
+  saveBtn.textContent = "Guardar outfit";
+  saveBtn.disabled = false;
+  gridEl.innerHTML = ["top", "bottom", "shoes"].map(cat => outfitCardHTML(outfit[cat], cat)).join("");
+  explainEl.textContent = "Pensando la combinación…";
+  explainEl.style.color = "var(--ink-soft)";
+
+  const ctxLabel = contextId && contextId !== "any" ? CONTEXTS.find(c => c.id === contextId).label : null;
+  const badgesHTML = badgeRowHTML(outfitBadges(outfit.top, outfit.bottom, outfit.shoes, ctxLabel));
+  const titleHTML = `<div class="verdict-label">✨ ¿Por qué funciona?</div>`;
+  const text = localOutfitText(outfit.top, outfit.bottom, outfit.shoes, outfit.evalRes);
+  explainEl.innerHTML = titleHTML + `<div class="verdict-text">${text}</div>` + (approximate ? `<div class="fallback-note">(No había ninguna combinación 100% válida para esta ocasión; esta es la más cercana)</div>` : "") + badgesHTML;
+  const meta = outfit.evalRes.ok ? { label: "Combina", color: "var(--accent)" } : { label: "Aproximada (no combina del todo)", color: "var(--gold)" };
+  saveBtn.style.display = "inline-flex";
+  saveBtn.onclick = async () => {
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Guardando…";
+    const name = await generateOutfitName(outfit.top, outfit.bottom, outfit.shoes);
+    addOutfit({ top: outfit.top, bottom: outfit.bottom, shoes: outfit.shoes, label: meta.label, color: meta.color, text, name });
+    saveBtn.textContent = "Guardado ✓";
+  };
+}
+
+/* ---------------- Manual builder (strict yes/no + swap suggestion) ---------------- */
+function renderPicker() {
+  const container = document.getElementById("pickerContainer");
+  const catIds = ["top", "bottom", "shoes"];
+  container.innerHTML = catIds.map(catId => {
+    const cat = CATEGORIES.find(c => c.id === catId);
+    const options = garments.filter(g => g.category === catId);
+    const items = options.map(g => {
+      const selected = manualPicks[catId] && manualPicks[catId].id === g.id;
+      return `
+        <div class="picker-item ${selected ? "selected" : ""}" data-pick="${catId}" data-id="${g.id}">
+          <div class="frame-img"><img src="${g.image}" alt=""></div>
+          <div class="frame-meta">${swatchHTML(g.color, 10)}</div>
+        </div>`;
+    }).join("");
+    return `
+      <div class="picker-row">
+        <div class="picker-label">${cat.label}</div>
+        <div class="picker-scroll">${items}</div>
+      </div>`;
+  }).join("");
+  container.querySelectorAll("[data-pick]").forEach(el => {
+    el.addEventListener("click", () => {
+      const cat = el.dataset.pick, id = el.dataset.id;
+      const garment = garments.find(g => g.id === id);
+      manualPicks[cat] = (manualPicks[cat] && manualPicks[cat].id === id) ? null : garment;
+      document.getElementById("manualResult").innerHTML = "";
+      renderPicker();
+      updateCheckManualBtn();
+    });
+  });
+}
+
+function updateCheckManualBtn() {
+  const btn = document.getElementById("checkManualBtn");
+  const ready = manualPicks.top && manualPicks.bottom && manualPicks.shoes;
+  btn.classList.toggle("btn-disabled", !ready);
+  btn.disabled = !ready;
+}
+
+function pickSuspectOrder(pairs) {
+  const involve = { top: 0, bottom: 0, shoes: 0 };
+  pairs.forEach(p => { if (!p.ok) { involve[p.catA]++; involve[p.catB]++; } });
+  return ["top", "bottom", "shoes"].sort((a, b) => involve[b] - involve[a]);
+}
+function findSwap(top, bottom, shoes) {
+  const slots = { top, bottom, shoes };
+  const evalRes = evaluateOutfit(top, bottom, shoes);
+  const order = pickSuspectOrder(evalRes.pairs);
+  for (const cat of order) {
+    const candidates = garments.filter(g => g.category === cat && g.id !== slots[cat].id);
+    const fixes = candidates.filter(cand => {
+      const trial = { ...slots, [cat]: cand };
+      return evaluateOutfit(trial.top, trial.bottom, trial.shoes).ok;
+    });
+    if (fixes.length) return { category: cat, options: fixes.slice(0, 2) };
+  }
+  return null;
+}
+
+async function handleCheckManual() {
+  const { top, bottom, shoes } = manualPicks;
+  if (!top || !bottom || !shoes) return;
+  const evalRes = evaluateOutfit(top, bottom, shoes);
+  const resultEl = document.getElementById("manualResult");
+  resultEl.innerHTML = `<div style="font-size:13px; color:var(--ink-soft);">Comprobando…</div>`;
+
+  const text = localOutfitText(top, bottom, shoes, evalRes);
+
+  const meta = evalRes.ok ? { label: "Combina", color: "var(--accent)" } : { label: "No combina", color: "var(--danger)" };
+  let swapHTML = "";
+  if (!evalRes.ok) {
+    const swap = findSwap(top, bottom, shoes);
+    if (swap) {
+      const catLabel = CATEGORIES.find(c => c.id === swap.category).label;
+      swapHTML = `
+        <div style="margin-top:14px;">
+          <div style="font-size:12px; font-weight:600; color:var(--ink-soft); margin-bottom:6px;">Cambia la prenda de ${catLabel.toLowerCase()} por:</div>
+          ${swap.options.map(opt => `
+            <div class="swap-card" data-swap-cat="${swap.category}" data-swap-id="${opt.id}">
+              <img src="${opt.image}" alt="">
+              <div style="flex:1; font-size:12px;">${swatchHTML(opt.color, 10)} Niv. ${opt.formality}${opt.versatile ? " · versátil" : ""}</div>
+              <button class="btn-text" data-use-swap="${swap.category}:${opt.id}">Usar esta →</button>
+            </div>`).join("")}
+        </div>`;
+    } else {
+      swapHTML = `<div class="fallback-note" style="margin-top:10px;">No encontré ninguna prenda de tu armario que, cambiando una sola pieza, arregle del todo esta combinación.</div>`;
+    }
+  }
+
+  resultEl.innerHTML = `
+    <div class="verdict-box">
+      <div class="verdict-label" style="color:${meta.color};">${meta.label}</div>
+      <div class="verdict-text">${text}</div>
+      ${badgeRowHTML(outfitBadges(top, bottom, shoes))}
+    </div>
+    ${swapHTML}
+    <button class="btn btn-outline" id="manualSaveBtn" style="margin-top:12px;">Guardar outfit</button>`;
+
+  resultEl.querySelectorAll("[data-use-swap]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const [cat, id] = btn.dataset.useSwap.split(":");
+      manualPicks[cat] = garments.find(g => g.id === id);
+      renderPicker();
+      updateCheckManualBtn();
+      handleCheckManual();
+    });
+  });
+
+  document.getElementById("manualSaveBtn").addEventListener("click", async (e) => {
+    e.target.disabled = true;
+    e.target.textContent = "Guardando…";
+    const name = await generateOutfitName(top, bottom, shoes);
+    addOutfit({ top, bottom, shoes, label: meta.label, color: meta.color, text, name });
+    e.target.textContent = "Guardado ✓";
+  });
+}
+
+/* ---------------- ¿Qué combina con esto? ---------------- */
+function renderMatchResults() {
+  const el = document.getElementById("matchResults");
+  const selected = garments.filter(g => selectedForMatch.has(g.id));
+  if (selected.length === 0) {
+    el.innerHTML = `<div class="fallback-note">Selecciona una o varias prendas en "Mi armario" (círculo en la esquina de cada tarjeta) y vuelve a pulsar "¿Qué combina con esto?".</div>`;
+    return;
+  }
+  const usedCats = new Set(selected.map(g => g.category));
+  const otherCats = CATEGORIES.filter(c => !usedCats.has(c.id));
+  const selectedRow = `<div class="grid" style="grid-template-columns: repeat(${selected.length}, 100px); margin-bottom:16px;">${selected.map(g => frameHTML(g, garments.indexOf(g))).join("")}</div>`;
+  if (otherCats.length === 0) {
+    el.innerHTML = selectedRow + `<div class="fallback-note">Ya tienes seleccionadas prendas de todas las categorías, no queda ninguna otra en la que buscar.</div>`;
+    return;
+  }
+  el.innerHTML = selectedRow + otherCats.map(cat => {
+    const candidates = garments.filter(g => g.category === cat.id && selected.every(sel => evaluatePair(sel, g).ok));
+    return `
+      <div style="margin-bottom:16px;">
+        <div class="picker-label">${cat.label}</div>
+        ${candidates.length
+          ? `<div class="picker-scroll">${candidates.map(g => `
+              <div class="picker-item">
+                <div class="frame-img"><img src="${g.image}" alt=""></div>
+                <div class="frame-meta">${swatchHTML(g.color, 10)}</div>
+              </div>`).join("")}</div>`
+          : `<div class="fallback-note">Ninguna prenda de esta categoría combina en color y estilo con lo seleccionado.</div>`}
+      </div>`;
+  }).join("");
+}
+
+/* ---------------- ¿Combinan? (compatibilidad directa entre las prendas elegidas) ---------------- */
+function evaluateSelection(items) {
+  const pairs = [];
+  for (let i = 0; i < items.length; i++) {
+    for (let j = i + 1; j < items.length; j++) {
+      pairs.push({ a: items[i], b: items[j], ...evaluatePair(items[i], items[j]) });
+    }
+  }
+  return { ok: pairs.length > 0 && pairs.every(p => p.ok), pairs };
+}
+function combineCheckFactsText(evalRes) {
+  return evalRes.pairs.map(p =>
+    `- ${describe(p.a)} / ${describe(p.b)}: color compatible=${p.colorOk ? "sí" : "no"}, nivel de formalidad compatible=${p.styleOk ? "sí" : "no"}`
+  ).join("\n");
+}
+function localCombineCheckText(evalRes) {
+  if (evalRes.ok) return "Todas las prendas seleccionadas son compatibles entre sí en color y nivel de formalidad.";
+  const fails = evalRes.pairs.filter(p => !p.ok);
+  return fails.map(p => {
+    const reasons = [];
+    if (!p.colorOk) reasons.push("el color no combina");
+    if (!p.styleOk) reasons.push("el nivel de formalidad no coincide");
+    return `${describe(p.a)} y ${describe(p.b)} no combinan: ${reasons.join(" y ")}`;
+  }).join(". ") + ".";
+}
+
+async function renderCombineCheck() {
+  const el = document.getElementById("combineCheckResults");
+  const selected = garments.filter(g => selectedForMatch.has(g.id));
+  if (selected.length < 2) {
+    el.innerHTML = `<div class="fallback-note">Selecciona al menos 2 prendas en "Mi armario" (círculo en la esquina de cada tarjeta) y vuelve a pulsar "¿Combinan?".</div>`;
+    return;
+  }
+  const evalRes = evaluateSelection(selected);
+  const selectedRow = `<div class="grid" style="grid-template-columns: repeat(${selected.length}, 100px); margin-bottom:14px;">${selected.map(g => frameHTML(g, garments.indexOf(g))).join("")}</div>`;
+  el.innerHTML = selectedRow + `<div style="font-size:13px; color:var(--ink-soft);">Comprobando…</div>`;
+
+  const text = localCombineCheckText(evalRes);
+  const meta = evalRes.ok ? { label: "Combinan", color: "var(--accent)" } : { label: "No combinan del todo", color: "var(--danger)" };
+  el.innerHTML = selectedRow + `
+    <div class="verdict-box">
+      <div class="verdict-label" style="color:${meta.color};">${meta.label}</div>
+      <div class="verdict-text">${text}</div>
+    </div>`;
+}
+
+/* ---------------- Outfits (saved) ---------------- */
+function formatDate(iso) {
+  try {
+    return new Date(iso).toLocaleString("es-ES", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+  } catch { return iso; }
+}
+
+function outfitEntryHTML(entry) {
+  return `
+    <div class="section" data-outfit-id="${entry.id}" style="padding-top:18px; margin-bottom:18px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px;">
+        <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:0;">
+          <h2 data-outfit-name="${entry.id}" style="font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${entry.name || "Outfit sin nombre"}</h2>
+          <button class="btn-text" data-rename-outfit="${entry.id}" title="Nombrar outfit" style="flex-shrink:0;">✎</button>
+        </div>
+        <button class="btn-text" data-del-outfit="${entry.id}" style="color:var(--danger); flex-shrink:0;">Eliminar</button>
+      </div>
+      <span class="badge" style="color:${entry.color}; border-color:${entry.color}; font-size:12px; display:inline-block; margin-bottom:12px;">${entry.label}</span>
+      <div class="grid" style="grid-template-columns: repeat(3, 1fr); max-width:460px; margin-bottom:10px;">
+        ${frameHTML(entry.top, 0)}${frameHTML(entry.bottom, 0)}${frameHTML(entry.shoes, 0)}
+      </div>
+      <details class="outfit-details">
+        <summary>¿Por qué funciona?</summary>
+        <div class="verdict-text" style="margin-top:8px;">${entry.text}</div>
+      </details>
+    </div>`;
+}
+
+function renderOutfits() {
+  const listEl = document.getElementById("outfitsList");
+  const emptyEl = document.getElementById("outfitsEmpty");
+  if (outfits.length === 0) {
+    emptyEl.style.display = "block";
+    listEl.innerHTML = "";
+    return;
+  }
+  emptyEl.style.display = "none";
+  listEl.innerHTML = outfits.map(outfitEntryHTML).join("");
+  listEl.querySelectorAll("[data-del-outfit]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      outfits = outfits.filter(o => o.id !== btn.dataset.delOutfit);
+      saveOutfits(outfits);
+      renderOutfits();
+    });
+  });
+  listEl.querySelectorAll("[data-rename-outfit]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.renameOutfit;
+      const entry = outfits.find(o => o.id === id);
+      const nameEl = listEl.querySelector(`[data-outfit-name="${id}"]`);
+      if (!entry || !nameEl) return;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = entry.name || "";
+      input.maxLength = 40;
+      input.style.cssText = "font-size:14px; font-family:inherit; padding:5px 9px; border:1px solid var(--line-strong); border-radius:8px; flex:1; min-width:0;";
+      nameEl.replaceWith(input);
+      input.focus();
+      input.select();
+      const commit = () => {
+        entry.name = input.value.trim().slice(0, 40) || "Outfit sin nombre";
+        saveOutfits(outfits);
+        renderOutfits();
+      };
+      input.addEventListener("blur", commit);
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") input.blur(); });
+    });
+  });
+}
+
+function renderAll() { renderTabs(); renderGrid(); renderActions(); }
+
+/* ---------------- Virtual try-on rendering ---------------- */
+/* ---------------- ¿Me lo compro? ---------------- */
+function renderShopView() {
+  const uploadSection = document.getElementById("shopUploadSection");
+  const resultEl = document.getElementById("shopResult");
+  if (!shopCandidate) {
+    uploadSection.style.display = "block";
+    resultEl.innerHTML = "";
+    return;
+  }
+  uploadSection.style.display = "none";
+  const otherCats = CATEGORIES.filter(c => c.id !== shopCandidate.category);
+  const matchesByCat = otherCats.map(cat => ({
+    cat,
+    items: garments.filter(g => g.category === cat.id && evaluatePair(shopCandidate, g).ok),
+  }));
+  const totalMatches = matchesByCat.reduce((sum, m) => sum + m.items.length, 0);
+
+  resultEl.innerHTML = `
+    <div class="section">
+      <div style="display:flex; gap:16px; align-items:flex-start; margin-bottom:16px; flex-wrap:wrap;">
+        <div style="width:150px; flex-shrink:0;">${frameHTML(shopCandidate, 0)}</div>
+        <div style="flex:1; min-width:220px;">
+          <div class="verdict-box">
+            <div class="verdict-label">${totalMatches > 0 ? `✨ Combina con ${totalMatches} prenda${totalMatches > 1 ? "s" : ""} de tu armario` : "No combina con nada de tu armario todavía"}</div>
+            <div class="verdict-text">${totalMatches > 0
+              ? "Puedes revisar con qué combina antes de decidirte."
+              : "Parece que ninguna prenda de tu armario encaja con la prenda que has subido."}</div>
+          </div>
+        </div>
+      </div>
+
+      ${matchesByCat.map(m => `
+        <div style="margin-bottom:16px;">
+          <div class="picker-label">${m.cat.label} (${m.items.length})</div>
+          ${m.items.length
+            ? `<div class="picker-scroll">${m.items.map(g => `
+                <div class="picker-item">
+                  <div class="frame-img"><img src="${g.image}" alt=""></div>
+                  <div class="frame-meta">${swatchHTML(g.color, 10)}</div>
+                </div>`).join("")}</div>`
+            : `<div class="fallback-note">Nada de esta categoría combina en color y estilo.</div>`}
+        </div>`).join("")}
+
+      <div class="row" style="margin-top:6px; margin-bottom:0;">
+        <button class="btn btn-primary" id="shopAddBtn">Añadir a mi armario</button>
+        <button class="btn btn-outline" id="shopDiscardBtn">Descartar</button>
+      </div>
+    </div>`;
+
+  document.getElementById("shopAddBtn").addEventListener("click", () => {
+    const { id, ...rest } = shopCandidate;
+    const garment = { id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, ...rest };
+    garments.push(garment);
+    saveGarments(garments);
+    shopCandidate = null;
+    renderAll();
+    renderShopView();
+  });
+  document.getElementById("shopDiscardBtn").addEventListener("click", () => {
+    shopCandidate = null;
+    renderShopView();
+  });
+}
+
+/* ---------------- Modal ---------------- */
+function renderModalFormality() {
+  const el = document.getElementById("modalFormality");
+  el.innerHTML = [1,2,3,4,5].map(n => `
+    <button class="formality-btn ${pending.formality === n ? "selected" : ""}" data-formality="${n}">${n} · ${FORMALITY_LABELS[n]}</button>
+  `).join("");
+  el.querySelectorAll("[data-formality]").forEach(btn => {
+    btn.addEventListener("click", () => { pending.formality = parseInt(btn.dataset.formality, 10); renderModalFormality(); });
+  });
+}
+function renderModalColors() {
+  const el = document.getElementById("modalColors");
+  el.innerHTML = COLORS.map(c => `
+    <button class="color-btn ${pending.color === c.id ? "selected" : ""}" data-color="${c.id}">
+      ${swatchHTML(c.id, 11)} ${c.label}
+    </button>`).join("");
+  el.querySelectorAll("[data-color]").forEach(btn => {
+    btn.addEventListener("click", () => { pending.color = btn.dataset.color; renderModalColors(); });
+  });
+}
+function openModal(image, rawFile, opts = {}) {
+  editingId = null;
+  candidateMode = !!opts.candidate;
+  pending = { image, category: "top", color: "blanco", name: "", rawFile, formality: 2, versatile: false };
+  document.getElementById("modalTitle").textContent = candidateMode ? "Evaluar prenda" : "Nueva prenda";
+  document.getElementById("modalConfirm").textContent = candidateMode ? "Ver compatibilidad" : "Añadir al armario";
+  document.getElementById("modalPreview").src = image;
+  document.getElementById("modalCategory").value = "top";
+  document.getElementById("modalName").value = "";
+  document.getElementById("modalVersatile").checked = false;
+  renderModalColors();
+  renderModalFormality();
+  document.getElementById("modalBackdrop").classList.add("open");
+}
+
+function openEditModal(garment) {
+  editingId = garment.id;
+  candidateMode = false;
+  pending = { image: garment.image, category: garment.category, color: garment.color, name: garment.name || "", rawFile: null, formality: garment.formality || 2, versatile: !!garment.versatile };
+  document.getElementById("modalTitle").textContent = "Editar prenda";
+  document.getElementById("modalConfirm").textContent = "Guardar cambios";
+  document.getElementById("modalPreview").src = garment.image;
+  document.getElementById("modalCategory").value = garment.category;
+  document.getElementById("modalName").value = garment.name || "";
+  document.getElementById("modalVersatile").checked = !!garment.versatile;
+  renderModalColors();
+  renderModalFormality();
+  document.getElementById("modalBackdrop").classList.add("open");
+}
+function closeModal() { document.getElementById("modalBackdrop").classList.remove("open"); pending = null; editingId = null; candidateMode = false; }
+
+/* ---------------- Wiring ---------------- */
+document.getElementById("uploadBtn").addEventListener("click", () => document.getElementById("fileInput").click());
+document.getElementById("fileInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  const errEl = document.getElementById("uploadError");
+  errEl.style.display = "none";
+  try {
+    const image = await resizeImage(file);
+    openModal(image, file);
+  } catch {
+    errEl.textContent = "No se pudo procesar la imagen. Prueba con otra foto.";
+    errEl.style.display = "block";
+  }
+});
+document.getElementById("modalVersatile").addEventListener("change", (e) => { if (pending) pending.versatile = e.target.checked; });
+document.getElementById("modalClose").addEventListener("click", closeModal);
+document.getElementById("modalBackdrop").addEventListener("click", (e) => { if (e.target.id === "modalBackdrop") closeModal(); });
+document.getElementById("modalCategory").addEventListener("change", (e) => { pending.category = e.target.value; });
+document.getElementById("modalName").addEventListener("input", (e) => { pending.name = e.target.value; });
+document.getElementById("modalConfirm").addEventListener("click", () => {
+  if (!pending) return;
+  const { rawFile, ...garmentData } = pending;
+  if (candidateMode) {
+    shopCandidate = { id: `candidate-${Date.now()}`, ...garmentData };
+    closeModal();
+    renderShopView();
+    return;
+  }
+  if (editingId) {
+    const idx = garments.findIndex(g => g.id === editingId);
+    if (idx !== -1) garments[idx] = { ...garments[idx], ...garmentData };
+  } else {
+    const garment = { id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, ...garmentData };
+    garments.push(garment);
+  }
+  saveGarments(garments);
+  closeModal();
+  renderAll();
+});
+
+const TOGGLE_BTN_BY_SECTION = { builderSection: "builderToggleBtn", matchSection: "matchToggleBtn", combineCheckSection: "combineCheckToggleBtn" };
+function closeOutfitPanels(except) {
+  ["suggestionSection", "builderSection", "matchSection", "combineCheckSection"].forEach(id => {
+    if (id !== except) {
+      document.getElementById(id).style.display = "none";
+      const btnId = TOGGLE_BTN_BY_SECTION[id];
+      if (btnId) document.getElementById(btnId).classList.remove("toggle-active");
+    }
+  });
+}
+document.getElementById("builderToggleBtn").addEventListener("click", () => {
+  const section = document.getElementById("builderSection");
+  const open = section.style.display === "block";
+  closeOutfitPanels(open ? null : "builderSection");
+  section.style.display = open ? "none" : "block";
+  document.getElementById("builderToggleBtn").classList.toggle("toggle-active", !open);
+  if (!open) { manualPicks = { top: null, bottom: null, shoes: null }; renderPicker(); updateCheckManualBtn(); document.getElementById("manualResult").innerHTML = ""; }
+});
+document.getElementById("matchToggleBtn").addEventListener("click", () => {
+  const section = document.getElementById("matchSection");
+  const open = section.style.display === "block";
+  closeOutfitPanels(open ? null : "matchSection");
+  section.style.display = open ? "none" : "block";
+  document.getElementById("matchToggleBtn").classList.toggle("toggle-active", !open);
+  if (!open) renderMatchResults();
+});
+document.getElementById("combineCheckToggleBtn").addEventListener("click", () => {
+  const section = document.getElementById("combineCheckSection");
+  const open = section.style.display === "block";
+  closeOutfitPanels(open ? null : "combineCheckSection");
+  section.style.display = open ? "none" : "block";
+  document.getElementById("combineCheckToggleBtn").classList.toggle("toggle-active", !open);
+  if (!open) renderCombineCheck();
+});
+document.getElementById("checkManualBtn").addEventListener("click", handleCheckManual);
+document.getElementById("againBtn").addEventListener("click", () => handleSuggest(document.getElementById("contextSelect").value));
+document.getElementById("generateOutfitBtn").addEventListener("click", () => {
+  document.getElementById("contextSelect").value = "any";
+  handleSuggest("any");
+});
+document.getElementById("suggestionGrid").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-lock-cat]");
+  if (!btn || !currentSuggestionOutfit) return;
+  const cat = btn.dataset.lockCat;
+  lockedPieces[cat] = lockedPieces[cat] ? null : currentSuggestionOutfit[cat];
+  document.getElementById("suggestionGrid").innerHTML = ["top", "bottom", "shoes"]
+    .map(c => outfitCardHTML(currentSuggestionOutfit[c], c)).join("");
+});
+
+CONTEXTS.forEach(c => {
+  const opt = document.createElement("option");
+  opt.value = c.id; opt.textContent = c.label;
+  document.getElementById("contextSelect").appendChild(opt);
+});
+document.getElementById("contextSelect").addEventListener("change", (e) => { handleSuggest(e.target.value); });
+
+COLORS.forEach(c => {
+  const btn = document.createElement("button");
+  btn.className = "color-filter-swatch";
+  btn.dataset.colorFilter = c.id;
+  btn.title = c.label;
+  btn.style.background = c.hex === "pattern"
+    ? "repeating-linear-gradient(45deg, #C9C2AE, #C9C2AE 2px, #8C8465 2px, #8C8465 4px)"
+    : c.hex;
+  document.getElementById("colorFilterRow").appendChild(btn);
+});
+document.getElementById("colorFilterRow").addEventListener("click", (e) => {
+  const target = e.target.closest("[data-color-filter]");
+  if (!target) return;
+  colorFilterValue = target.dataset.colorFilter;
+  document.querySelectorAll("#colorFilterRow [data-color-filter]").forEach(el => {
+    el.classList.toggle("active", el.dataset.colorFilter === colorFilterValue);
+  });
+  renderGrid();
+});
+CONTEXTS.forEach(c => {
+  const opt = document.createElement("option");
+  opt.value = c.id; opt.textContent = c.label;
+  document.getElementById("contextFilterSelect").appendChild(opt);
+});
+document.getElementById("searchInput").addEventListener("input", (e) => { searchQuery = e.target.value.trim().toLowerCase(); renderGrid(); });
+document.getElementById("contextFilterSelect").addEventListener("change", (e) => { contextFilterValue = e.target.value; renderGrid(); });
+
+const PAGE_META = {
+  wardrobe: { title: "Mi armario", subtitle: "Gestiona tu ropa y crea combinaciones que realmente vayan con tu estilo.", action: true },
+  outfits: { title: "Mis outfits", subtitle: "Tu colección de outfits, lista para consultar cuando quieras.", action: false },
+  shop: { title: "¿Me lo compro?", subtitle: "¿Dudas si esa prenda combinaría con lo que ya tienes? ¡Compruébalo antes de comprarla!", action: false },
+  settings: { title: "Configuración", subtitle: "Copia de seguridad de tu armario.", action: false },
+};
+
+function switchView(view) {
+  document.getElementById("viewWardrobe").style.display = view === "wardrobe" ? "block" : "none";
+  document.getElementById("viewOutfits").style.display = view === "outfits" ? "block" : "none";
+  document.getElementById("viewShop").style.display = view === "shop" ? "block" : "none";
+  document.getElementById("viewSettings").style.display = view === "settings" ? "block" : "none";
+  const meta = PAGE_META[view];
+  document.getElementById("pageTitle").textContent = meta.title;
+  document.getElementById("pageSubtitle").textContent = meta.subtitle;
+  document.getElementById("pageAction").style.display = meta.action ? "flex" : "none";
+  const wTab = document.getElementById("viewTabWardrobe");
+  const oTab = document.getElementById("viewTabOutfits");
+  const shTab = document.getElementById("viewTabShop");
+  const sTab = document.getElementById("viewTabSettings");
+  [wTab, oTab, shTab, sTab].forEach(t => t.classList.remove("nav-active"));
+  ({ wardrobe: wTab, outfits: oTab, shop: shTab, settings: sTab }[view]).classList.add("nav-active");
+  if (view === "outfits") renderOutfits();
+  if (view === "shop") renderShopView();
+}
+document.getElementById("viewTabWardrobe").addEventListener("click", () => switchView("wardrobe"));
+document.getElementById("viewTabOutfits").addEventListener("click", () => switchView("outfits"));
+document.getElementById("viewTabShop").addEventListener("click", () => switchView("shop"));
+document.getElementById("viewTabSettings").addEventListener("click", () => switchView("settings"));
+
+document.getElementById("shopUploadBtn").addEventListener("click", () => document.getElementById("shopFileInput").click());
+document.getElementById("shopFileInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (!file) return;
+  try {
+    const image = await resizeImage(file);
+    openModal(image, file, { candidate: true });
+  } catch {
+    alert("No se pudo procesar esa foto. Prueba con otra.");
+  }
+});
+
+/* ---------------- Backup export/import ---------------- */
+function exportBackup() {
+  const payload = {
+    app: "armario-local",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    garments,
+    outfits,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const stamp = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `armario-backup-${stamp}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+async function importBackup(file) {
+  const statusEl = document.getElementById("backupStatus");
+  statusEl.style.display = "block";
+  statusEl.style.color = "var(--ink-soft)";
+  statusEl.textContent = "Leyendo copia de seguridad...";
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    if (!Array.isArray(data.garments) || !Array.isArray(data.outfits)) {
+      throw new Error("FORMATO_INVALIDO");
+    }
+    const confirmed = window.confirm(
+      "Vas a cargar una copia de seguridad. Todo tu armario y outfits actuales se sobrescribirán. ¿Continuamos?"
+    );
+    if (!confirmed) {
+      statusEl.style.display = "none";
+      return;
+    }
+    garments = data.garments || [];
+    outfits = data.outfits || [];
+    saveGarments(garments);
+    saveOutfits(outfits);
+    selectedForMatch = new Set();
+    lockedPieces = { top: null, bottom: null, shoes: null };
+    renderAll();
+    statusEl.style.color = "var(--accent)";
+    statusEl.textContent = "¡Cargado con éxito!";
+  } catch (err) {
+    statusEl.style.color = "var(--danger)";
+    statusEl.textContent = err.message === "FORMATO_INVALIDO"
+      ? "¡Algo ha salido mal! Comprueba que el archivo cargado es una copia de seguridad."
+      : "¡Algo ha salido mal! Vuelve a intentarlo.";
+  }
+}
+
+document.getElementById("exportBackupBtn").addEventListener("click", exportBackup);
+document.getElementById("importBackupBtn").addEventListener("click", () => document.getElementById("backupFileInput").click());
+document.getElementById("backupFileInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  e.target.value = "";
+  if (file) importBackup(file);
+});
+
+renderAll();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch((err) => console.error("SW registration failed", err));
+  });
+}
+</script>
+</body>
+</html>
