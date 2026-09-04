@@ -158,12 +158,28 @@
     display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 700;
   }
   .select-check.checked { background: var(--accent); border-color: var(--accent); }
-  .frame-actions { display: flex; gap: 10px; margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--line); }
+  .frame-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--line); }
   .frame-action-btn {
     background: none; border: none; padding: 2px; cursor: pointer; color: var(--ink-soft);
     font-size: 13px; line-height: 1; display: flex; align-items: center; justify-content: center;
   }
-  .frame-action-btn.active { color: var(--gold); }
+  .fav-star-btn {
+    background: #fff; border: 1.5px solid var(--gold); cursor: pointer; color: var(--gold);
+    font-size: 11px; line-height: 1; display: flex; align-items: center; justify-content: center;
+    width: 20px; height: 20px; border-radius: 50%; padding: 0; flex-shrink: 0;
+  }
+  .fav-star-btn.active { background: var(--gold); color: #fff; }
+  .fav-filter-circle {
+    width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--gold); cursor: pointer;
+    background: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--gold); flex-shrink: 0;
+  }
+  .fav-filter-circle.active { background: var(--gold); color: #fff; box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--gold); }
+  #bulkActionBar {
+    display: none; position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 45;
+    background: #fff; border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15); padding: 10px 14px; align-items: center;
+    justify-content: space-between; gap: 12px; max-width: 560px; margin: 0 auto;
+  }
   .lock-btn {
     position: absolute; top: 8px; left: 8px; width: 24px; height: 24px; border-radius: 50%;
     border: none; background: rgba(255,255,255,0.92); display: flex; align-items: center;
@@ -248,6 +264,22 @@
   .ai-status { font-size: 11.5px; margin: -10px 0 14px; }
   .swap-card { display: flex; align-items: center; gap: 10px; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 8px; margin-top: 8px; background: #fff; }
   .swap-card img { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+  #wardrobeFab {
+    display: none; flex-direction: column; align-items: flex-end; gap: 10px;
+    position: fixed; right: 20px; bottom: 24px; z-index: 46;
+  }
+  #fabToggleBtn {
+    width: 52px; height: 52px; border-radius: 50%; background: var(--ink); color: #fff; border: none;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.28);
+  }
+  #fabMenu { display: none; flex-direction: column; align-items: flex-end; gap: 8px; }
+  .fab-mini {
+    display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line-strong);
+    border-radius: 999px; padding: 8px 14px; font-size: 12.5px; font-weight: 600; color: var(--ink);
+    cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.14); white-space: nowrap; font-family: inherit;
+  }
+  .fab-mini svg { flex-shrink: 0; }
 </style>
 <style>
   @media (max-width: 720px) {
@@ -266,6 +298,8 @@
     }
     .nav-item svg { width: 20px; height: 20px; }
     .wrap { padding: 22px 16px calc(80px + env(safe-area-inset-bottom)); }
+    #bulkActionBar { bottom: calc(64px + env(safe-area-inset-bottom)); }
+    #wardrobeFab { bottom: calc(80px + env(safe-area-inset-bottom)); }
   }
   .mobile-topbar {
     display: none; position: sticky; top: 0; z-index: 40; background: var(--sidebar-bg);
@@ -292,7 +326,7 @@
     <div class="brand"><img src="data:image/png;base64,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" alt=""><div class="brand-text"><span>D</span><span>R</span><span>E</span><span>S</span><span>S</span><span>R</span></div></div>
     <nav class="nav-list">
       <button class="nav-item nav-active" id="viewTabWardrobe">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="1.2"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/></svg>
         Mi armario
       </button>
       <button class="nav-item" id="viewTabOutfits">
@@ -340,11 +374,19 @@
       <option value="entretiempo">Entretiempo</option>
       <option value="invierno">Invierno</option>
     </select>
-    <button class="color-filter-chip" id="favoritesFilterBtn" style="margin-left:auto;">☆ Favoritas</button>
-    <button class="color-filter-chip" id="bulkDeleteChip" style="display:none; background:var(--danger); color:#fff; border-color:var(--danger);">Eliminar</button>
   </div>
   <div class="color-filter-row" id="colorSwatchRow" style="display:none;">
+    <button class="fav-filter-circle" id="favoritesFilterBtn" title="Favoritas">★</button>
     <button class="color-filter-chip active" data-color-filter="">Todos</button>
+  </div>
+  <div id="bulkActionBar" style="flex-wrap:wrap; row-gap:8px;">
+    <span id="bulkActionCount" style="font-size:13px; color:var(--ink-soft);"></span>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+      <button class="btn-text" id="deselectAllBtn">Deseleccionar</button>
+      <button class="btn btn-outline" id="matchToggleBtn" style="padding:6px 12px; font-size:12.5px;">¿Qué combina?</button>
+      <button class="btn btn-outline" id="combineCheckToggleBtn" style="padding:6px 12px; font-size:12.5px;">¿Combinan?</button>
+      <button class="btn btn-outline" id="bulkDeleteChip" style="color:#fff; background:var(--danger); border-color:var(--danger); padding:6px 12px; font-size:12.5px;">Eliminar</button>
+    </div>
   </div>
 
   <div class="tabs" id="tabs" style="display:none;"></div>
@@ -365,58 +407,69 @@
         </select>
         <div class="hint" id="contextHint" style="display:none;"></div>
       </div>
-      <div class="row" id="actionsRow" style="margin-bottom:0; flex-direction:column; align-items:flex-start; gap:10px;">
-        <div class="row" style="margin-bottom:0;">
-          <button class="btn btn-outline" id="createGroupBtn">Crear outfit</button>
-          <button class="btn btn-outline" id="combineGroupBtn">Combinar prendas</button>
-        </div>
-        <div class="row" id="createSubRow" style="display:none; margin-bottom:0;">
-          <button class="btn btn-accent" id="generateOutfitBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg> Sugiéreme un outfit</button>
-          <button class="btn btn-outline" id="builderToggleBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="11" height="11" rx="2"/><rect x="10" y="10" width="11" height="11" rx="2"/></svg> Crear mi propio outfit</button>
-        </div>
-        <div class="row" id="combineSubRow" style="display:none; margin-bottom:0;">
-          <button class="btn btn-outline" id="matchToggleBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.2" r="1.3"/><path d="M12 5.5V7"/><path d="M12 7 4.7 12.1a1.8 1.8 0 0 0 1 3.3h12.6a1.8 1.8 0 0 0 1-3.3z"/><path d="M4.5 18.5h15"/></svg> ¿Qué combina con esto?</button>
-          <button class="btn btn-outline" id="combineCheckToggleBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg> ¿Combinan estas prendas?</button>
+      <div class="row" id="actionsRow" style="margin-bottom:0; flex-direction:column; align-items:flex-start; gap:14px;">
+        <div>
+          <div style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin-bottom:6px;">Crear outfit</div>
+          <div class="row" style="margin-bottom:0;">
+            <button class="btn btn-accent" id="generateOutfitBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg> Sugiéreme un outfit</button>
+            <button class="btn btn-outline" id="builderToggleBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="11" height="11" rx="2"/><rect x="10" y="10" width="11" height="11" rx="2"/></svg> Crear mi propio outfit</button>
+          </div>
         </div>
         <div class="hint" id="actionsHint" style="display:none;">Necesitas al menos una prenda de cada categoría para usar estas opciones.</div>
-        <div class="hint" id="selectionHint" style="display:none; color:var(--accent); font-weight:600;"></div>
+        <div class="hint" style="color:var(--ink-soft);">Marca prendas en tu armario (círculo en la esquina de cada tarjeta) para comprobar si combinan o borrarlas juntas.</div>
       </div>
     </div>
   </div>
 
 
-  <div class="section" id="suggestionSection" style="display:none;">
-    <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
-      <h2>Outfit sugerido</h2>
-      <button class="btn-text" id="againBtn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg> Otra combinación</button>
+  <div class="modal-backdrop" id="suggestionOverlayBackdrop">
+    <div class="modal" style="max-width:440px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <h2 style="font-size:17px;">Outfit sugerido</h2>
+        <button class="modal-close" id="suggestionOverlayClose">✕</button>
+      </div>
+      <p class="sub" style="margin-bottom:12px;">Toca el candado de una prenda para bloquearla antes de regenerar.</p>
+      <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:14px;" id="suggestionGrid"></div>
+      <div class="verdict-box" id="suggestionExplain" style="margin-bottom:12px;"></div>
+      <div class="row" style="margin-bottom:0;">
+        <button class="btn btn-outline" id="suggestionSaveBtn" style="display:none;">Guardar outfit</button>
+        <button class="btn btn-outline" id="suggestionShareBtn" style="display:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg> Compartir</button>
+      </div>
+      <button class="btn-text" id="againBtn" style="margin-top:12px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg> Otra combinación</button>
     </div>
-    <p class="sub" style="margin-bottom:12px;">Toca el candado de una prenda para bloquearla antes de regenerar.</p>
-    <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:14px;" id="suggestionGrid"></div>
-    <div class="verdict-box" id="suggestionExplain" style="margin-bottom:12px;"></div>
-    <div class="row" style="margin-bottom:0;">
-      <button class="btn btn-outline" id="suggestionSaveBtn" style="display:none;">Guardar outfit</button>
-      <button class="btn btn-outline" id="suggestionShareBtn" style="display:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg> Compartir</button>
+  </div>
+
+  <div class="modal-backdrop" id="builderOverlayBackdrop">
+    <div class="modal" style="max-width:440px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <h2 style="font-size:17px;">Crea tu combinación</h2>
+        <button class="modal-close" id="builderOverlayClose">✕</button>
+      </div>
+      <p class="sub" style="margin-bottom:14px;">Elige una prenda de cada categoría.</p>
+      <div id="pickerContainer"></div>
+      <button class="btn btn-primary btn-disabled" id="checkManualBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg> ¿Combina?</button>
+      <div id="manualResult" style="margin-top:16px;"></div>
     </div>
   </div>
 
-  <div class="section" id="builderSection" style="display:none;">
-    <h2 style="margin-bottom:4px;">Crea tu combinación</h2>
-    <p class="sub" style="margin-bottom:14px;">Elige una prenda de cada categoría.</p>
-    <div id="pickerContainer"></div>
-    <button class="btn btn-primary btn-disabled" id="checkManualBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg> ¿Combina?</button>
-    <div id="manualResult" style="margin-top:16px;"></div>
+  <div class="modal-backdrop" id="matchOverlayBackdrop">
+    <div class="modal" style="max-width:440px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 style="font-size:17px;">¿Qué combina con esto?</h2>
+        <button class="modal-close" id="matchOverlayClose">✕</button>
+      </div>
+      <div id="matchResults"></div>
+    </div>
   </div>
 
-  <div class="section" id="matchSection" style="display:none;">
-    <h2 style="margin-bottom:4px;">¿Qué combina con esto?</h2>
-    <p class="sub" style="margin-bottom:14px;">Marca en tu armario las prendas que quieres comprobar.</p>
-    <div id="matchResults"></div>
-  </div>
-
-  <div class="section" id="combineCheckSection" style="display:none;">
-    <h2 style="margin-bottom:4px;">¿Combinan?</h2>
-    <p class="sub" style="margin-bottom:14px;">Comprueba si las prendas seleccionadas combinan entre sí.</p>
-    <div id="combineCheckResults"></div>
+  <div class="modal-backdrop" id="combineCheckOverlayBackdrop">
+    <div class="modal" style="max-width:440px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h2 style="font-size:17px;">¿Combinan estas prendas?</h2>
+        <button class="modal-close" id="combineCheckOverlayClose">✕</button>
+      </div>
+      <div id="combineCheckResults"></div>
+    </div>
   </div>
   </div>
 
@@ -437,9 +490,9 @@
         <option value="entretiempo">Entretiempo</option>
         <option value="invierno">Invierno</option>
       </select>
-      <button class="color-filter-chip" id="outfitFavoritesFilterBtn" style="margin-left:auto;">☆ Favoritos</button>
     </div>
     <div class="color-filter-row" id="outfitColorSwatchRow" style="display:none;">
+      <button class="fav-filter-circle" id="outfitFavoritesFilterBtn" title="Favoritos">★</button>
       <button class="color-filter-chip active" data-outfit-color-filter="">Todos</button>
     </div>
     <div id="outfitsEmpty" class="empty" style="display:none;">Aún no has guardado ningún outfit. ¡Crea uno y guárdalo para que aparezca!</div>
@@ -471,6 +524,18 @@
   </main>
 </div>
 
+<div id="wardrobeFab" style="display:none;">
+  <div id="fabMenu" style="display:none;">
+    <button class="fab-mini" id="fabGenerateBtn"><span>Sugiéreme un outfit</span><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg></button>
+    <button class="fab-mini" id="fabBuilderBtn"><span>Crear mi propio outfit</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="11" height="11" rx="2"/><rect x="10" y="10" width="11" height="11" rx="2"/></svg></button>
+    <button class="fab-mini" id="fabMatchBtn"><span>¿Qué combina con esto?</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.2" r="1.3"/><path d="M12 5.5V7"/><path d="M12 7 4.7 12.1a1.8 1.8 0 0 0 1 3.3h12.6a1.8 1.8 0 0 0 1-3.3z"/><path d="M4.5 18.5h15"/></svg></button>
+  </div>
+  <button id="fabToggleBtn" aria-label="Acciones de outfit">
+    <svg id="fabIconHanger" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4a1.6 1.6 0 1 0-1.6 1.6"/><path d="M12 5.6v2"/><path d="M4.5 18.3l6.6-4.6a1.4 1.4 0 0 1 1.8 0l6.6 4.6"/><path d="M3 18.5h18"/></svg>
+    <svg id="fabIconClose" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+</div>
+
 <div class="modal-backdrop" id="onboardingBackdrop">
   <div class="modal" style="max-width:380px; text-align:center;">
     <div id="onboardingImgSlot" style="display:none; width:100%; aspect-ratio:4/3; background:#EFEFEC; border-radius:var(--radius-sm); margin-bottom:16px; overflow:hidden;"></div>
@@ -480,6 +545,16 @@
     <div style="display:flex; gap:10px; justify-content:space-between; align-items:center;">
       <button class="btn-text" id="onboardingSkipBtn">Saltar</button>
       <button class="btn btn-primary" id="onboardingNextBtn">Siguiente</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="confirmBackdrop">
+  <div class="modal" style="max-width:340px; text-align:center;">
+    <p id="confirmMessage" style="font-size:14.5px; margin-bottom:22px; color:var(--ink); line-height:1.4;"></p>
+    <div class="row" style="margin-bottom:0; justify-content:center;">
+      <button class="btn-text" id="confirmCancelBtn">Cancelar</button>
+      <button class="btn btn-outline" id="confirmOkBtn" style="color:#fff; background:var(--danger); border-color:var(--danger);">Eliminar</button>
     </div>
   </div>
 </div>
@@ -919,7 +994,7 @@ function renderGrid() {
   list = list.slice().reverse(); // más recientes primero (se añaden al final del array al subirlas)
   emptyEl.style.display = garments.length === 0 ? "block" : "none";
 
-  updateBulkDeleteChip();
+  updateSelectionBar();
 
   const isCollapsed = !wardrobeExpanded && list.length > WARDROBE_ROW_MAX;
   const visibleList = isCollapsed ? list.slice(0, WARDROBE_ROW_MAX) : list;
@@ -946,12 +1021,13 @@ function renderGrid() {
       e.stopPropagation();
       const g = garments.find(x => x.id === btn.dataset.del);
       const label = g && g.name ? `"${g.name}"` : "esta prenda";
-      if (!confirm(`¿Eliminar ${label}? Esta acción no se puede deshacer.`)) return;
-      garments = garments.filter(g => g.id !== btn.dataset.del);
-      selectedForMatch.delete(btn.dataset.del);
-      saveGarments(garments);
-      document.getElementById("suggestionSection").style.display = "none";
-      renderAll();
+      showConfirmModal(`¿Eliminar ${label}? Esta acción no se puede deshacer.`, () => {
+        garments = garments.filter(g => g.id !== btn.dataset.del);
+        selectedForMatch.delete(btn.dataset.del);
+        saveGarments(garments);
+        closeAllActionOverlays();
+        renderAll();
+      });
     });
   });
   gridEl.querySelectorAll("[data-edit]").forEach(btn => {
@@ -967,7 +1043,7 @@ function renderGrid() {
       const id = btn.dataset.select;
       if (selectedForMatch.has(id)) selectedForMatch.delete(id); else selectedForMatch.add(id);
       renderGrid();
-      updateSelectionHint();
+      updateSelectionBar();
     });
   });
   gridEl.querySelectorAll("[data-fav]").forEach(btn => {
@@ -997,15 +1073,22 @@ function duplicateGarment(g) {
   openEditModal(copy);
 }
 
-function updateBulkDeleteChip() {
-  const chip = document.getElementById("bulkDeleteChip");
-  if (!chip) return;
+function updateSelectionBar() {
+  const bar = document.getElementById("bulkActionBar");
+  const matchBtn = document.getElementById("matchToggleBtn");
+  const combineBtn = document.getElementById("combineCheckToggleBtn");
+  const delChip = document.getElementById("bulkDeleteChip");
+  if (!bar) return;
   const n = selectedForMatch.size;
-  if (n >= 2) {
-    chip.style.display = "inline-flex";
-    chip.textContent = `Eliminar (${n})`;
+  if (n >= 1) {
+    bar.style.display = "flex";
+    document.getElementById("bulkActionCount").textContent = `${n} seleccionada${n === 1 ? "" : "s"}`;
+    matchBtn.style.display = "inline-flex";
+    combineBtn.style.display = n >= 2 ? "inline-flex" : "none";
+    delChip.style.display = n >= 2 ? "inline-flex" : "none";
+    if (n >= 2) delChip.textContent = `Eliminar (${n})`;
   } else {
-    chip.style.display = "none";
+    bar.style.display = "none";
   }
 }
 
@@ -1014,14 +1097,6 @@ function counts() {
   return CATEGORIES.reduce((acc,c) => { acc[c.id] = garments.filter(g=>g.category===c.id).length; return acc; }, {});
 }
 function canSuggest() { const c = counts(); return c.top > 0 && c.bottom > 0 && c.shoes > 0; }
-
-function updateSelectionHint() {
-  const hintEl = document.getElementById("selectionHint");
-  const n = selectedForMatch.size;
-  if (n === 0) { hintEl.style.display = "none"; return; }
-  hintEl.style.display = "block";
-  hintEl.textContent = `${n} prenda${n > 1 ? "s" : ""} seleccionada${n > 1 ? "s" : ""} para "¿Qué combina con esto?"`;
-}
 
 function renderActions() {
   const row = document.getElementById("actionsRow");
@@ -1044,21 +1119,16 @@ function renderActions() {
   builderBtn.style.cursor = ok ? "pointer" : "not-allowed";
   matchBtn.disabled = false;
   matchBtn.style.cursor = "pointer";
-  updateSelectionHint();
+  updateSelectionBar();
 
-  if (outfits.length === 0) {
-    if (!ok) {
-      const c = counts();
-      const missing = [];
-      if (c.top === 0) missing.push("una prenda superior");
-      if (c.bottom === 0) missing.push("una prenda inferior");
-      if (c.shoes === 0) missing.push("un calzado");
-      onboardEl.style.display = "block";
-      onboardEl.textContent = `Sube al menos ${missing.join(", ")} para generar tu primer outfit.`;
-    } else {
-      onboardEl.style.display = "block";
-      onboardEl.textContent = "¡Ya tienes lo necesario! Pulsa \"Generar outfit\" ahí abajo para ver tu primera combinación.";
-    }
+  if (!ok) {
+    const c = counts();
+    const missing = [];
+    if (c.top === 0) missing.push("una prenda superior");
+    if (c.bottom === 0) missing.push("una prenda inferior");
+    if (c.shoes === 0) missing.push("un calzado");
+    onboardEl.style.display = "block";
+    onboardEl.textContent = `Te falta: ${missing.join(", ")}.`;
   } else {
     onboardEl.style.display = "none";
   }
@@ -1276,10 +1346,13 @@ function badgeRowHTML(badges) {
   return `<div class="badge-row">${badges.map(b => `<span class="badge">${b}</span>`).join("")}</div>`;
 }
 
+function closeSuggestionOverlay() {
+  document.getElementById("suggestionOverlayBackdrop").classList.remove("open");
+}
 async function handleSuggest(contextId) {
-  closeOutfitPanels("suggestionSection");
+  closeAllActionOverlays();
   const { outfit, approximate } = buildOutfit(contextId, lockedPieces);
-  const section = document.getElementById("suggestionSection");
+  const backdrop = document.getElementById("suggestionOverlayBackdrop");
   const gridEl = document.getElementById("suggestionGrid");
   const explainEl = document.getElementById("suggestionExplain");
   const saveBtn = document.getElementById("suggestionSaveBtn");
@@ -1290,12 +1363,12 @@ async function handleSuggest(contextId) {
     hintEl.textContent = contextId && contextId !== "any"
       ? "No hay suficientes prendas de tu armario etiquetadas para esa ocasión."
       : "Necesitas al menos una prenda de cada categoría en tu armario.";
-    section.style.display = "none";
+    closeSuggestionOverlay();
     return;
   }
   currentSuggestionOutfit = outfit;
   hintEl.style.display = "none";
-  section.style.display = "block";
+  backdrop.classList.add("open");
   saveBtn.style.display = "none";
   saveBtn.textContent = "Guardar outfit";
   saveBtn.disabled = false;
@@ -1450,7 +1523,7 @@ function renderMatchResults() {
   const el = document.getElementById("matchResults");
   const selected = garments.filter(g => selectedForMatch.has(g.id));
   if (selected.length === 0) {
-    el.innerHTML = `<div class="fallback-note">Selecciona una o varias prendas en "Mi armario" (círculo en la esquina de cada tarjeta) y vuelve a pulsar "¿Qué combina con esto?".</div>`;
+    el.innerHTML = `<div class="fallback-note">Cierra esto, marca una o varias prendas en "Mi armario" (círculo en la esquina de cada tarjeta) y vuelve a pulsar "¿Qué combina con esto?".</div>`;
     return;
   }
   const usedCats = new Set(selected.map(g => g.category));
@@ -1512,7 +1585,7 @@ async function renderCombineCheck() {
   const el = document.getElementById("combineCheckResults");
   const selected = garments.filter(g => selectedForMatch.has(g.id));
   if (selected.length < 2) {
-    el.innerHTML = `<div class="fallback-note">Selecciona al menos 2 prendas en "Mi armario" (círculo en la esquina de cada tarjeta) y vuelve a pulsar "¿Combinan?".</div>`;
+    el.innerHTML = `<div class="fallback-note">Cierra esto, marca una o varias prendas en "Mi armario" (círculo en la esquina de cada tarjeta) y vuelve a pulsar "¿Combinan estas prendas?".</div>`;
     return;
   }
   const evalRes = evaluateSelection(selected);
@@ -1633,10 +1706,11 @@ function renderOutfits() {
     btn.addEventListener("click", () => {
       const entry = outfits.find(o => o.id === btn.dataset.delOutfit);
       const label = entry && entry.name ? `"${entry.name}"` : "este outfit";
-      if (!confirm(`¿Eliminar ${label}? Esta acción no se puede deshacer.`)) return;
-      outfits = outfits.filter(o => o.id !== btn.dataset.delOutfit);
-      saveOutfits(outfits);
-      renderOutfits();
+      showConfirmModal(`¿Eliminar ${label}? Esta acción no se puede deshacer.`, () => {
+        outfits = outfits.filter(o => o.id !== btn.dataset.delOutfit);
+        saveOutfits(outfits);
+        renderOutfits();
+      });
     });
   });
   listEl.querySelectorAll("[data-share-outfit]").forEach(btn => {
@@ -1834,6 +1908,8 @@ document.getElementById("fileInput").addEventListener("change", async (e) => {
 document.getElementById("modalVersatile").addEventListener("change", (e) => { if (pending) pending.versatile = e.target.checked; });
 document.getElementById("modalClose").addEventListener("click", closeModal);
 document.getElementById("modalBackdrop").addEventListener("click", (e) => { if (e.target.id === "modalBackdrop") closeModal(); });
+document.getElementById("suggestionOverlayClose").addEventListener("click", closeSuggestionOverlay);
+document.getElementById("suggestionOverlayBackdrop").addEventListener("click", (e) => { if (e.target.id === "suggestionOverlayBackdrop") closeSuggestionOverlay(); });
 document.getElementById("modalCategory").addEventListener("change", (e) => { pending.category = e.target.value; });
 document.getElementById("modalName").addEventListener("input", (e) => { pending.name = e.target.value; });
 document.getElementById("modalConfirm").addEventListener("click", () => {
@@ -1866,61 +1942,95 @@ document.getElementById("modalConfirm").addEventListener("click", () => {
   }
 });
 
-const TOGGLE_BTN_BY_SECTION = { builderSection: "builderToggleBtn", matchSection: "matchToggleBtn", combineCheckSection: "combineCheckToggleBtn" };
-function closeOutfitPanels(except) {
-  ["suggestionSection", "builderSection", "matchSection", "combineCheckSection"].forEach(id => {
-    if (id !== except) {
-      document.getElementById(id).style.display = "none";
-      const btnId = TOGGLE_BTN_BY_SECTION[id];
-      if (btnId) document.getElementById(btnId).classList.remove("toggle-active");
-    }
-  });
+function showConfirmModal(message, onConfirm, opts = {}) {
+  const backdrop = document.getElementById("confirmBackdrop");
+  document.getElementById("confirmMessage").textContent = message;
+  const okBtn = document.getElementById("confirmOkBtn");
+  const cancelBtn = document.getElementById("confirmCancelBtn");
+  okBtn.textContent = opts.confirmLabel || "Eliminar";
+  okBtn.style.background = opts.confirmLabel ? "var(--ink)" : "var(--danger)";
+  okBtn.style.borderColor = opts.confirmLabel ? "var(--ink)" : "var(--danger)";
+  backdrop.classList.add("open");
+  const cleanup = () => {
+    backdrop.classList.remove("open");
+    okBtn.removeEventListener("click", onOk);
+    cancelBtn.removeEventListener("click", onCancel);
+    backdrop.removeEventListener("click", onBackdropClick);
+  };
+  const onOk = () => { cleanup(); onConfirm(); };
+  const onCancel = () => { cleanup(); if (opts.onCancel) opts.onCancel(); };
+  const onBackdropClick = (e) => { if (e.target.id === "confirmBackdrop") onCancel(); };
+  okBtn.addEventListener("click", onOk);
+  cancelBtn.addEventListener("click", onCancel);
+  backdrop.addEventListener("click", onBackdropClick);
 }
-document.getElementById("createGroupBtn").addEventListener("click", () => {
-  const sub = document.getElementById("createSubRow");
-  const open = sub.style.display === "flex";
-  document.getElementById("combineSubRow").style.display = "none";
-  document.getElementById("combineGroupBtn").classList.remove("toggle-active");
-  sub.style.display = open ? "none" : "flex";
-  document.getElementById("createGroupBtn").classList.toggle("toggle-active", !open);
-});
-document.getElementById("combineGroupBtn").addEventListener("click", () => {
-  const sub = document.getElementById("combineSubRow");
-  const open = sub.style.display === "flex";
-  document.getElementById("createSubRow").style.display = "none";
-  document.getElementById("createGroupBtn").classList.remove("toggle-active");
-  sub.style.display = open ? "none" : "flex";
-  document.getElementById("combineGroupBtn").classList.toggle("toggle-active", !open);
-});
+function closeAllActionOverlays() {
+  ["suggestionOverlayBackdrop", "builderOverlayBackdrop", "matchOverlayBackdrop", "combineCheckOverlayBackdrop"].forEach(id => {
+    document.getElementById(id).classList.remove("open");
+  });
+  closeFabMenu();
+}
 document.getElementById("builderToggleBtn").addEventListener("click", () => {
-  const section = document.getElementById("builderSection");
-  const open = section.style.display === "block";
-  closeOutfitPanels(open ? null : "builderSection");
-  section.style.display = open ? "none" : "block";
-  document.getElementById("builderToggleBtn").classList.toggle("toggle-active", !open);
-  if (!open) { manualPicks = { top: null, bottom: null, shoes: null }; renderPicker(); updateCheckManualBtn(); document.getElementById("manualResult").innerHTML = ""; }
+  closeAllActionOverlays();
+  manualPicks = { top: null, bottom: null, shoes: null };
+  renderPicker();
+  updateCheckManualBtn();
+  document.getElementById("manualResult").innerHTML = "";
+  document.getElementById("builderOverlayBackdrop").classList.add("open");
 });
 document.getElementById("matchToggleBtn").addEventListener("click", () => {
-  const section = document.getElementById("matchSection");
-  const open = section.style.display === "block";
-  closeOutfitPanels(open ? null : "matchSection");
-  section.style.display = open ? "none" : "block";
-  document.getElementById("matchToggleBtn").classList.toggle("toggle-active", !open);
-  if (!open) renderMatchResults();
+  closeAllActionOverlays();
+  renderMatchResults();
+  document.getElementById("matchOverlayBackdrop").classList.add("open");
 });
 document.getElementById("combineCheckToggleBtn").addEventListener("click", () => {
-  const section = document.getElementById("combineCheckSection");
-  const open = section.style.display === "block";
-  closeOutfitPanels(open ? null : "combineCheckSection");
-  section.style.display = open ? "none" : "block";
-  document.getElementById("combineCheckToggleBtn").classList.toggle("toggle-active", !open);
-  if (!open) renderCombineCheck();
+  closeAllActionOverlays();
+  renderCombineCheck();
+  document.getElementById("combineCheckOverlayBackdrop").classList.add("open");
 });
+document.getElementById("builderOverlayClose").addEventListener("click", () => document.getElementById("builderOverlayBackdrop").classList.remove("open"));
+document.getElementById("builderOverlayBackdrop").addEventListener("click", (e) => { if (e.target.id === "builderOverlayBackdrop") document.getElementById("builderOverlayBackdrop").classList.remove("open"); });
+document.getElementById("matchOverlayClose").addEventListener("click", () => document.getElementById("matchOverlayBackdrop").classList.remove("open"));
+document.getElementById("matchOverlayBackdrop").addEventListener("click", (e) => { if (e.target.id === "matchOverlayBackdrop") document.getElementById("matchOverlayBackdrop").classList.remove("open"); });
+document.getElementById("combineCheckOverlayClose").addEventListener("click", () => document.getElementById("combineCheckOverlayBackdrop").classList.remove("open"));
+document.getElementById("combineCheckOverlayBackdrop").addEventListener("click", (e) => { if (e.target.id === "combineCheckOverlayBackdrop") document.getElementById("combineCheckOverlayBackdrop").classList.remove("open"); });
 document.getElementById("checkManualBtn").addEventListener("click", handleCheckManual);
 document.getElementById("againBtn").addEventListener("click", () => handleSuggest(document.getElementById("contextSelect").value));
 document.getElementById("generateOutfitBtn").addEventListener("click", () => {
   document.getElementById("contextSelect").value = "any";
   handleSuggest("any");
+});
+function closeFabMenu() {
+  document.getElementById("fabMenu").style.display = "none";
+  document.getElementById("fabIconHanger").style.display = "block";
+  document.getElementById("fabIconClose").style.display = "none";
+}
+document.getElementById("fabToggleBtn").addEventListener("click", () => {
+  const menu = document.getElementById("fabMenu");
+  const open = menu.style.display === "flex";
+  if (open) {
+    closeFabMenu();
+  } else {
+    menu.style.display = "flex";
+    document.getElementById("fabIconHanger").style.display = "none";
+    document.getElementById("fabIconClose").style.display = "block";
+  }
+});
+document.getElementById("fabGenerateBtn").addEventListener("click", () => {
+  closeFabMenu();
+  document.getElementById("generateOutfitBtn").click();
+});
+document.getElementById("fabBuilderBtn").addEventListener("click", () => {
+  closeFabMenu();
+  document.getElementById("builderToggleBtn").click();
+});
+document.getElementById("fabMatchBtn").addEventListener("click", () => {
+  closeFabMenu();
+  document.getElementById("matchToggleBtn").click();
+});
+document.addEventListener("click", (e) => {
+  const fab = document.getElementById("wardrobeFab");
+  if (fab.style.display !== "none" && !fab.contains(e.target)) closeFabMenu();
 });
 document.getElementById("suggestionGrid").addEventListener("click", (e) => {
   const btn = e.target.closest("[data-lock-cat]");
@@ -1955,6 +2065,16 @@ document.getElementById("colorSwatchRow").addEventListener("click", (e) => {
   document.querySelectorAll("#colorSwatchRow [data-color-filter]").forEach(el => {
     el.classList.toggle("active", el.dataset.colorFilter === colorFilterValue);
   });
+  if (colorFilterValue === "") {
+    seasonFilterValue = "";
+    contextFilterValue = "";
+    favoritesOnlyFilter = false;
+    searchQuery = "";
+    document.getElementById("seasonFilterSelect").value = "";
+    document.getElementById("contextFilterSelect").value = "";
+    document.getElementById("favoritesFilterBtn").classList.remove("active");
+    document.getElementById("searchInput").value = "";
+  }
   wardrobeExpanded = false;
   renderGrid();
 });
@@ -1976,6 +2096,16 @@ document.getElementById("outfitColorSwatchRow").addEventListener("click", (e) =>
   document.querySelectorAll("#outfitColorSwatchRow [data-outfit-color-filter]").forEach(el => {
     el.classList.toggle("active", el.dataset.outfitColorFilter === outfitColorFilterValue);
   });
+  if (outfitColorFilterValue === "") {
+    outfitSeasonFilterValue = "";
+    outfitFormalityFilterValue = "";
+    outfitFavoritesOnlyFilter = false;
+    outfitSearchQuery = "";
+    document.getElementById("outfitSeasonFilterSelect").value = "";
+    document.getElementById("outfitFormalityFilterSelect").value = "";
+    document.getElementById("outfitFavoritesFilterBtn").classList.remove("active");
+    document.getElementById("outfitSearchInput").value = "";
+  }
   outfitsExpanded = false;
   renderOutfits();
 });
@@ -1984,9 +2114,7 @@ document.getElementById("outfitFormalityFilterSelect").addEventListener("change"
 document.getElementById("outfitSeasonFilterSelect").addEventListener("change", (e) => { outfitSeasonFilterValue = e.target.value; outfitsExpanded = false; renderOutfits(); });
 document.getElementById("outfitFavoritesFilterBtn").addEventListener("click", () => {
   outfitFavoritesOnlyFilter = !outfitFavoritesOnlyFilter;
-  const btn = document.getElementById("outfitFavoritesFilterBtn");
-  btn.classList.toggle("active", outfitFavoritesOnlyFilter);
-  btn.textContent = outfitFavoritesOnlyFilter ? "★ Favoritos" : "☆ Favoritos";
+  document.getElementById("outfitFavoritesFilterBtn").classList.toggle("active", outfitFavoritesOnlyFilter);
   outfitsExpanded = false;
   renderOutfits();
 });
@@ -2001,21 +2129,25 @@ document.getElementById("contextFilterSelect").addEventListener("change", (e) =>
 document.getElementById("seasonFilterSelect").addEventListener("change", (e) => { seasonFilterValue = e.target.value; wardrobeExpanded = false; renderGrid(); });
 document.getElementById("favoritesFilterBtn").addEventListener("click", () => {
   favoritesOnlyFilter = !favoritesOnlyFilter;
-  const btn = document.getElementById("favoritesFilterBtn");
-  btn.classList.toggle("active", favoritesOnlyFilter);
-  btn.textContent = favoritesOnlyFilter ? "★ Favoritas" : "☆ Favoritas";
+  document.getElementById("favoritesFilterBtn").classList.toggle("active", favoritesOnlyFilter);
   wardrobeExpanded = false;
   renderGrid();
 });
 document.getElementById("bulkDeleteChip").addEventListener("click", () => {
   const n = selectedForMatch.size;
   if (n < 2) return;
-  if (!confirm(`¿Eliminar ${n} prendas? Esta acción no se puede deshacer.`)) return;
-  garments = garments.filter(g => !selectedForMatch.has(g.id));
+  showConfirmModal(`¿Eliminar ${n} prendas? Esta acción no se puede deshacer.`, () => {
+    garments = garments.filter(g => !selectedForMatch.has(g.id));
+    selectedForMatch = new Set();
+    saveGarments(garments);
+    closeAllActionOverlays();
+    renderAll();
+  });
+});
+document.getElementById("deselectAllBtn").addEventListener("click", () => {
   selectedForMatch = new Set();
-  saveGarments(garments);
-  document.getElementById("suggestionSection").style.display = "none";
-  renderAll();
+  renderGrid();
+  updateSelectionBar();
 });
 
 const PAGE_META = {
@@ -2030,6 +2162,8 @@ function switchView(view) {
   document.getElementById("viewOutfits").style.display = view === "outfits" ? "block" : "none";
   document.getElementById("viewShop").style.display = view === "shop" ? "block" : "none";
   document.getElementById("viewSettings").style.display = view === "settings" ? "block" : "none";
+  document.getElementById("wardrobeFab").style.display = view === "wardrobe" ? "flex" : "none";
+  if (view !== "wardrobe") closeFabMenu();
   const meta = PAGE_META[view];
   document.getElementById("pageTitle").textContent = meta.title;
   document.getElementById("pageSubtitle").textContent = meta.subtitle;
@@ -2093,22 +2227,21 @@ async function importBackup(file) {
     if (!Array.isArray(data.garments) || !Array.isArray(data.outfits)) {
       throw new Error("FORMATO_INVALIDO");
     }
-    const confirmed = window.confirm(
-      "Vas a cargar una copia de seguridad. Todo tu armario y outfits actuales se sobrescribirán. ¿Continuamos?"
+    showConfirmModal(
+      "Vas a cargar una copia de seguridad. Todo tu armario y outfits actuales se sobrescribirán. ¿Continuamos?",
+      () => {
+        garments = data.garments || [];
+        outfits = data.outfits || [];
+        saveGarments(garments);
+        saveOutfits(outfits);
+        selectedForMatch = new Set();
+        lockedPieces = { top: null, bottom: null, shoes: null };
+        renderAll();
+        statusEl.style.color = "var(--accent)";
+        statusEl.textContent = "¡Cargado con éxito!";
+      },
+      { confirmLabel: "Continuar", onCancel: () => { statusEl.style.display = "none"; } }
     );
-    if (!confirmed) {
-      statusEl.style.display = "none";
-      return;
-    }
-    garments = data.garments || [];
-    outfits = data.outfits || [];
-    saveGarments(garments);
-    saveOutfits(outfits);
-    selectedForMatch = new Set();
-    lockedPieces = { top: null, bottom: null, shoes: null };
-    renderAll();
-    statusEl.style.color = "var(--accent)";
-    statusEl.textContent = "¡Cargado con éxito!";
   } catch (err) {
     statusEl.style.color = "var(--danger)";
     statusEl.textContent = err.message === "FORMATO_INVALIDO"
