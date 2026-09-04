@@ -1,6 +1,6 @@
 {
-  "name": "Armario",
-  "short_name": "Armario",
+  "name": "DRESSR",
+  "short_name": "DRESSR",
   "description": "Tu armario virtual: cataloga tu ropa y crea combinaciones que van con tu estilo.",
   "start_url": "./index.html",
   "scope": "./",
