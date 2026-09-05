@@ -156,8 +156,13 @@
     position: absolute; top: 8px; left: 8px; width: 22px; height: 22px; border-radius: 50%;
     border: 1.5px solid rgba(255,255,255,0.9); background: rgba(20,20,15,0.25); cursor: pointer;
     display: flex; align-items: center; justify-content: center; color: #fff; font-size: 12px; font-weight: 700;
+    transition: background 0.15s ease, border-color 0.15s ease;
   }
   .select-check.checked { background: var(--accent); border-color: var(--accent); }
+  @keyframes selectPop { 0% { transform: scale(0.6); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+  .select-check.just-checked { animation: selectPop 0.3s ease; }
+  @keyframes cardRemove { to { opacity: 0; transform: scale(0.85); } }
+  .card-removing { animation: cardRemove 0.25s ease forwards; pointer-events: none; }
   .frame-actions { display: flex; align-items: center; gap: 10px; margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--line); }
   .frame-action-btn {
     background: none; border: none; padding: 2px; cursor: pointer; color: var(--ink-soft);
@@ -169,6 +174,11 @@
     width: 20px; height: 20px; border-radius: 50%; padding: 0; flex-shrink: 0;
   }
   .fav-star-btn.active { background: var(--gold); color: #fff; }
+  @keyframes favBounce {
+    0% { transform: scale(1); } 30% { transform: scale(1.35); } 55% { transform: scale(0.9); }
+    75% { transform: scale(1.15); } 100% { transform: scale(1); }
+  }
+  .fav-bounce { animation: favBounce 0.4s ease; }
   .fav-filter-circle {
     width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--gold); cursor: pointer;
     background: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--gold); flex-shrink: 0;
@@ -226,10 +236,14 @@
   .picker-item .frame-meta { justify-content: center; padding: 4px 0 0; }
 
   .modal-backdrop {
-    position: fixed; inset: 0; background: rgba(20,20,15,0.45); display: none;
+    position: fixed; inset: 0; background: rgba(20,20,15,0.45); display: flex;
     align-items: center; justify-content: center; z-index: 50; overflow-y: auto; padding: 20px;
+    backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+    opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
   }
-  .modal-backdrop.open { display: flex; }
+  .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+  .modal-backdrop .modal { transform: scale(0.94); transition: transform 0.22s cubic-bezier(0.34,1.4,0.64,1); }
+  .modal-backdrop.open .modal { transform: scale(1); }
   .modal {
     background: #fff; width: 100%; max-width: 460px; padding: 24px; border-radius: var(--radius);
     box-shadow: 0 20px 60px rgba(0,0,0,0.25);
@@ -270,16 +284,27 @@
   }
   #fabToggleBtn {
     width: 52px; height: 52px; border-radius: 50%; background: var(--ink); color: #fff; border: none;
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative;
     box-shadow: 0 3px 10px rgba(0,0,0,0.28);
   }
+  #fabToggleBtn svg {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%) rotate(0deg); opacity: 1;
+    transition: transform 0.25s ease, opacity 0.18s ease;
+  }
+  #fabToggleBtn #fabIconClose { opacity: 0; transform: translate(-50%,-50%) rotate(-90deg); }
+  #fabToggleBtn.open #fabIconHanger { opacity: 0; transform: translate(-50%,-50%) rotate(90deg); }
+  #fabToggleBtn.open #fabIconClose { opacity: 1; transform: translate(-50%,-50%) rotate(0deg); }
   #fabMenu { display: none; flex-direction: column; align-items: flex-end; gap: 8px; }
+  @keyframes fabMiniIn { from { opacity: 0; transform: translateY(6px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
   .fab-mini {
     display: flex; align-items: center; gap: 8px; background: #fff; border: 1px solid var(--line-strong);
     border-radius: 999px; padding: 8px 14px; font-size: 12.5px; font-weight: 600; color: var(--ink);
     cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.14); white-space: nowrap; font-family: inherit;
+    animation: fabMiniIn 0.22s ease backwards;
   }
   .fab-mini svg { flex-shrink: 0; }
+  .fab-mini:disabled { color: var(--ink-soft); background: #EFEDE7; cursor: not-allowed; box-shadow: none; }
+  .fab-mini-danger { color: #fff; background: var(--danger); border-color: var(--danger); }
 </style>
 <style>
   @media (max-width: 720px) {
@@ -300,6 +325,7 @@
     .wrap { padding: 22px 16px calc(80px + env(safe-area-inset-bottom)); }
     #bulkActionBar { bottom: calc(64px + env(safe-area-inset-bottom)); }
     #wardrobeFab { bottom: calc(80px + env(safe-area-inset-bottom)); }
+    #viewTabSettings { display: none; }
   }
   .mobile-topbar {
     display: none; position: sticky; top: 0; z-index: 40; background: var(--sidebar-bg);
@@ -310,6 +336,12 @@
     display: flex; gap: 2px; font-family: "Poppins", sans-serif; font-size: 10px; font-weight: 300;
     color: #fff;
   }
+  .topbar-settings-btn {
+    position: absolute; right: 16px; top: calc(50% + env(safe-area-inset-top) / 2); transform: translateY(-50%);
+    background: none; border: none; color: #fff; padding: 4px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .topbar-settings-btn svg { width: 21px; height: 21px; }
   @media (max-width: 720px) and (orientation: portrait) {
     .mobile-topbar { display: flex; }
     .wrap { padding-top: 84px; }
@@ -320,6 +352,9 @@
 <div class="mobile-topbar">
     <img src="data:image/png;base64,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" alt="">
     <div class="mobile-topbar-text"><span>D</span><span>R</span><span>E</span><span>S</span><span>S</span><span>R</span></div>
+    <button class="topbar-settings-btn" id="topbarSettingsBtn" aria-label="Configuración">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
   </div>
   <div class="app-shell">
   <aside class="sidebar">
@@ -398,27 +433,9 @@
 
   <div id="onboardingBanner" style="display:none; margin-bottom:16px; padding:14px 16px; background:var(--ink); color:#fff; border-radius:var(--radius-sm); font-size:13.5px;"></div>
 
-  <div class="section" id="contextSection" style="display:none;">
-    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap;">
-      <div id="occasionBlock" style="min-width:220px;">
-        <h2 style="margin-bottom:8px;">Sugerir por ocasión</h2>
-        <select id="contextSelect" style="max-width:280px;">
-          <option value="any">Elige una ocasión…</option>
-        </select>
-        <div class="hint" id="contextHint" style="display:none;"></div>
-      </div>
-      <div class="row" id="actionsRow" style="margin-bottom:0; flex-direction:column; align-items:flex-start; gap:14px;">
-        <div>
-          <div style="font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-soft); margin-bottom:6px;">Crear outfit</div>
-          <div class="row" style="margin-bottom:0;">
-            <button class="btn btn-accent" id="generateOutfitBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg> Sugiéreme un outfit</button>
-            <button class="btn btn-outline" id="builderToggleBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="11" height="11" rx="2"/><rect x="10" y="10" width="11" height="11" rx="2"/></svg> Crear mi propio outfit</button>
-          </div>
-        </div>
-        <div class="hint" id="actionsHint" style="display:none;">Necesitas al menos una prenda de cada categoría para usar estas opciones.</div>
-        <div class="hint" style="color:var(--ink-soft);">Marca prendas en tu armario (círculo en la esquina de cada tarjeta) para comprobar si combinan o borrarlas juntas.</div>
-      </div>
-    </div>
+  <div id="actionsRow" style="display:none;">
+    <button id="generateOutfitBtn"></button>
+    <button id="builderToggleBtn"></button>
   </div>
 
 
@@ -428,7 +445,19 @@
         <h2 style="font-size:17px;">Outfit sugerido</h2>
         <button class="modal-close" id="suggestionOverlayClose">✕</button>
       </div>
-      <p class="sub" style="margin-bottom:12px;">Toca el candado de una prenda para bloquearla antes de regenerar.</p>
+      <p class="sub" style="margin-bottom:10px;">Toca el candado de una prenda para bloquearla antes de regenerar.</p>
+      <div class="row" style="margin-bottom:10px;">
+        <select id="contextSelect" class="filter-select" style="flex:1; max-width:none;">
+          <option value="any">Cualquier ocasión</option>
+        </select>
+        <select id="seasonSuggestSelect" class="filter-select" style="flex:1; max-width:none;">
+          <option value="any">Cualquier temporada</option>
+          <option value="verano">Verano</option>
+          <option value="entretiempo">Entretiempo</option>
+          <option value="invierno">Invierno</option>
+        </select>
+      </div>
+      <div class="hint" id="contextHint" style="display:none; margin-bottom:10px;"></div>
       <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:14px;" id="suggestionGrid"></div>
       <div class="verdict-box" id="suggestionExplain" style="margin-bottom:12px;"></div>
       <div class="row" style="margin-bottom:0;">
@@ -447,7 +476,10 @@
       </div>
       <p class="sub" style="margin-bottom:14px;">Elige una prenda de cada categoría.</p>
       <div id="pickerContainer"></div>
-      <button class="btn btn-primary btn-disabled" id="checkManualBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg> ¿Combina?</button>
+      <div class="row" style="margin-bottom:0;">
+        <button class="btn btn-outline btn-disabled" id="manualSaveBtnTop" disabled>Guardar outfit</button>
+        <button class="btn btn-primary btn-disabled" id="checkManualBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg> ¿Combina?</button>
+      </div>
       <div id="manualResult" style="margin-top:16px;"></div>
     </div>
   </div>
@@ -524,11 +556,11 @@
   </main>
 </div>
 
-<div id="wardrobeFab" style="display:none;">
+<div id="wardrobeFab" style="display:flex;">
   <div id="fabMenu" style="display:none;"></div>
   <button id="fabToggleBtn" aria-label="Acciones de outfit">
     <svg id="fabIconHanger" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.2" r="1.3"/><path d="M12 5.5V7"/><path d="M12 7 4.7 12.1a1.8 1.8 0 0 0 1 3.3h12.6a1.8 1.8 0 0 0 1-3.3z"/><path d="M4.5 18.5h15"/></svg>
-    <svg id="fabIconClose" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    <svg id="fabIconClose" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
   </button>
 </div>
 
@@ -541,6 +573,21 @@
     <div style="display:flex; gap:10px; justify-content:space-between; align-items:center;">
       <button class="btn-text" id="onboardingSkipBtn">Saltar</button>
       <button class="btn btn-primary" id="onboardingNextBtn">Siguiente</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="savedOutfitBackdrop">
+  <div class="modal" style="max-width:420px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+      <h2 style="font-size:17px;">¡Outfit guardado!</h2>
+      <button class="modal-close" id="savedOutfitClose">✕</button>
+    </div>
+    <p class="sub" style="margin-bottom:14px;">Ve a la sección "Outfits" para ver todos tus looks guardados.</p>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:16px;" id="savedOutfitGrid"></div>
+    <div class="row" style="margin-bottom:0;">
+      <button class="btn btn-outline" id="savedOutfitGoBtn">Ir a Outfits</button>
+      <button class="btn btn-outline" id="savedOutfitShareBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg> Compartir</button>
     </div>
   </div>
 </div>
@@ -977,6 +1024,16 @@ function matchesFavoritesFilter(g) { return !favoritesOnlyFilter || !!g.favorite
 let wardrobeExpanded = false;
 const WARDROBE_ROW_MAX = 4;
 
+function fadeSwapGrid(callback) {
+  const gridEl = document.getElementById("grid");
+  gridEl.style.transition = "opacity 0.15s ease";
+  gridEl.style.opacity = "0";
+  setTimeout(() => {
+    callback();
+    requestAnimationFrame(() => { gridEl.style.opacity = "1"; });
+  }, 150);
+}
+
 function renderGrid() {
   const gridEl = document.getElementById("grid");
   const emptyEl = document.getElementById("emptyState");
@@ -1004,9 +1061,9 @@ function renderGrid() {
       ? `<button class="btn-text" id="wardrobeExpandBtn">Abrir armario (${list.length}) →</button>`
       : `<button class="btn-text" id="wardrobeCollapseBtn">Cerrar armario</button>`;
     const expandBtn = document.getElementById("wardrobeExpandBtn");
-    if (expandBtn) expandBtn.addEventListener("click", () => { wardrobeExpanded = true; renderGrid(); });
+    if (expandBtn) expandBtn.addEventListener("click", () => { fadeSwapGrid(() => { wardrobeExpanded = true; renderGrid(); }); });
     const collapseBtn = document.getElementById("wardrobeCollapseBtn");
-    if (collapseBtn) collapseBtn.addEventListener("click", () => { wardrobeExpanded = false; renderGrid(); });
+    if (collapseBtn) collapseBtn.addEventListener("click", () => { fadeSwapGrid(() => { wardrobeExpanded = false; renderGrid(); }); });
   } else {
     toggleEl.style.display = "none";
     toggleEl.innerHTML = "";
@@ -1018,11 +1075,16 @@ function renderGrid() {
       const g = garments.find(x => x.id === btn.dataset.del);
       const label = g && g.name ? `"${g.name}"` : "esta prenda";
       showConfirmModal(`¿Eliminar ${label}? Esta acción no se puede deshacer.`, () => {
-        garments = garments.filter(g => g.id !== btn.dataset.del);
-        selectedForMatch.delete(btn.dataset.del);
-        saveGarments(garments);
-        closeAllActionOverlays();
-        renderAll();
+        const frameEl = btn.closest(".frame");
+        const removeData = () => {
+          garments = garments.filter(g => g.id !== btn.dataset.del);
+          selectedForMatch.delete(btn.dataset.del);
+          saveGarments(garments);
+          closeAllActionOverlays();
+          renderAll();
+        };
+        if (frameEl) { frameEl.classList.add("card-removing"); setTimeout(() => flipAnimate(gridEl, removeData), 250); }
+        else removeData();
       });
     });
   });
@@ -1037,8 +1099,14 @@ function renderGrid() {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const id = btn.dataset.select;
-      if (selectedForMatch.has(id)) selectedForMatch.delete(id); else selectedForMatch.add(id);
-      renderGrid();
+      const nowSelected = !selectedForMatch.has(id);
+      if (nowSelected) selectedForMatch.add(id); else selectedForMatch.delete(id);
+      btn.classList.toggle("checked", nowSelected);
+      btn.textContent = nowSelected ? "✓" : "";
+      const frameInner = btn.closest(".frame")?.querySelector(".frame-inner");
+      if (frameInner) frameInner.classList.toggle("selected", nowSelected);
+      btn.classList.remove("just-checked");
+      if (nowSelected) { void btn.offsetWidth; btn.classList.add("just-checked"); }
       updateSelectionBar();
     });
   });
@@ -1046,7 +1114,16 @@ function renderGrid() {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
       const g = garments.find(x => x.id === btn.dataset.fav);
-      if (g) { g.favorite = !g.favorite; saveGarments(garments); renderGrid(); }
+      if (!g) return;
+      g.favorite = !g.favorite;
+      saveGarments(garments);
+      if (favoritesOnlyFilter && !g.favorite) { renderGrid(); return; }
+      btn.classList.toggle("active", g.favorite);
+      btn.textContent = g.favorite ? "★" : "☆";
+      btn.title = g.favorite ? "Quitar de favoritas" : "Marcar como favorita";
+      btn.classList.remove("fav-bounce");
+      void btn.offsetWidth;
+      btn.classList.add("fav-bounce");
     });
   });
   gridEl.querySelectorAll("[data-dup]").forEach(btn => {
@@ -1071,24 +1148,45 @@ function duplicateGarment(g) {
 
 function updateSelectionBar() {
   const n = selectedForMatch.size;
+  const ok = canSuggest();
   const menu = document.getElementById("fabMenu");
-  let html = `
-    <button class="fab-mini" id="fabGenerateBtn"><span>Sugiéreme un outfit</span><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg></button>
-    <button class="fab-mini" id="fabBuilderBtn"><span>Crear mi propio outfit</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="11" height="11" rx="2"/><rect x="10" y="10" width="11" height="11" rx="2"/></svg></button>`;
+  const items = [];
+  items.push({
+    id: "fabGenerateBtn", label: "Sugiéreme un outfit", disabled: !ok,
+    svg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"/></svg>`
+  });
+  items.push({
+    id: "fabBuilderBtn", label: "Crear mi propio outfit", disabled: !ok,
+    svg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="11" height="11" rx="2"/><rect x="10" y="10" width="11" height="11" rx="2"/></svg>`
+  });
   if (n >= 1) {
-    html += `<button class="fab-mini" id="fabMatchBtn"><span>¿Qué combina con esto?</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.2" r="1.3"/><path d="M12 5.5V7"/><path d="M12 7 4.7 12.1a1.8 1.8 0 0 0 1 3.3h12.6a1.8 1.8 0 0 0 1-3.3z"/><path d="M4.5 18.5h15"/></svg></button>`;
+    items.push({
+      id: "fabMatchBtn", label: "¿Qué combina con esto?",
+      svg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.2" r="1.3"/><path d="M12 5.5V7"/><path d="M12 7 4.7 12.1a1.8 1.8 0 0 0 1 3.3h12.6a1.8 1.8 0 0 0 1-3.3z"/><path d="M4.5 18.5h15"/></svg>`
+    });
   }
   if (n >= 2) {
-    html += `<button class="fab-mini" id="fabCombineCheckBtn"><span>¿Combinan estas prendas?</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg></button>`;
-    html += `<button class="fab-mini" id="fabDeleteBtn" style="color:#fff; background:var(--danger); border-color:var(--danger);"><span>Eliminar (${n})</span></button>`;
+    items.push({
+      id: "fabCombineCheckBtn", label: "¿Combinan estas prendas?",
+      svg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>`
+    });
+    items.push({ id: "fabDeleteBtn", label: `Eliminar (${n})`, danger: true, svg: "" });
   }
-  if (n >= 1) {
-    html += `<button class="fab-mini" id="fabDeselectBtn"><span>Deseleccionar</span></button>`;
+  if (n >= 2) {
+    items.push({ id: "fabDeselectBtn", label: "Deseleccionar todo", svg: "" });
   }
-  menu.innerHTML = html;
 
-  document.getElementById("fabGenerateBtn").addEventListener("click", () => { closeFabMenu(); document.getElementById("generateOutfitBtn").click(); });
-  document.getElementById("fabBuilderBtn").addEventListener("click", () => { closeFabMenu(); document.getElementById("builderToggleBtn").click(); });
+  items.sort((a, b) => a.label.length - b.label.length);
+
+  menu.innerHTML = items.map((it, i) => `
+    <button class="fab-mini${it.danger ? " fab-mini-danger" : ""}" id="${it.id}" style="animation-delay:${(items.length - 1 - i) * 45}ms" ${it.disabled ? "disabled" : ""}>
+      <span>${it.label}</span>${it.svg}
+    </button>`).join("");
+
+  const genBtn = document.getElementById("fabGenerateBtn");
+  if (genBtn) genBtn.addEventListener("click", () => { closeFabMenu(); document.getElementById("generateOutfitBtn").click(); });
+  const buildBtn = document.getElementById("fabBuilderBtn");
+  if (buildBtn) buildBtn.addEventListener("click", () => { closeFabMenu(); document.getElementById("builderToggleBtn").click(); });
   const matchMini = document.getElementById("fabMatchBtn");
   if (matchMini) matchMini.addEventListener("click", () => { closeFabMenu(); document.getElementById("matchToggleBtn").click(); });
   const combineMini = document.getElementById("fabCombineCheckBtn");
@@ -1098,16 +1196,13 @@ function updateSelectionBar() {
   const deselMini = document.getElementById("fabDeselectBtn");
   if (deselMini) deselMini.addEventListener("click", () => { document.getElementById("deselectAllBtn").click(); });
 
-  const hangerIcon = document.getElementById("fabIconHanger");
-  const closeIcon = document.getElementById("fabIconClose");
-  if (n >= 1) {
+  const toggleBtn = document.getElementById("fabToggleBtn");
+  if (n >= 1 || fabManuallyOpen) {
     menu.style.display = "flex";
-    hangerIcon.style.display = "none";
-    closeIcon.style.display = "block";
+    toggleBtn.classList.add("open");
   } else {
     menu.style.display = "none";
-    hangerIcon.style.display = "block";
-    closeIcon.style.display = "none";
+    toggleBtn.classList.remove("open");
   }
 }
 
@@ -1118,26 +1213,17 @@ function counts() {
 function canSuggest() { const c = counts(); return c.top > 0 && c.bottom > 0 && c.shoes > 0; }
 
 function renderActions() {
-  const row = document.getElementById("actionsRow");
-  const hint = document.getElementById("actionsHint");
-  const contextSection = document.getElementById("contextSection");
-  const occasionBlock = document.getElementById("occasionBlock");
   const generateBtn = document.getElementById("generateOutfitBtn");
   const builderBtn = document.getElementById("builderToggleBtn");
   const matchBtn = document.getElementById("matchToggleBtn");
   const onboardEl = document.getElementById("onboardingBanner");
-  if (garments.length === 0) { contextSection.style.display = "none"; onboardEl.style.display = "none"; return; }
+  const fab = document.getElementById("wardrobeFab");
+  if (garments.length === 0) { onboardEl.style.display = "none"; fab.style.display = "none"; return; }
+  fab.style.display = "flex";
   const ok = canSuggest();
-  contextSection.style.display = "block";
-  occasionBlock.style.display = ok ? "block" : "none";
-  row.style.display = "flex";
-  hint.style.display = ok ? "none" : "block";
   generateBtn.disabled = !ok;
-  generateBtn.classList.toggle("btn-disabled", !ok);
   builderBtn.disabled = !ok;
-  builderBtn.style.cursor = ok ? "pointer" : "not-allowed";
   matchBtn.disabled = false;
-  matchBtn.style.cursor = "pointer";
   updateSelectionBar();
 
   if (!ok) {
@@ -1154,11 +1240,14 @@ function renderActions() {
 }
 
 /* ---------------- Suggest by context ---------------- */
-function buildOutfit(contextId, locked = {}) {
+function buildOutfit(contextId, seasonId, locked = {}) {
   let pool = garments;
   if (contextId && contextId !== "any") {
     const ctx = CONTEXTS.find(c => c.id === contextId);
-    pool = garments.filter(g => fitsContext(g, ctx.target));
+    pool = pool.filter(g => fitsContext(g, ctx.target));
+  }
+  if (seasonId && seasonId !== "any") {
+    pool = pool.filter(g => (g.season || "entretiempo") === seasonId);
   }
   const poolFor = (cat) => locked[cat] ? [locked[cat]] : pool.filter(g => g.category === cat);
   const tops = poolFor("top");
@@ -1368,19 +1457,20 @@ function badgeRowHTML(badges) {
 function closeSuggestionOverlay() {
   document.getElementById("suggestionOverlayBackdrop").classList.remove("open");
 }
-async function handleSuggest(contextId) {
+async function handleSuggest(contextId, seasonId) {
   closeAllActionOverlays();
-  const { outfit, approximate } = buildOutfit(contextId, lockedPieces);
+  const { outfit, approximate } = buildOutfit(contextId, seasonId, lockedPieces);
   const backdrop = document.getElementById("suggestionOverlayBackdrop");
   const gridEl = document.getElementById("suggestionGrid");
   const explainEl = document.getElementById("suggestionExplain");
   const saveBtn = document.getElementById("suggestionSaveBtn");
   const hintEl = document.getElementById("contextHint");
+  const isFiltered = (contextId && contextId !== "any") || (seasonId && seasonId !== "any");
 
   if (!outfit) {
     hintEl.style.display = "block";
-    hintEl.textContent = contextId && contextId !== "any"
-      ? "No hay suficientes prendas de tu armario etiquetadas para esa ocasión."
+    hintEl.textContent = isFiltered
+      ? "No hay suficientes prendas de tu armario etiquetadas para esos filtros."
       : "Necesitas al menos una prenda de cada categoría en tu armario.";
     closeSuggestionOverlay();
     return;
@@ -1399,7 +1489,7 @@ async function handleSuggest(contextId) {
   const badgesHTML = badgeRowHTML(outfitBadges(outfit.top, outfit.bottom, outfit.shoes, ctxLabel));
   const titleHTML = `<div class="verdict-label">✨ ¿Por qué funciona?</div>`;
   const text = localOutfitText(outfit.top, outfit.bottom, outfit.shoes, outfit.evalRes);
-  explainEl.innerHTML = titleHTML + `<div class="verdict-text">${text}</div>` + (approximate ? `<div class="fallback-note">(No había ninguna combinación 100% válida para esta ocasión; esta es la más cercana)</div>` : "") + badgesHTML;
+  explainEl.innerHTML = titleHTML + `<div class="verdict-text">${text}</div>` + (approximate ? `<div class="fallback-note">(No había ninguna combinación 100% válida para estos filtros; esta es la más cercana)</div>` : "") + badgesHTML;
   const meta = outfit.evalRes.ok ? { label: "Combina", color: "var(--accent)" } : { label: "Aproximada (no combina del todo)", color: "var(--gold)" };
   saveBtn.style.display = "inline-flex";
   saveBtn.onclick = async () => {
@@ -1407,7 +1497,8 @@ async function handleSuggest(contextId) {
     saveBtn.textContent = "Guardando…";
     const name = await generateOutfitName(outfit.top, outfit.bottom, outfit.shoes);
     addOutfit({ top: outfit.top, bottom: outfit.bottom, shoes: outfit.shoes, label: meta.label, color: meta.color, text, name });
-    saveBtn.textContent = "Guardado ✓";
+    saveBtn.textContent = "Guardar outfit";
+    showSavedOutfitCard(outfit.top, outfit.bottom, outfit.shoes, name);
   };
   const shareBtn = document.getElementById("suggestionShareBtn");
   shareBtn.style.display = "inline-flex";
@@ -1452,6 +1543,9 @@ function updateCheckManualBtn() {
   const ready = manualPicks.top && manualPicks.bottom && manualPicks.shoes;
   btn.classList.toggle("btn-disabled", !ready);
   btn.disabled = !ready;
+  const saveBtn = document.getElementById("manualSaveBtnTop");
+  saveBtn.classList.toggle("btn-disabled", !ready);
+  saveBtn.disabled = !ready;
 }
 
 function pickSuspectOrder(pairs) {
@@ -1512,7 +1606,6 @@ async function handleCheckManual() {
     </div>
     ${swapHTML}
     <div class="row" style="margin-top:12px; margin-bottom:0;">
-      <button class="btn btn-outline" id="manualSaveBtn">Guardar outfit</button>
       <button class="btn btn-outline" id="manualShareBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg> Compartir</button>
     </div>`;
 
@@ -1526,13 +1619,6 @@ async function handleCheckManual() {
     });
   });
 
-  document.getElementById("manualSaveBtn").addEventListener("click", async (e) => {
-    e.target.disabled = true;
-    e.target.textContent = "Guardando…";
-    const name = await generateOutfitName(top, bottom, shoes);
-    addOutfit({ top, bottom, shoes, label: meta.label, color: meta.color, text, name });
-    e.target.textContent = "Guardado ✓";
-  });
   const manualShareBtn = document.getElementById("manualShareBtn");
   manualShareBtn.addEventListener("click", () => shareOutfitAsImage(top, bottom, shoes, null, manualShareBtn));
 }
@@ -1726,9 +1812,14 @@ function renderOutfits() {
       const entry = outfits.find(o => o.id === btn.dataset.delOutfit);
       const label = entry && entry.name ? `"${entry.name}"` : "este outfit";
       showConfirmModal(`¿Eliminar ${label}? Esta acción no se puede deshacer.`, () => {
-        outfits = outfits.filter(o => o.id !== btn.dataset.delOutfit);
-        saveOutfits(outfits);
-        renderOutfits();
+        const sectionEl = btn.closest("[data-outfit-id]");
+        const removeData = () => {
+          outfits = outfits.filter(o => o.id !== btn.dataset.delOutfit);
+          saveOutfits(outfits);
+          renderOutfits();
+        };
+        if (sectionEl) { sectionEl.classList.add("card-removing"); setTimeout(() => flipAnimate(listEl, removeData), 250); }
+        else removeData();
       });
     });
   });
@@ -1742,7 +1833,16 @@ function renderOutfits() {
   listEl.querySelectorAll("[data-fav-outfit]").forEach(btn => {
     btn.addEventListener("click", () => {
       const entry = outfits.find(o => o.id === btn.dataset.favOutfit);
-      if (entry) { entry.favorite = !entry.favorite; saveOutfits(outfits); renderOutfits(); }
+      if (!entry) return;
+      entry.favorite = !entry.favorite;
+      saveOutfits(outfits);
+      if (outfitFavoritesOnlyFilter && !entry.favorite) { renderOutfits(); return; }
+      btn.classList.toggle("active", entry.favorite);
+      btn.textContent = entry.favorite ? "★" : "☆";
+      btn.title = entry.favorite ? "Quitar de favoritos" : "Marcar como favorito";
+      btn.classList.remove("fav-bounce");
+      void btn.offsetWidth;
+      btn.classList.add("fav-bounce");
     });
   });
   listEl.querySelectorAll("[data-rename-outfit]").forEach(btn => {
@@ -1961,6 +2061,47 @@ document.getElementById("modalConfirm").addEventListener("click", () => {
   }
 });
 
+function flipAnimate(containerEl, renderFn) {
+  const items = Array.from(containerEl.children);
+  const firstRects = new Map();
+  items.forEach(el => {
+    const id = el.dataset.id || el.dataset.outfitId || el.id;
+    if (id) firstRects.set(id, el.getBoundingClientRect());
+  });
+  renderFn();
+  const newItems = Array.from(containerEl.children);
+  newItems.forEach(el => {
+    const id = el.dataset.id || el.dataset.outfitId || el.id;
+    if (!id || !firstRects.has(id)) return;
+    const first = firstRects.get(id);
+    const last = el.getBoundingClientRect();
+    const dx = first.left - last.left;
+    const dy = first.top - last.top;
+    if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+      el.style.transition = "none";
+      el.style.transform = `translate(${dx}px, ${dy}px)`;
+      requestAnimationFrame(() => {
+        el.style.transition = "transform 0.25s ease";
+        el.style.transform = "";
+        setTimeout(() => { el.style.transition = ""; }, 260);
+      });
+    }
+  });
+}
+function showSavedOutfitCard(top, bottom, shoes, outfitName) {
+  closeAllActionOverlays();
+  document.getElementById("savedOutfitGrid").innerHTML = frameHTML(top, 0) + frameHTML(bottom, 0) + frameHTML(shoes, 0);
+  document.getElementById("savedOutfitBackdrop").classList.add("open");
+  document.getElementById("savedOutfitGoBtn").onclick = () => {
+    document.getElementById("savedOutfitBackdrop").classList.remove("open");
+    switchView("outfits");
+  };
+  document.getElementById("savedOutfitShareBtn").onclick = () => {
+    shareOutfitAsImage(top, bottom, shoes, outfitName, document.getElementById("savedOutfitShareBtn"));
+  };
+}
+document.getElementById("savedOutfitClose").addEventListener("click", () => document.getElementById("savedOutfitBackdrop").classList.remove("open"));
+document.getElementById("savedOutfitBackdrop").addEventListener("click", (e) => { if (e.target.id === "savedOutfitBackdrop") document.getElementById("savedOutfitBackdrop").classList.remove("open"); });
 function showConfirmModal(message, onConfirm, opts = {}) {
   const backdrop = document.getElementById("confirmBackdrop");
   document.getElementById("confirmMessage").textContent = message;
@@ -2014,15 +2155,32 @@ document.getElementById("matchOverlayBackdrop").addEventListener("click", (e) =>
 document.getElementById("combineCheckOverlayClose").addEventListener("click", () => document.getElementById("combineCheckOverlayBackdrop").classList.remove("open"));
 document.getElementById("combineCheckOverlayBackdrop").addEventListener("click", (e) => { if (e.target.id === "combineCheckOverlayBackdrop") document.getElementById("combineCheckOverlayBackdrop").classList.remove("open"); });
 document.getElementById("checkManualBtn").addEventListener("click", handleCheckManual);
-document.getElementById("againBtn").addEventListener("click", () => handleSuggest(document.getElementById("contextSelect").value));
+document.getElementById("manualSaveBtnTop").addEventListener("click", async () => {
+  const { top, bottom, shoes } = manualPicks;
+  if (!top || !bottom || !shoes) return;
+  const btn = document.getElementById("manualSaveBtnTop");
+  btn.disabled = true;
+  btn.textContent = "Guardando…";
+  const evalRes = evaluateOutfit(top, bottom, shoes);
+  const text = localOutfitText(top, bottom, shoes, evalRes);
+  const meta = evalRes.ok ? { label: "Combina", color: "var(--accent)" } : { label: "No combina", color: "var(--danger)" };
+  const name = await generateOutfitName(top, bottom, shoes);
+  addOutfit({ top, bottom, shoes, label: meta.label, color: meta.color, text, name });
+  btn.textContent = "Guardar outfit";
+  btn.disabled = false;
+  showSavedOutfitCard(top, bottom, shoes, name);
+});
+document.getElementById("againBtn").addEventListener("click", () => handleSuggest(document.getElementById("contextSelect").value, document.getElementById("seasonSuggestSelect").value));
 document.getElementById("generateOutfitBtn").addEventListener("click", () => {
   document.getElementById("contextSelect").value = "any";
-  handleSuggest("any");
+  document.getElementById("seasonSuggestSelect").value = "any";
+  handleSuggest("any", "any");
 });
+let fabManuallyOpen = false;
 function closeFabMenu() {
+  fabManuallyOpen = false;
   document.getElementById("fabMenu").style.display = "none";
-  document.getElementById("fabIconHanger").style.display = "block";
-  document.getElementById("fabIconClose").style.display = "none";
+  document.getElementById("fabToggleBtn").classList.remove("open");
 }
 document.getElementById("fabToggleBtn").addEventListener("click", () => {
   const menu = document.getElementById("fabMenu");
@@ -2030,9 +2188,9 @@ document.getElementById("fabToggleBtn").addEventListener("click", () => {
   if (open) {
     closeFabMenu();
   } else {
+    fabManuallyOpen = true;
     menu.style.display = "flex";
-    document.getElementById("fabIconHanger").style.display = "none";
-    document.getElementById("fabIconClose").style.display = "block";
+    document.getElementById("fabToggleBtn").classList.add("open");
   }
 });
 document.addEventListener("click", (e) => {
@@ -2054,7 +2212,8 @@ CONTEXTS.forEach(c => {
   opt.value = c.id; opt.textContent = c.label;
   document.getElementById("contextSelect").appendChild(opt);
 });
-document.getElementById("contextSelect").addEventListener("change", (e) => { handleSuggest(e.target.value); });
+document.getElementById("contextSelect").addEventListener("change", (e) => { handleSuggest(e.target.value, document.getElementById("seasonSuggestSelect").value); });
+document.getElementById("seasonSuggestSelect").addEventListener("change", (e) => { handleSuggest(document.getElementById("contextSelect").value, e.target.value); });
 
 COLORS.forEach(c => {
   const btn = document.createElement("button");
@@ -2145,11 +2304,19 @@ document.getElementById("bulkDeleteChip").addEventListener("click", () => {
   const n = selectedForMatch.size;
   if (n < 2) return;
   showConfirmModal(`¿Eliminar ${n} prendas? Esta acción no se puede deshacer.`, () => {
-    garments = garments.filter(g => !selectedForMatch.has(g.id));
-    selectedForMatch = new Set();
-    saveGarments(garments);
-    closeAllActionOverlays();
-    renderAll();
+    const idsToRemove = new Set(selectedForMatch);
+    document.querySelectorAll(".frame").forEach(el => {
+      if (idsToRemove.has(el.dataset.id)) el.classList.add("card-removing");
+    });
+    setTimeout(() => {
+      flipAnimate(document.getElementById("grid"), () => {
+        garments = garments.filter(g => !idsToRemove.has(g.id));
+        selectedForMatch = new Set();
+        saveGarments(garments);
+        closeAllActionOverlays();
+        renderAll();
+      });
+    }, 250);
   });
 });
 document.getElementById("deselectAllBtn").addEventListener("click", () => {
@@ -2170,8 +2337,12 @@ function switchView(view) {
   document.getElementById("viewOutfits").style.display = view === "outfits" ? "block" : "none";
   document.getElementById("viewShop").style.display = view === "shop" ? "block" : "none";
   document.getElementById("viewSettings").style.display = view === "settings" ? "block" : "none";
-  document.getElementById("wardrobeFab").style.display = view === "wardrobe" ? "flex" : "none";
-  if (view !== "wardrobe") closeFabMenu();
+  if (view === "wardrobe") {
+    renderActions();
+  } else {
+    document.getElementById("wardrobeFab").style.display = "none";
+    closeFabMenu();
+  }
   const meta = PAGE_META[view];
   document.getElementById("pageTitle").textContent = meta.title;
   document.getElementById("pageSubtitle").textContent = meta.subtitle;
@@ -2189,6 +2360,7 @@ document.getElementById("viewTabWardrobe").addEventListener("click", () => switc
 document.getElementById("viewTabOutfits").addEventListener("click", () => switchView("outfits"));
 document.getElementById("viewTabShop").addEventListener("click", () => switchView("shop"));
 document.getElementById("viewTabSettings").addEventListener("click", () => switchView("settings"));
+document.getElementById("topbarSettingsBtn").addEventListener("click", () => switchView("settings"));
 
 document.getElementById("shopUploadBtn").addEventListener("click", () => document.getElementById("shopFileInput").click());
 document.getElementById("shopFileInput").addEventListener("change", async (e) => {
