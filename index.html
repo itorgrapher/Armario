@@ -3622,6 +3622,14 @@ try {
     document.getElementById("onboardingBackdrop").classList.add("open");
   }
 } catch {}
+const SPLASH_SESSION_KEY = "drobr_splashShown_v1";
+let splashAlreadySeen = false;
+try { splashAlreadySeen = sessionStorage.getItem(SPLASH_SESSION_KEY) === "1"; } catch {}
+if (splashAlreadySeen) {
+  document.getElementById("splashScreen").classList.add("gone");
+} else {
+  try { sessionStorage.setItem(SPLASH_SESSION_KEY, "1"); } catch {}
+}
 document.getElementById("splashOpenBtn").addEventListener("click", () => {
   const splash = document.getElementById("splashScreen");
   splash.classList.add("opening");
