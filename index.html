@@ -1193,8 +1193,23 @@ const BG_REMOVAL_ASSETS = "rembg-assets/";
 async function getBgRemovalSession() {
   if (bgRemovalSession) return bgRemovalSession;
   if (!bgRemovalModule) {
-    bgRemovalModule = await import(BG_REMOVAL_ASSETS + "ort.wasm.bundle.min.mjs");
+    // Cargamos el bundle como texto y lo importamos desde un blob: con tipo MIME explícito.
+    // Esto evita que falle si el hosting no sirve los .mjs con el Content-Type correcto,
+    // que es la causa más común de que quitar el fondo no funcione en la app instalada.
+    const bundleRes = await fetch(BG_REMOVAL_ASSETS + "ort.wasm.bundle.min.mjs");
+    if (!bundleRes.ok) throw new Error("No se pudo cargar el módulo de quitar fondo (" + bundleRes.status + ")");
+    const bundleText = await bundleRes.text();
+    const bundleBlob = new Blob([bundleText], { type: "text/javascript" });
+    const bundleUrl = URL.createObjectURL(bundleBlob);
+    bgRemovalModule = await import(bundleUrl);
+    URL.revokeObjectURL(bundleUrl);
     bgRemovalModule.env.wasm.numThreads = 1; // works with no special server headers
+    // Al importar desde un blob:, la resolución automática de rutas relativas dentro del
+    // bundle deja de funcionar, así que le indicamos explícitamente dónde están sus archivos compañeros.
+    bgRemovalModule.env.wasm.wasmPaths = {
+      mjs: BG_REMOVAL_ASSETS + "ort-wasm-simd-threaded.mjs",
+      wasm: BG_REMOVAL_ASSETS + "ort-wasm-simd-threaded.wasm",
+    };
   }
   bgRemovalSession = await bgRemovalModule.InferenceSession.create(BG_REMOVAL_ASSETS + "u2netp.onnx");
   return bgRemovalSession;
