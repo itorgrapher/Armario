@@ -168,6 +168,8 @@
   .swatch { width: 12px; height: 12px; border-radius: 50%; border: 1px solid var(--line-strong); flex-shrink: 0; display: inline-block; margin-top: 2px; }
   .frame-label { font-size: 12.5px; color: var(--ink); font-weight: 600; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .frame-sub { font-size: 11px; color: var(--ink-soft); margin-top: 4px; line-height: 1.3; }
+  .frame-chip-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
+  .mini-chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; color: #fff; line-height: 1.4; }
   .del-btn {
     position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%;
     border: none; background: rgba(255,255,255,0.92); display: flex; align-items: center;
@@ -197,6 +199,9 @@
     width: 28px; height: 28px; border-radius: 50%; padding: 0 0 2px; flex-shrink: 0;
   }
   .fav-star-btn.active { background: var(--gold); color: #fff; }
+  .fav-star-corner {
+    position: absolute; top: 8px; right: 8px; width: 26px; height: 26px; font-size: 13px;
+  }
   @keyframes favBounce {
     0% { transform: scale(1); } 30% { transform: scale(1.35); } 55% { transform: scale(0.9); }
     75% { transform: scale(1.15); } 100% { transform: scale(1); }
@@ -488,7 +493,6 @@
     </div>
     <div id="pageAction" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
       <input type="text" id="searchInput" placeholder="Buscar por nombre…" style="margin-top:0; width:220px;">
-      <button class="btn-text" id="wardrobeToggleAllBtn" style="display:none;"></button>
       <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
       <button class="btn btn-primary" id="uploadBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Subir prenda</button>
       <div class="error-msg" id="uploadError" style="display:none;"></div>
@@ -517,6 +521,10 @@
       <button class="btn btn-outline" id="combineCheckToggleBtn" style="padding:6px 12px; font-size:12.5px;">¿Combinan?</button>
       <button class="btn btn-outline" id="bulkDeleteChip" style="color:#fff; background:var(--danger); border-color:var(--danger); padding:6px 12px; font-size:12.5px;">Eliminar</button>
     </div>
+  </div>
+
+  <div id="wardrobeToggleAllRow" style="display:none; justify-content:flex-end; margin-bottom:14px;">
+    <button class="btn btn-outline" id="wardrobeToggleAllBtn" style="padding:6px 14px; font-size:12.5px; display:inline-flex; align-items:center; gap:6px;"></button>
   </div>
 
   <div class="empty" id="emptyState" style="display:none;">Aún no has subido ninguna prenda. Empieza subiendo la foto de una prenda cualquiera.</div>
@@ -713,6 +721,17 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="textPromptBackdrop">
+  <div class="modal" style="max-width:320px;">
+    <p id="textPromptLabel" style="font-size:13.5px; font-weight:600; color:var(--ink); margin-bottom:10px;"></p>
+    <input type="text" id="textPromptInput" style="width:100%; margin-bottom:18px;">
+    <div class="row" style="margin-bottom:0; justify-content:flex-end; gap:8px;">
+      <button class="btn-text" id="textPromptCancelBtn">Cancelar</button>
+      <button class="btn btn-primary" id="textPromptOkBtn">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="categoryPickerBackdrop">
   <div class="modal" style="max-width:340px;">
     <div class="modal-head">
@@ -730,7 +749,7 @@
 <div class="modal-backdrop" id="outfitTagBackdrop">
   <div class="modal" style="max-width:380px;">
     <div class="modal-head">
-      <h2 style="font-size:16px;">Etiquetar outfit</h2>
+      <h2 style="font-size:16px;" id="outfitTagTitle">Etiquetar outfit</h2>
       <button class="modal-close" id="outfitTagClose">✕</button>
     </div>
     <div id="outfitTagPreview" class="outfit-frame-row" style="margin-bottom:16px;"></div>
@@ -745,15 +764,25 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="outfitPickerBackdrop">
+  <div class="modal" style="max-width:340px;">
+    <div class="modal-head">
+      <h2 style="font-size:16px;">Elige un outfit</h2>
+      <button class="modal-close" id="outfitPickerClose">✕</button>
+    </div>
+    <div id="outfitPickerList" style="display:flex; flex-direction:column; gap:6px; max-height:340px; overflow-y:auto;"></div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="modalBackdrop">
   <div class="modal">
     <div class="modal-head">
       <h2 style="font-size:17px;" id="modalTitle">Nueva prenda</h2>
       <button class="modal-close" id="modalClose">✕</button>
     </div>
-    <div class="modal-body" id="modalCategoryField">
+    <div class="modal-body">
       <img class="modal-preview" id="modalPreview" src="" alt="Vista previa">
-      <div style="flex:1;">
+      <div style="flex:1;" id="modalCategoryField">
         <label class="field" style="margin-bottom:0;">Tipo de prenda
           <div class="formality-options" id="modalCategory"></div>
         </label>
@@ -929,6 +958,12 @@ function seasonCompatible(a, b) {
 }
 
 const FORMALITY_LABELS = { 1: "Deporte", 2: "Casual", 3: "Trabajo", 4: "Evento", 5: "Etiqueta" };
+const SEASON_COLORS = { verano: "#E0A72E", entretiempo: "#4C9A5B", invierno: "#4A90C2" };
+const FORMALITY_COLORS = { 1: "#E0763C", 2: "#4FA6A0", 3: "#3B6E91", 4: "#6A4C93", 5: "#2B2B2B" };
+function metaChipsHTML(g) {
+  const season = g.season || "entretiempo";
+  return `<span class="mini-chip" style="background:${FORMALITY_COLORS[g.formality || 2]};">${FORMALITY_LABELS[g.formality || 2]}</span><span class="mini-chip" style="background:${SEASON_COLORS[season]};">${SEASONS.find(s => s.id === season).label}</span>`;
+}
 const CONTEXTS = [
   { id: "deporte", label: "Deporte", target: 1 },
   { id: "casual", label: "Casual", target: 2 },
@@ -1110,6 +1145,7 @@ let manualPicks = { top: null, bottom: null, shoes: null, accessory: null };
 let manualAccessoryVisible = false;
 let selectedForMatch = new Set();
 let selectedOutfits = new Set();
+let outfitsOrganizeMode = false;
 let currentView = "wardrobe";
 let lockedPieces = { top: null, bottom: null, shoes: null };
 let currentSuggestionOutfit = null;
@@ -1253,7 +1289,7 @@ function frameHTML(g, index, opts = {}) {
   const cat = CATEGORIES.find(c => c.id === g.category);
   const title = g.name ? g.name.charAt(0).toUpperCase() + g.name.slice(1) : (cat ? cat.label : g.category);
   const isSelected = opts.selectable && selectedForMatch.has(g.id);
-  const hasActions = opts.favable || opts.duplicable || opts.editable;
+  const hasActions = opts.duplicable || opts.editable;
   if (opts.minimal) {
     return `
     <div class="frame frame-minimal" data-id="${g.id}">
@@ -1272,18 +1308,18 @@ function frameHTML(g, index, opts = {}) {
           <div class="frame-meta">
             ${swatchHTML(g.color)}<span class="frame-label" title="${title}">${title}</span>
           </div>
-          <div class="frame-sub">${cat ? cat.label : g.category} · ${FORMALITY_LABELS[g.formality || 2]}${g.versatile ? " · versátil" : ""}${g.season && g.season !== "entretiempo" ? ` · ${SEASONS.find(s => s.id === g.season).label}` : ""}</div>
+          ${opts.compact ? "" : `<div class="frame-chip-row">${metaChipsHTML(g)}</div>`}
           ${hasActions ? `
           <div class="frame-actions">
             <div class="frame-actions-left">
               ${opts.duplicable ? `<button class="frame-action-btn" data-dup="${g.id}" title="Duplicar prenda">⧉</button>` : ""}
               ${opts.editable ? `<button class="frame-action-btn" data-edit="${g.id}" title="Editar prenda">✎</button>` : ""}
             </div>
-            ${opts.favable ? `<button class="fav-star-btn ${g.favorite ? "active" : ""}" data-fav="${g.id}" title="${g.favorite ? "Quitar de favoritas" : "Marcar como favorita"}">${g.favorite ? "★" : "☆"}</button>` : ""}
           </div>` : ""}
         </div>
       </div>
       ${opts.selectable ? `<button class="select-check ${isSelected ? "checked" : ""}" data-select="${g.id}">${isSelected ? "✓" : ""}</button>` : ""}
+      ${opts.favable ? `<button class="fav-star-btn fav-star-corner ${g.favorite ? "active" : ""}" data-fav="${g.id}" title="${g.favorite ? "Quitar de favoritas" : "Marcar como favorita"}">${g.favorite ? "★" : "☆"}</button>` : ""}
       ${opts.deletable ? `<button class="del-btn" data-del="${g.id}">✕</button>` : ""}
     </div>`;
 }
@@ -1323,27 +1359,42 @@ function fadeSwapGrid(callback) {
   }, 150);
 }
 
+let textPromptCallback = null;
+function showTextPromptModal(label, defaultValue, onConfirm) {
+  document.getElementById("textPromptLabel").textContent = label;
+  const input = document.getElementById("textPromptInput");
+  input.value = defaultValue || "";
+  textPromptCallback = onConfirm;
+  document.getElementById("textPromptBackdrop").classList.add("open");
+  setTimeout(() => { input.focus(); input.select(); }, 50);
+}
+function closeTextPromptModal() {
+  document.getElementById("textPromptBackdrop").classList.remove("open");
+  textPromptCallback = null;
+}
+
 function renameSection(id) {
   const isDefault = CATEGORIES.some(c => c.id === id);
   const current = categoryLabel(id);
-  const name = prompt("Nuevo nombre para esta categoría:", current);
-  if (name === null) return;
-  const trimmed = name.trim();
-  if (!trimmed) return;
-  if (isDefault) {
-    categoryLabelOverrides[id] = trimmed;
-    saveCategoryLabelOverrides(categoryLabelOverrides);
-  } else {
-    const cat = customCategories.find(c => c.id === id);
-    if (cat) { cat.label = trimmed; saveCustomCategories(customCategories); }
-  }
-  renderGrid();
+  showTextPromptModal("Nuevo nombre para esta categoría:", current, (name) => {
+    const trimmed = (name || "").trim();
+    if (!trimmed) return;
+    if (isDefault) {
+      categoryLabelOverrides[id] = trimmed;
+      saveCategoryLabelOverrides(categoryLabelOverrides);
+    } else {
+      const cat = customCategories.find(c => c.id === id);
+      if (cat) { cat.label = trimmed; saveCustomCategories(customCategories); }
+    }
+    renderGrid();
+  });
 }
 
 function renderGrid() {
   const gridEl = document.getElementById("grid");
   const emptyEl = document.getElementById("emptyState");
   const toggleAllBtn = document.getElementById("wardrobeToggleAllBtn");
+  const toggleAllRow = document.getElementById("wardrobeToggleAllRow");
   const colorRow = document.getElementById("colorFilterRow");
   const swatchRow = document.getElementById("colorSwatchRow");
   colorRow.style.display = garments.length > 0 ? "flex" : "none";
@@ -1362,8 +1413,7 @@ function renderGrid() {
   sections.forEach((sec, i) => {
     const isCollapsed = !expandedSections.has(sec.id) && sec.items.length > WARDROBE_ROW_MAX;
     const visibleItems = isCollapsed ? sec.items.slice(0, WARDROBE_ROW_MAX) : sec.items;
-    const isLast = i === sections.length - 1;
-    const cardsHTML = visibleItems.map(g => frameHTML(g, garments.indexOf(g), { deletable: true, editable: true, selectable: true, favable: true, duplicable: true })).join("") + (isLast ? addCardHTML() : "");
+    const cardsHTML = visibleItems.map(g => frameHTML(g, garments.indexOf(g), { editable: true, selectable: true, favable: true, duplicable: true })).join("") + addCardHTML(`addCardTrigger_${sec.id}`);
     html += `
       <div class="category-section" data-section="${sec.id}">
         <div class="category-section-head">
@@ -1383,8 +1433,10 @@ function renderGrid() {
   const collapsibleSections = sections.filter(sec => sec.items.length > WARDROBE_ROW_MAX);
   if (collapsibleSections.length > 0) {
     const allExpanded = collapsibleSections.every(sec => expandedSections.has(sec.id));
-    toggleAllBtn.style.display = "inline-flex";
-    toggleAllBtn.textContent = allExpanded ? "Cerrar armario" : "Abrir armario →";
+    toggleAllRow.style.display = "flex";
+    toggleAllBtn.innerHTML = allExpanded
+      ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15 12 9 6 15"/></svg> Cerrar armario`
+      : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9 12 15 18 9"/></svg> Abrir Armario`;
     toggleAllBtn.onclick = () => {
       fadeSwapGrid(() => {
         if (allExpanded) collapsibleSections.forEach(sec => expandedSections.delete(sec.id));
@@ -1393,8 +1445,12 @@ function renderGrid() {
       });
     };
   } else {
-    toggleAllBtn.style.display = "none";
+    toggleAllRow.style.display = "none";
   }
+
+  gridEl.querySelectorAll(".add-card").forEach(addCard => {
+    addCard.addEventListener("click", () => document.getElementById("fileInput").click());
+  });
 
   gridEl.querySelectorAll("[data-section-toggle]").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -1473,8 +1529,6 @@ function renderGrid() {
       if (g) duplicateGarment(g);
     });
   });
-  const addCard = document.getElementById("addCardTrigger");
-  if (addCard) addCard.addEventListener("click", () => document.getElementById("fileInput").click());
 }
 
 function duplicateGarment(g) {
@@ -1526,10 +1580,10 @@ function updateSelectionBar() {
       id: "fabCombineCheckBtn", label: "¿Combinan estas prendas?",
       svg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg>`
     });
-    items.push({ id: "fabDeleteBtn", label: `Eliminar (${n})`, danger: true, svg: "" });
   }
-  if (n >= 2) {
-    items.push({ id: "fabDeselectBtn", label: "Deseleccionar todo", svg: "" });
+  if (n >= 1) {
+    items.push({ id: "fabDeleteBtn", label: "Eliminar", danger: true, svg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>` });
+    items.push({ id: "fabDeselectBtn", label: "Deseleccionar todo", svg: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/></svg>` });
   }
 
   items.sort((a, b) => a.label.length - b.label.length);
@@ -1571,13 +1625,23 @@ function renderOutfitFab() {
   fab.style.display = outfits.length > 0 ? "flex" : "none";
   const n = selectedOutfits.size;
   const items = [];
-  if (n === 1) {
-    items.push({ id: "fabTagOutfitBtn", label: "Etiquetar outfit", svg: "" });
-    items.push({ id: "fabShareOutfitBtn", label: "Compartir", svg: "" });
-  }
-  if (n >= 1) {
-    items.push({ id: "fabDeleteOutfitsBtn", label: `Eliminar (${n})`, danger: true, svg: "" });
-    items.push({ id: "fabDeselectOutfitsBtn", label: "Deseleccionar", svg: "" });
+  const ICON_TAG = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24L4 3a1 1 0 0 0-1 1l.24 5.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.83 0l4.35-4.35a2 2 0 0 0 0-2.82Z"/><circle cx="7.5" cy="7.5" r="1"/></svg>`;
+  const ICON_SHARE = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>`;
+  const ICON_SORT = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V4M7 4 3 8M7 4l4 4"/><path d="M17 4v16M17 20l4-4M17 20l-4-4"/></svg>`;
+  const ICON_CHECK = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+  const ICON_TRASH = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`;
+  const ICON_DESELECT = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/></svg>`;
+  if (outfitsOrganizeMode) {
+    items.push({ id: "fabOrganizeOutfitsBtn", label: "Guardar", svg: ICON_CHECK });
+  } else {
+    if (n <= 1) items.push({ id: "fabTagOutfitBtn", label: "Etiquetar outfit", svg: ICON_TAG });
+    else items.push({ id: "fabTagOutfitBtn", label: `Etiquetar (${n})`, svg: ICON_TAG });
+    if (n === 1) items.push({ id: "fabShareOutfitBtn", label: "Compartir", svg: ICON_SHARE });
+    items.push({ id: "fabOrganizeOutfitsBtn", label: "Organizar", svg: ICON_SORT });
+    if (n >= 1) {
+      items.push({ id: "fabDeleteOutfitsBtn", label: "Eliminar", danger: true, svg: ICON_TRASH });
+      items.push({ id: "fabDeselectOutfitsBtn", label: "Deseleccionar", svg: ICON_DESELECT });
+    }
   }
   items.sort((a, b) => a.label.length - b.label.length);
   menu.innerHTML = items.map((it, i) => `
@@ -1586,7 +1650,12 @@ function renderOutfitFab() {
     </button>`).join("");
 
   const tagBtn = document.getElementById("fabTagOutfitBtn");
-  if (tagBtn) tagBtn.addEventListener("click", () => { closeFabMenu(); const id = [...selectedOutfits][0]; openOutfitTagModal(id); });
+  if (tagBtn) tagBtn.addEventListener("click", () => {
+    closeFabMenu();
+    if (n === 0) openOutfitPickerModal();
+    else if (n === 1) openOutfitTagModal([...selectedOutfits][0]);
+    else openOutfitTagQueue([...selectedOutfits]);
+  });
   const shareBtn = document.getElementById("fabShareOutfitBtn");
   if (shareBtn) shareBtn.addEventListener("click", () => {
     closeFabMenu();
@@ -1596,6 +1665,13 @@ function renderOutfitFab() {
       const realName = entry.name && entry.name !== "Outfit sin nombre" ? entry.name : null;
       shareOutfitAsImage(entry.top, entry.bottom, entry.shoes, realName, shareBtn, entry.accessory ? [entry.accessory] : []);
     }
+  });
+  const organizeBtn = document.getElementById("fabOrganizeOutfitsBtn");
+  if (organizeBtn) organizeBtn.addEventListener("click", () => {
+    closeFabMenu();
+    outfitsOrganizeMode = !outfitsOrganizeMode;
+    if (outfitsOrganizeMode) selectedOutfits = new Set();
+    renderOutfits();
   });
   const delBtn = document.getElementById("fabDeleteOutfitsBtn");
   if (delBtn) delBtn.addEventListener("click", () => {
@@ -1610,7 +1686,7 @@ function renderOutfitFab() {
   const deselBtn = document.getElementById("fabDeselectOutfitsBtn");
   if (deselBtn) deselBtn.addEventListener("click", () => { selectedOutfits = new Set(); renderOutfits(); });
 
-  if (n >= 1 || fabManuallyOpen) {
+  if (n >= 1 || outfitsOrganizeMode || fabManuallyOpen) {
     menu.style.display = "flex";
     toggleBtn.classList.add("open");
   } else {
@@ -2417,7 +2493,7 @@ function renderMatchResults() {
   }
   const usedCats = new Set(selected.map(g => g.category));
   const otherCats = CATEGORIES.filter(c => !usedCats.has(c.id) && garments.some(g => g.category === c.id));
-  const selectedRow = `<div class="grid" style="grid-template-columns: repeat(${selected.length}, minmax(0, 100px)); margin-bottom:16px;">${selected.map(g => frameHTML(g, garments.indexOf(g))).join("")}</div>`;
+  const selectedRow = `<div class="grid" style="grid-template-columns: repeat(${selected.length}, minmax(0, 100px)); margin-bottom:16px;">${selected.map(g => frameHTML(g, garments.indexOf(g), { minimal: true })).join("")}</div>`;
   if (otherCats.length === 0) {
     el.innerHTML = selectedRow + `<div class="fallback-note">Ya tienes seleccionadas prendas de todas las categorías, no queda ninguna otra en la que buscar.</div>`;
     return;
@@ -2499,31 +2575,47 @@ function formatDate(iso) {
 }
 
 function outfitTagChipHTML(entry) {
-  if (!entry.taggedSeason && !entry.taggedFormality) return "";
-  const parts = [];
+  let html = "";
   if (entry.taggedSeason) {
     const s = SEASONS.find(s => s.id === entry.taggedSeason);
-    if (s) parts.push(s.label);
+    if (s) html += `<span class="verdict-chip" style="background:${SEASON_COLORS[entry.taggedSeason]};">${s.label}</span>`;
   }
-  if (entry.taggedFormality) parts.push(FORMALITY_LABELS[entry.taggedFormality]);
-  if (parts.length === 0) return "";
-  return `<span class="verdict-chip" style="background:var(--ink-soft);">${parts.join(" · ")}</span>`;
+  if (entry.taggedFormality) {
+    html += `<span class="verdict-chip" style="background:${FORMALITY_COLORS[entry.taggedFormality]};">${FORMALITY_LABELS[entry.taggedFormality]}</span>`;
+  }
+  return html;
+}
+function moveOutfit(id, direction) {
+  const idx = outfits.findIndex(o => o.id === id);
+  if (idx === -1) return;
+  const newIdx = idx + direction;
+  if (newIdx < 0 || newIdx >= outfits.length) return;
+  const [item] = outfits.splice(idx, 1);
+  outfits.splice(newIdx, 0, item);
+  saveOutfits(outfits);
+  renderOutfits();
 }
 function outfitEntryHTML(entry) {
   const isSelected = selectedOutfits.has(entry.id);
-  const cardsHTML = `${frameHTML(entry.top, 0)}${frameHTML(entry.bottom, 0)}${frameHTML(entry.shoes, 0)}${entry.accessory ? frameHTML(entry.accessory, 0) : ""}`;
+  const cardsHTML = `${frameHTML(entry.top, 0, { compact: true })}${frameHTML(entry.bottom, 0, { compact: true })}${frameHTML(entry.shoes, 0, { compact: true })}${entry.accessory ? frameHTML(entry.accessory, 0, { compact: true }) : ""}`;
+  const leadControl = outfitsOrganizeMode
+    ? `<div style="display:flex; flex-direction:column; gap:1px; flex-shrink:0;">
+         <button class="frame-action-btn" data-move-outfit-up="${entry.id}" title="Subir" style="line-height:1;">▲</button>
+         <button class="frame-action-btn" data-move-outfit-down="${entry.id}" title="Bajar" style="line-height:1;">▼</button>
+       </div>`
+    : `<button class="select-check ${isSelected ? "checked" : ""}" style="position:static; flex-shrink:0;" data-select-outfit="${entry.id}">${isSelected ? "✓" : ""}</button>`;
   return `
     <div class="section" data-outfit-id="${entry.id}" style="padding-top:18px; margin-bottom:18px;">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:8px;">
         <div style="display:flex; align-items:center; gap:8px; flex:1; min-width:0;">
-          <button class="select-check ${isSelected ? "checked" : ""}" style="position:static; flex-shrink:0;" data-select-outfit="${entry.id}">${isSelected ? "✓" : ""}</button>
+          ${leadControl}
           <h2 data-outfit-name="${entry.id}" style="font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${entry.name || "Outfit sin nombre"}</h2>
           <button class="btn-text" data-rename-outfit="${entry.id}" title="Nombrar outfit" style="flex-shrink:0;">✎</button>
         </div>
         <button class="fav-star-btn ${entry.favorite ? "active" : ""}" data-fav-outfit="${entry.id}" title="${entry.favorite ? "Quitar de favoritos" : "Marcar como favorito"}" style="flex-shrink:0;">${entry.favorite ? "★" : "☆"}</button>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
-        <span class="badge" style="color:${entry.color}; border-color:${entry.color}; font-size:12px; display:inline-block; margin-bottom:8px;">${entry.label}</span>
+        <span class="verdict-chip" style="background:${entry.color}; display:inline-block;">${entry.label}</span>
         ${outfitTagChipHTML(entry)}
       </div>
       <div class="outfit-frame-row">${cardsHTML}</div>
@@ -2616,6 +2708,12 @@ function renderOutfits() {
       if (selectedOutfits.has(id)) { void btn.offsetWidth; btn.classList.add("just-checked"); }
       updateSelectionBar();
     });
+  });
+  listEl.querySelectorAll("[data-move-outfit-up]").forEach(btn => {
+    btn.addEventListener("click", () => moveOutfit(btn.dataset.moveOutfitUp, -1));
+  });
+  listEl.querySelectorAll("[data-move-outfit-down]").forEach(btn => {
+    btn.addEventListener("click", () => moveOutfit(btn.dataset.moveOutfitDown, 1));
   });
   listEl.querySelectorAll("[data-fav-outfit]").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -2766,7 +2864,7 @@ function openModal(image, rawFile, opts = {}) {
   const queueNote = (!candidateMode && opts.queueRemaining) ? ` (quedan ${opts.queueRemaining} más)` : "";
   document.getElementById("modalTitle").textContent = (candidateMode ? "Evaluar prenda" : "Nueva prenda") + queueNote;
   document.getElementById("modalConfirm").textContent = candidateMode ? "Ver compatibilidad" : "Añadir al armario";
-  document.getElementById("modalCategoryField").style.display = "flex";
+  document.getElementById("modalCategoryField").style.display = "block";
   document.getElementById("modalFormalityField").style.display = "block";
   document.getElementById("modalVersatileField").style.display = "flex";
   document.getElementById("modalSeasonField").style.display = "block";
@@ -2800,7 +2898,7 @@ function openEditModal(garment) {
   pending = { image: garment.image, category: garment.category, color: garment.color, name: garment.name || "", rawFile: null, formality: garment.formality || 2, versatile: !!garment.versatile, season: garment.season || "entretiempo" };
   document.getElementById("modalTitle").textContent = "Editar prenda";
   document.getElementById("modalConfirm").textContent = "Guardar cambios";
-  document.getElementById("modalCategoryField").style.display = "flex";
+  document.getElementById("modalCategoryField").style.display = "block";
   document.getElementById("modalFormalityField").style.display = "block";
   document.getElementById("modalVersatileField").style.display = "flex";
   document.getElementById("modalSeasonField").style.display = "block";
@@ -3053,6 +3151,16 @@ function assignSelectedToCategory(categoryId) {
   closeCategoryPicker();
   renderGrid();
 }
+document.getElementById("textPromptCancelBtn").addEventListener("click", closeTextPromptModal);
+document.getElementById("textPromptBackdrop").addEventListener("click", (e) => { if (e.target.id === "textPromptBackdrop") closeTextPromptModal(); });
+document.getElementById("textPromptOkBtn").addEventListener("click", () => {
+  const value = document.getElementById("textPromptInput").value;
+  const cb = textPromptCallback;
+  closeTextPromptModal();
+  if (cb) cb(value);
+});
+document.getElementById("textPromptInput").addEventListener("keydown", (e) => { if (e.key === "Enter") document.getElementById("textPromptOkBtn").click(); });
+
 document.getElementById("categoryPickerClose").addEventListener("click", closeCategoryPicker);
 document.getElementById("categoryPickerBackdrop").addEventListener("click", (e) => { if (e.target.id === "categoryPickerBackdrop") closeCategoryPicker(); });
 document.getElementById("categoryPickerCreateBtn").addEventListener("click", () => {
@@ -3064,20 +3172,49 @@ document.getElementById("categoryPickerCreateBtn").addEventListener("click", () 
   assignSelectedToCategory(id);
 });
 
+function openOutfitPickerModal() {
+  const listEl = document.getElementById("outfitPickerList");
+  listEl.innerHTML = outfits.map(o => `
+    <button class="btn btn-outline" data-pick-outfit="${o.id}" style="text-align:left; justify-content:flex-start; display:flex; align-items:center; gap:8px;">
+      <img src="${o.top.image}" style="width:28px; height:28px; object-fit:cover; border-radius:6px; flex-shrink:0;" alt="">
+      <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${o.name || "Outfit sin nombre"}</span>
+    </button>`).join("");
+  listEl.querySelectorAll("[data-pick-outfit]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      closeOutfitPickerModal();
+      openOutfitTagModal(btn.dataset.pickOutfit);
+    });
+  });
+  document.getElementById("outfitPickerBackdrop").classList.add("open");
+}
+function closeOutfitPickerModal() { document.getElementById("outfitPickerBackdrop").classList.remove("open"); }
+document.getElementById("outfitPickerClose").addEventListener("click", closeOutfitPickerModal);
+document.getElementById("outfitPickerBackdrop").addEventListener("click", (e) => { if (e.target.id === "outfitPickerBackdrop") closeOutfitPickerModal(); });
+
 let outfitTagPending = { season: null, formality: null };
 let outfitTagEntryId = null;
+let outfitTagQueue = [];
+function openOutfitTagQueue(ids) {
+  outfitTagQueue = [...ids];
+  const next = outfitTagQueue.shift();
+  if (next) openOutfitTagModal(next);
+}
 function openOutfitTagModal(entryId) {
   const entry = outfits.find(o => o.id === entryId);
   if (!entry) return;
   outfitTagEntryId = entryId;
   outfitTagPending = { season: entry.taggedSeason || null, formality: entry.taggedFormality || null };
-  document.getElementById("outfitTagPreview").innerHTML = `${frameHTML(entry.top, 0)}${frameHTML(entry.bottom, 0)}${frameHTML(entry.shoes, 0)}`;
+  document.getElementById("outfitTagPreview").innerHTML = `${frameHTML(entry.top, 0, { compact: true })}${frameHTML(entry.bottom, 0, { compact: true })}${frameHTML(entry.shoes, 0, { compact: true })}`;
+  document.getElementById("outfitTagTitle").textContent = outfitTagQueue.length > 0
+    ? `Etiquetar outfit (quedan ${outfitTagQueue.length + 1})`
+    : "Etiquetar outfit";
   renderOutfitTagSeason();
   renderOutfitTagFormality();
   document.getElementById("outfitTagBackdrop").classList.add("open");
 }
 function closeOutfitTagModal() {
   document.getElementById("outfitTagBackdrop").classList.remove("open");
+  outfitTagQueue = [];
 }
 function renderOutfitTagSeason() {
   const el = document.getElementById("outfitTagSeason");
@@ -3100,9 +3237,9 @@ function renderOutfitTagFormality() {
     });
   });
 }
-document.getElementById("outfitTagClose").addEventListener("click", closeOutfitTagModal);
-document.getElementById("outfitTagCancelBtn").addEventListener("click", closeOutfitTagModal);
-document.getElementById("outfitTagBackdrop").addEventListener("click", (e) => { if (e.target.id === "outfitTagBackdrop") closeOutfitTagModal(); });
+document.getElementById("outfitTagClose").addEventListener("click", () => { closeOutfitTagModal(); renderOutfits(); });
+document.getElementById("outfitTagCancelBtn").addEventListener("click", () => { closeOutfitTagModal(); renderOutfits(); });
+document.getElementById("outfitTagBackdrop").addEventListener("click", (e) => { if (e.target.id === "outfitTagBackdrop") { closeOutfitTagModal(); renderOutfits(); } });
 document.getElementById("outfitTagSaveBtn").addEventListener("click", () => {
   const entry = outfits.find(o => o.id === outfitTagEntryId);
   if (entry) {
@@ -3110,8 +3247,13 @@ document.getElementById("outfitTagSaveBtn").addEventListener("click", () => {
     entry.taggedFormality = outfitTagPending.formality;
     saveOutfits(outfits);
   }
-  closeOutfitTagModal();
-  renderOutfits();
+  if (outfitTagQueue.length > 0) {
+    const next = outfitTagQueue.shift();
+    openOutfitTagModal(next);
+  } else {
+    closeOutfitTagModal();
+    renderOutfits();
+  }
 });
 
 document.getElementById("builderToggleBtn").addEventListener("click", () => {
@@ -3124,6 +3266,7 @@ document.getElementById("builderToggleBtn").addEventListener("click", () => {
   });
   manualAccessoryVisible = !!manualPicks.accessory;
   document.getElementById("toggleManualAccessoryBtn").textContent = manualAccessoryVisible ? "− Quitar complemento" : "+ Añadir complemento";
+  document.getElementById("toggleManualAccessoryBtn").style.display = garments.some(g => g.category === "accessory") ? "block" : "none";
   renderPicker();
   updateCheckManualBtn();
   document.getElementById("manualResult").innerHTML = "";
@@ -3302,8 +3445,8 @@ document.getElementById("favoritesFilterBtn").addEventListener("click", () => {
 });
 document.getElementById("bulkDeleteChip").addEventListener("click", () => {
   const n = selectedForMatch.size;
-  if (n < 2) return;
-  showConfirmModal(`¿Eliminar ${n} prendas? Esta acción no se puede deshacer.`, () => {
+  if (n < 1) return;
+  showConfirmModal(`¿Eliminar ${n} prenda${n > 1 ? "s" : ""}? Esta acción no se puede deshacer.`, () => {
     const idsToRemove = new Set(selectedForMatch);
     document.querySelectorAll(".frame").forEach(el => {
       if (idsToRemove.has(el.dataset.id)) el.classList.add("card-removing");
