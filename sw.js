@@ -1,9 +1,13 @@
-const CACHE_NAME = "armario-cache-v2";
+const CACHE_NAME = "armario-cache-v3";
 const ASSETS = [
   "./index.html",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
+  "./rembg-assets/ort.wasm.bundle.min.mjs",
+  "./rembg-assets/ort-wasm-simd-threaded.mjs",
+  "./rembg-assets/ort-wasm-simd-threaded.wasm",
+  "./rembg-assets/u2netp.onnx",
 ];
 
 self.addEventListener("install", (event) => {
