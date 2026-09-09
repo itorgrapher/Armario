@@ -1492,7 +1492,7 @@ async function getBgRemovalSession() {
     if (!bgRemovalModule) throw new Error("No se pudo inicializar el módulo de quitar fondo.");
     bgRemovalModule.env.wasm.numThreads = 1; // works with no special server headers
     bgRemovalModule.env.wasm.wasmPaths = {
-      wasm: new URL(BG_REMOVAL_ASSETS + "ort-wasm-simd.wasm", location.href).href,
+      "ort-wasm-simd.wasm": new URL(BG_REMOVAL_ASSETS + "ort-wasm-simd.wasm", location.href).href,
     };
   }
   bgRemovalSession = await bgRemovalModule.InferenceSession.create(BG_REMOVAL_ASSETS + "u2netp.onnx");
