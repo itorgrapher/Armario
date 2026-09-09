@@ -918,6 +918,26 @@
     <div id="visitorProfileContent"></div>
   </div>
 
+  <div id="viewForeignWardrobe" style="display:none;">
+    <div class="section" style="margin-bottom:0; padding-bottom:0;">
+      <button class="back-chip" id="foreignWardrobeBackBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        Volver
+      </button>
+    </div>
+    <div id="foreignWardrobeContent"></div>
+  </div>
+
+  <div id="viewForeignOutfits" style="display:none;">
+    <div class="section" style="margin-bottom:0; padding-bottom:0;">
+      <button class="back-chip" id="foreignOutfitsBackBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        Volver
+      </button>
+    </div>
+    <div id="foreignOutfitsContent"></div>
+  </div>
+
   <div class="modal-backdrop" id="identityAnalysisBackdrop">
     <div class="modal" style="max-width:520px;">
       <div class="modal-head"><h2 style="font-size:16px;">Análisis de tu identidad</h2><button class="modal-close" id="identityAnalysisClose">✕</button></div>
@@ -3990,6 +4010,8 @@ const PAGE_META = {
 function switchView(view) {
   currentView = view;
   document.getElementById("viewVisitorProfile").style.display = "none";
+  document.getElementById("viewForeignWardrobe").style.display = "none";
+  document.getElementById("viewForeignOutfits").style.display = "none";
   document.getElementById("viewWardrobe").style.display = view === "wardrobe" ? "block" : "none";
   document.getElementById("viewOutfits").style.display = view === "outfits" ? "block" : "none";
   document.getElementById("viewShop").style.display = view === "shop" ? "block" : "none";
@@ -4031,6 +4053,8 @@ document.getElementById("userSearchBackdrop").addEventListener("click", (e) => {
 document.getElementById("userSearchGoBtn").addEventListener("click", performUserSearch);
 document.getElementById("userSearchInput").addEventListener("keydown", (e) => { if (e.key === "Enter") performUserSearch(); });
 document.getElementById("visitorProfileBackBtn").addEventListener("click", closeVisitorProfile);
+document.getElementById("foreignWardrobeBackBtn").addEventListener("click", () => showForeignSubView("viewVisitorProfile"));
+document.getElementById("foreignOutfitsBackBtn").addEventListener("click", () => showForeignSubView("viewVisitorProfile"));
 document.getElementById("viewTabSettings").addEventListener("click", () => switchView("settings"));
 document.getElementById("topbarSettingsBtn").addEventListener("click", () => switchView("settings"));
 document.getElementById("profileViewWardrobeBtn").addEventListener("click", () => switchView("wardrobe"));
@@ -4412,6 +4436,20 @@ function foreignSections(meta) {
 }
 
 let visitorProfilePreviousView = "profile";
+const FOREIGN_SUBVIEWS = ["viewVisitorProfile", "viewForeignWardrobe", "viewForeignOutfits"];
+// Muestra una de las pantallas "ajenas" (perfil / armario / outfits de solo
+// lectura) y oculta el resto de vistas principales de la app.
+function showForeignSubView(id) {
+  ["viewWardrobe", "viewOutfits", "viewShop", "viewProfile", "viewGuardados", "viewSettings", ...FOREIGN_SUBVIEWS].forEach(v => {
+    document.getElementById(v).style.display = v === id ? "block" : "none";
+  });
+  document.getElementById("wardrobeFab").style.display = "none";
+  document.getElementById("pageAction").style.display = "none";
+  document.getElementById("pageHead").style.display = "none";
+  closeFabMenu();
+  window.scrollTo(0, 0);
+}
+
 async function openVisitorProfile(targetUid) {
   try {
     const { doc, getDoc } = window.__drobrFirestoreFns;
@@ -4424,14 +4462,7 @@ async function openVisitorProfile(targetUid) {
     ]);
     renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections);
     visitorProfilePreviousView = currentView;
-    ["viewWardrobe", "viewOutfits", "viewShop", "viewProfile", "viewGuardados", "viewSettings"].forEach(id => {
-      document.getElementById(id).style.display = "none";
-    });
-    document.getElementById("wardrobeFab").style.display = "none";
-    document.getElementById("pageAction").style.display = "none";
-    document.getElementById("pageHead").style.display = "none";
-    closeFabMenu();
-    document.getElementById("viewVisitorProfile").style.display = "block";
+    showForeignSubView("viewVisitorProfile");
   } catch (err) {
     console.error(err);
     showAppToast("No se pudo abrir el perfil.");
@@ -4440,6 +4471,156 @@ async function openVisitorProfile(targetUid) {
 function closeVisitorProfile() {
   document.getElementById("viewVisitorProfile").style.display = "none";
   switchView(visitorProfilePreviousView);
+}
+
+// Armario de otro usuario, de solo lectura: agrupado exactamente como el dueño
+// organizó el suyo (mismas customCategories/categoryLabels). Sin buscador ni
+// filtros por ahora — es una pantalla de consulta, no de gestión.
+function openForeignWardrobe(meta, prendas) {
+  const sections = foreignSections(meta)
+    .map(sec => ({ ...sec, items: garmentsInSection(prendas, sec) }))
+    .filter(sec => sec.items.length > 0);
+  const sectionsHTML = sections.map(sec => `
+    <div class="category-section">
+      <div class="category-section-head">
+        <span class="category-section-title">${sec.label}</span>
+        <span class="category-section-count">(${sec.items.length})</span>
+      </div>
+      <div class="grid">${sec.items.map(g => frameHTML(g, 0)).join("")}</div>
+    </div>`).join("");
+  const content = document.getElementById("foreignWardrobeContent");
+  content.innerHTML = `
+    <div class="section" style="margin-bottom:0;">
+      <div class="profile-section-title"><h2>Armario de ${meta.name || meta.username || "usuario"}</h2></div>
+    </div>
+    ${sectionsHTML || `<div class="section"><p class="sub">Este usuario aún no tiene prendas.</p></div>`}`;
+  content.querySelectorAll("[data-id]").forEach(card => {
+    card.addEventListener("click", () => {
+      const g = prendas.find(p => p.id === card.dataset.id);
+      if (g) openForeignGarmentDetail(g, meta);
+    });
+  });
+  showForeignSubView("viewForeignWardrobe");
+}
+
+// Outfits de otro usuario, de solo lectura: lista completa de collages (no se
+// agrupan, no tienen categoría).
+function openForeignOutfits(meta, foreignOutfitsArr) {
+  const cardsHTML = foreignOutfitsArr.map(o => `
+    <div class="outfit-mini-card" data-outfit-id="${o.id}">
+      <div class="outfit-mini-collage">${o.thumbCache ? `<img src="${o.thumbCache}" alt="">` : (o.top && o.top.image ? `<img src="${o.top.image}" alt="">` : "")}</div>
+      <p class="outfit-mini-name">${o.name || "Outfit sin nombre"}</p>
+      <p class="outfit-mini-sub">${o.label || ""}</p>
+    </div>`).join("");
+  const content = document.getElementById("foreignOutfitsContent");
+  content.innerHTML = `
+    <div class="section">
+      <div class="profile-section-title"><h2>Outfits de ${meta.name || meta.username || "usuario"}</h2></div>
+      <div class="outfit-mini-row">${cardsHTML || `<p class="sub">Este usuario aún no tiene outfits.</p>`}</div>
+    </div>`;
+  content.querySelectorAll("[data-outfit-id]").forEach(card => {
+    card.addEventListener("click", () => {
+      const o = foreignOutfitsArr.find(x => x.id === card.dataset.outfitId);
+      if (o) openForeignOutfitDetail(o, meta);
+    });
+  });
+  showForeignSubView("viewForeignOutfits");
+}
+
+// Detalle de una prenda ajena: informativo (sin "aparece en X outfits", eso es
+// dato propio), con "Comprobar con mi armario" (evaluatePair contra mis
+// prendas, versión reducida de ¿Me lo compro? sin Añadir/Descartar) y "Guardar".
+function openForeignGarmentDetail(garment, meta) {
+  const cat = CATEGORIES.find(c => c.id === garment.category);
+  const title = garment.name ? garment.name.charAt(0).toUpperCase() + garment.name.slice(1) : (cat ? cat.label : garment.category);
+  document.getElementById("itemDetailTitle").textContent = title;
+  document.getElementById("itemDetailImages").innerHTML = `<img src="${garment.image}" class="detail-img" alt="">`;
+  document.getElementById("itemDetailSubtitle").textContent = meta.username ? `Del armario de @${meta.username}` : "";
+  document.getElementById("itemDetailActions").innerHTML = `
+    <div style="display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:4px;">
+      ${swatchHTML(garment.color, 16)}
+      ${metaChipsHTML(garment)}
+    </div>
+    <div class="row" style="margin-top:16px; margin-bottom:0;">
+      <button class="btn btn-outline" id="foreignGarmentCheckBtn">Comprobar con mi armario</button>
+      <button class="btn btn-primary" id="foreignGarmentSaveBtn">Guardar</button>
+    </div>
+    <div id="foreignGarmentCheckResult"></div>`;
+  document.getElementById("foreignGarmentCheckBtn").addEventListener("click", (e) => {
+    e.target.closest("button").disabled = true;
+    renderForeignGarmentCheck(garment);
+  });
+  document.getElementById("foreignGarmentSaveBtn").addEventListener("click", (e) => {
+    saveGarmentToGuardados({ ...garment, savedFrom: { username: meta.username || "" } });
+    showAppToast("Prenda guardada.");
+  });
+  document.getElementById("itemDetailBackdrop").classList.add("open");
+}
+
+// Versión reducida de renderShopView: mismo cálculo (evaluatePair contra cada
+// categoría de mi propio armario) pero sin los botones de añadir/descartar,
+// porque la prenda no es candidata a subir sino de otro usuario.
+function renderForeignGarmentCheck(garment) {
+  const resultEl = document.getElementById("foreignGarmentCheckResult");
+  const otherCats = CATEGORIES.filter(c => c.id !== garment.category);
+  const matchesByCat = otherCats.map(cat => ({
+    cat,
+    items: garments.filter(g => g.category === cat.id && evaluatePair(garment, g).ok),
+  }));
+  const totalMatches = matchesByCat.reduce((sum, m) => sum + m.items.length, 0);
+  resultEl.innerHTML = `
+    <div class="verdict-box" style="margin-top:14px;">
+      <div class="verdict-label">${totalMatches > 0 ? `✨ Combina con ${totalMatches} prenda${totalMatches > 1 ? "s" : ""} de tu armario` : "No combina con nada de tu armario todavía"}</div>
+      <div class="verdict-text">${totalMatches > 0 ? "Así es como encajaría con lo que ya tienes." : "Ninguna prenda de tu armario encaja con esta en color y estilo."}</div>
+    </div>
+    ${matchesByCat.map(m => m.items.length ? `
+      <div style="margin-top:12px;">
+        <div class="picker-label">${m.cat.label} (${m.items.length})</div>
+        <div class="picker-scroll">${m.items.map(g => `
+          <div class="picker-item">
+            <div class="frame-img"><img src="${g.image}" alt=""></div>
+            <div class="frame-meta">${swatchHTML(g.color, 10)}</div>
+          </div>`).join("")}</div>
+      </div>` : "").join("")}`;
+  enableDragScrollAll(resultEl);
+}
+
+// Detalle de un outfit ajeno: mismo desglose que "Mis Outfits"/"Guardados"
+// (outfitDetailContentHTML), con 🔖 para guardarlo.
+function openForeignOutfitDetail(entry, meta) {
+  document.getElementById("itemDetailTitle").textContent = entry.name || "Outfit sin nombre";
+  document.getElementById("itemDetailImages").innerHTML = `<img src="${entry.thumbCache || (entry.top && entry.top.image) || ""}" class="detail-img" alt="">`;
+  document.getElementById("itemDetailSubtitle").textContent = meta.username ? `Outfit de @${meta.username}` : (entry.label || "");
+  document.getElementById("itemDetailActions").innerHTML = outfitDetailContentHTML(entry) + `
+    <button class="btn btn-primary" style="width:100%; margin-top:14px;" id="foreignOutfitSaveBtn">Guardar outfit</button>`;
+  document.getElementById("foreignOutfitSaveBtn").addEventListener("click", () => {
+    saveOutfitToGuardados({ ...entry, savedFrom: { username: meta.username || "" } });
+    showAppToast("Outfit guardado.");
+  });
+  document.getElementById("itemDetailBackdrop").classList.add("open");
+}
+
+// Detalle de una colección pública ajena: solo lectura, sin botón de eliminar.
+function openForeignCollectionDetail(collection, meta, foreignOutfitsArr) {
+  const items = (collection.outfitIds || []).map(id => foreignOutfitsArr.find(o => o.id === id)).filter(Boolean);
+  document.getElementById("itemDetailTitle").textContent = collection.name;
+  document.getElementById("itemDetailImages").innerHTML = "";
+  document.getElementById("itemDetailSubtitle").textContent = meta.username ? `Colección de @${meta.username}` : "";
+  document.getElementById("itemDetailActions").innerHTML = `
+    <div class="outfit-mini-row" style="margin-top:4px;">
+      ${items.map(o => `
+        <div class="outfit-mini-card" data-outfit-id="${o.id}">
+          <div class="outfit-mini-collage">${o.thumbCache ? `<img src="${o.thumbCache}" alt="">` : (o.top && o.top.image ? `<img src="${o.top.image}" alt="">` : "")}</div>
+          <p class="outfit-mini-name">${o.name || "Outfit sin nombre"}</p>
+        </div>`).join("") || `<p class="sub">Esta colección está vacía.</p>`}
+    </div>`;
+  document.getElementById("itemDetailActions").querySelectorAll("[data-outfit-id]").forEach(card => {
+    card.addEventListener("click", () => {
+      const o = items.find(x => x.id === card.dataset.outfitId);
+      if (o) openForeignOutfitDetail(o, meta);
+    });
+  });
+  document.getElementById("itemDetailBackdrop").classList.add("open");
 }
 
 // Perfil de otro usuario: misma plantilla visual que el propio, pero de solo
@@ -4466,7 +4647,7 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
     const coverGarment = items[items.length - 1];
     return `
       <div>
-        <div class="category-tile">
+        <div class="category-tile" data-cat-tile="${coverGarment.id}">
           <div class="category-tile-img"><img src="${coverGarment.image}" alt="${sec.label}"></div>
         </div>
         <div class="category-tile-label">${sec.label}</div>
@@ -4475,7 +4656,7 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
   }).join("");
 
   const outfitsHTML = foreignOutfits.slice(0, 10).map(o => `
-    <div class="outfit-mini-card">
+    <div class="outfit-mini-card" data-outfit-mini="${o.id}">
       <div class="outfit-mini-collage">${o.thumbCache ? `<img src="${o.thumbCache}" alt="">` : (o.top && o.top.image ? `<img src="${o.top.image}" alt="">` : "")}</div>
       <p class="outfit-mini-name">${o.name || "Outfit sin nombre"}</p>
       <p class="outfit-mini-sub">${o.label || ""}</p>
@@ -4487,7 +4668,7 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
     const count = (c.outfitIds || []).length;
     return `
       <div>
-        <div class="collection-tile">
+        <div class="collection-tile" data-collection-tile="${c.id}">
           <div class="collection-tile-img ${img ? "single" : ""}">${img ? `<img src="${img}" alt="">` : ""}</div>
         </div>
         <div class="collection-tile-label">${c.name}</div>
@@ -4539,12 +4720,12 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
     </div>
 
     <div class="section">
-      <div class="profile-section-title"><h2>Armario</h2></div>
+      <div class="profile-section-title"><h2>Armario</h2>${prendas.length ? `<button class="btn-text" id="visitorViewWardrobeBtn">Ver armario →</button>` : ""}</div>
       <div class="category-grid">${sectionsHTML || `<p class="sub">Este usuario aún no tiene prendas.</p>`}</div>
     </div>
 
     <div class="section">
-      <div class="profile-section-title"><h2>Outfits</h2></div>
+      <div class="profile-section-title"><h2>Outfits</h2>${foreignOutfits.length ? `<button class="btn-text" id="visitorViewOutfitsBtn">Ver todos →</button>` : ""}</div>
       <div class="outfit-mini-row">${outfitsHTML || `<p class="sub">Este usuario aún no tiene outfits.</p>`}</div>
     </div>
 
@@ -4556,6 +4737,28 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
 
   document.getElementById("visitorFollowBtn").addEventListener("click", () => {
     showAppToast("La función de seguir estará disponible próximamente.");
+  });
+  const viewWardrobeBtn = document.getElementById("visitorViewWardrobeBtn");
+  if (viewWardrobeBtn) viewWardrobeBtn.addEventListener("click", () => openForeignWardrobe(meta, prendas));
+  const viewOutfitsBtn = document.getElementById("visitorViewOutfitsBtn");
+  if (viewOutfitsBtn) viewOutfitsBtn.addEventListener("click", () => openForeignOutfits(meta, foreignOutfits));
+  document.querySelectorAll("#visitorProfileContent [data-cat-tile]").forEach(tile => {
+    tile.addEventListener("click", () => {
+      const g = prendas.find(p => p.id === tile.dataset.catTile);
+      if (g) openForeignGarmentDetail(g, meta);
+    });
+  });
+  document.querySelectorAll("#visitorProfileContent [data-outfit-mini]").forEach(card => {
+    card.addEventListener("click", () => {
+      const o = foreignOutfits.find(x => x.id === card.dataset.outfitMini);
+      if (o) openForeignOutfitDetail(o, meta);
+    });
+  });
+  document.querySelectorAll("#visitorProfileContent [data-collection-tile]").forEach(tile => {
+    tile.addEventListener("click", () => {
+      const c = publicCollections.find(x => x.id === tile.dataset.collectionTile);
+      if (c) openForeignCollectionDetail(c, meta, foreignOutfits);
+    });
   });
 }
 
