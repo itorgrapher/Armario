@@ -78,8 +78,8 @@
   .sidebar-note strong { display: block; color: #fff; font-size: 13px; margin-bottom: 4px; font-weight: 600; }
 
   .main { flex: 1; min-width: 0; }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 32px 32px 70px; }
-  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 46px 32px 70px; }
+  .page-head { display: flex; justify-content: flex-end; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
   h1 { font-family: ui-serif, Georgia, "Times New Roman", serif; font-size: 30px; font-weight: 600; letter-spacing: -0.01em; margin: 0; }
   h2 { font-family: ui-sans-serif, -apple-system, sans-serif; font-size: 16px; font-weight: 700; margin: 0; }
   p.sub { margin: 6px 0 0; font-size: 13.5px; color: var(--ink-soft); max-width: 460px; line-height: 1.5; }
@@ -594,11 +594,7 @@
 
   <main class="main">
   <div class="wrap">
-  <div class="page-head">
-    <div>
-      <h1 id="pageTitle">Mi armario</h1>
-      <p class="sub" id="pageSubtitle">Gestiona tu ropa y crea combinaciones que realmente vayan con tu estilo.</p>
-    </div>
+  <div class="page-head" id="pageHead">
     <div id="pageAction" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
       <input type="text" id="searchInput" placeholder="Buscar por nombre…" style="margin-top:0; width:220px;">
       <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
@@ -3804,9 +3800,8 @@ function switchView(view) {
     closeFabMenu();
   }
   const meta = PAGE_META[view];
-  document.getElementById("pageTitle").textContent = meta.title;
-  document.getElementById("pageSubtitle").textContent = meta.subtitle;
   document.getElementById("pageAction").style.display = meta.action ? "flex" : "none";
+  document.getElementById("pageHead").style.display = meta.action ? "flex" : "none";
   const wTab = document.getElementById("viewTabWardrobe");
   const oTab = document.getElementById("viewTabOutfits");
   const shTab = document.getElementById("viewTabShop");
