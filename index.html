@@ -441,8 +441,46 @@
   .category-tile-img img { width:100%; height:100%; object-fit:contain; padding:8px; }
   .category-tile-label { font-size:12px; font-weight:600; margin-top:6px; }
   .category-tile-count { font-size:11.5px; color:var(--ink-soft); }
-  .category-tile-pin { position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,0.92); border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
-  .category-tile-pin svg { width:12px; height:12px; }
+  .profile-header-stats { display:flex; gap:22px; margin-left:auto; padding-left:16px; flex-shrink:0; }
+  .profile-header-stat { text-align:center; }
+  .profile-header-stat-num { font-size:26px; font-weight:700; line-height:1; font-family:"Poppins",sans-serif; }
+  .profile-header-stat-label { font-size:11px; color:var(--ink-soft); margin-top:3px; }
+  @media (max-width:520px) { .profile-header-stats { margin-left:0; padding-left:0; width:100%; justify-content:flex-start; gap:28px; margin-top:12px; } }
+
+  .outfit-mini-collage { width:100%; aspect-ratio:4/5; border-radius:6px; background:#EFEFEC; margin-bottom:8px; overflow:hidden; }
+  .outfit-mini-collage img { width:100%; height:100%; object-fit:cover; display:block; }
+  .outfit-mini-collage-loading { width:100%; height:100%; background:linear-gradient(90deg, #EFEFEC 25%, #E4E2DA 37%, #EFEFEC 63%); background-size:400% 100%; animation:outfitThumbPulse 1.4s ease infinite; }
+  @keyframes outfitThumbPulse { 0% { background-position:100% 0; } 100% { background-position:0 0; } }
+
+  .outfit-detail-palette { display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+  .outfit-detail-list { display:flex; flex-direction:column; gap:10px; max-height:280px; overflow-y:auto; }
+  .outfit-detail-row { display:flex; gap:10px; align-items:center; }
+  .outfit-detail-row .frame-img { width:48px; height:48px; flex-shrink:0; border-radius:6px; overflow:hidden; background:#EFEFEC; }
+  .outfit-detail-row .frame-img img { width:100%; height:100%; object-fit:contain; }
+
+  .analysis-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap:14px; margin-bottom:22px; }
+  .analysis-card { border:1px solid var(--line); border-radius:var(--radius-sm); padding:14px; }
+  .analysis-card-title { font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.02em; color:var(--ink-soft); margin-bottom:8px; }
+  .analysis-big-num { font-size:26px; font-weight:700; font-family:"Poppins",sans-serif; line-height:1; margin-bottom:4px; }
+  .analysis-card-text { font-size:12.5px; color:var(--ink-soft); line-height:1.4; }
+  .analysis-star-row { display:flex; gap:10px; align-items:center; }
+  .analysis-star-row .frame-img { width:52px; height:52px; flex-shrink:0; border-radius:8px; overflow:hidden; background:#EFEFEC; }
+  .analysis-star-row .frame-img img { width:100%; height:100%; object-fit:contain; }
+  .analysis-unused-grid { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .analysis-unused-grid .frame-img { width:40px; height:40px; border-radius:6px; overflow:hidden; background:#EFEFEC; }
+  .analysis-unused-grid .frame-img img { width:100%; height:100%; object-fit:contain; }
+  .dist-bar { display:flex; height:14px; border-radius:7px; overflow:hidden; margin-bottom:10px; }
+  .dist-bar-seg { height:100%; }
+  .dist-legend { display:flex; flex-wrap:wrap; gap:8px 14px; }
+  .dist-legend-item { display:flex; align-items:center; gap:5px; font-size:11.5px; color:var(--ink-soft); }
+  .dist-legend-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+
+  .identity-bar-row { margin-bottom:16px; }
+  .identity-bar-row:last-child { margin-bottom:0; }
+  .identity-bar-labels { display:flex; justify-content:space-between; font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.02em; margin-bottom:5px; }
+  .identity-bar-track { height:6px; border-radius:3px; background:var(--line-strong); overflow:hidden; }
+  .identity-bar-fill { height:100%; border-radius:3px; background:var(--ink); }
+  .identity-bar-text { font-size:12px; color:var(--ink-soft); margin-top:5px; }
 
   .identity-row { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
   .identity-row:last-child { margin-bottom:0; }
@@ -453,17 +491,18 @@
 
   .outfit-mini-row { display:flex; gap:14px; overflow-x:auto; padding-bottom:4px; }
   .outfit-mini-card { flex:0 0 150px; background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; position:relative; cursor:pointer; }
-  .outfit-mini-imgs { display:flex; gap:3px; height:74px; margin-bottom:8px; }
-  .outfit-mini-imgs .frame-img { flex:1; border-radius:6px; }
   .outfit-mini-name { font-size:12.5px; font-weight:600; margin:0 0 1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .outfit-mini-sub { font-size:11px; color:var(--ink-soft); margin:0; }
   .bookmark-btn { position:absolute; top:8px; right:8px; background:rgba(255,255,255,0.92); border:1px solid var(--line-strong); border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
   .bookmark-btn svg { width:13px; height:13px; }
 
   .collection-grid { display:grid; grid-template-columns: repeat(auto-fill, 140px); gap:14px; }
-  .collection-tile { cursor:pointer; }
+  .collection-tile { cursor:pointer; position:relative; }
   .collection-tile-img { width:140px; height:110px; border-radius:var(--radius-sm); background:#EFEFEC; overflow:hidden; border:1px solid var(--line); display:flex; }
   .collection-tile-img img { width:50%; height:100%; object-fit:cover; }
+  .collection-tile-img.single img { width:100%; }
+  .collection-tile-lock { position:absolute; top:6px; left:6px; width:20px; height:20px; border-radius:50%; background:rgba(255,255,255,0.92); border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; color:var(--ink); }
+  .collection-tile-lock svg { width:11px; height:11px; }
   .collection-tile-label { font-size:12.5px; font-weight:600; margin-top:6px; }
   .collection-tile-count { font-size:11.5px; color:var(--ink-soft); }
   .new-collection-tile { width:140px; height:110px; border:1.5px dashed var(--line-strong); border-radius:var(--radius-sm); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; color:var(--ink-soft); font-size:12px; }
@@ -473,6 +512,7 @@
   .collection-item-row:last-child { border-bottom:none; }
   .collection-item-row img { width:44px; height:44px; object-fit:cover; border-radius:8px; background:#EFEFEC; flex-shrink:0; }
   .collection-item-row span { flex:1; font-size:13px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .privacy-toggle { display:flex; gap:8px; margin-top:14px; }
 
   .app-toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:13px; z-index:100; opacity:0; pointer-events:none; transition:opacity 0.2s ease, transform 0.2s ease; }
   .app-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
@@ -581,6 +621,14 @@
       <button class="nav-item" id="viewTabProfile">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6"/></svg>
         Perfil
+      </button>
+      <button class="nav-item" id="viewTabSearchUser">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        Buscar
+      </button>
+      <button class="nav-item" id="viewTabGuardados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Guardados
       </button>
       <button class="nav-item" id="viewTabSettings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -781,41 +829,50 @@
   </div>
 
   <div id="viewProfile" style="display:none;">
-    <div class="profile-header">
-      <div class="profile-avatar" id="profileAvatar">?</div>
-      <div class="profile-info">
-        <p class="profile-name" id="profileName"></p>
-        <p class="profile-username" id="profileUsername"></p>
-        <p class="profile-bio" id="profileBio"></p>
-        <a class="profile-link" id="profileLink" href="#" target="_blank" rel="noopener" style="display:none;"></a>
-        <div class="profile-stats">
-          <span><b id="profileFollowers">0</b> seguidores</span>
-          <span><b id="profileFollowing">0</b> siguiendo</span>
-          <span class="profile-privacy-badge" id="profilePrivacyBadge" style="display:none;">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-            Armario privado
-          </span>
+    <div class="section">
+      <div class="profile-header" style="margin-bottom:0;">
+        <div class="profile-avatar" id="profileAvatar">?</div>
+        <div class="profile-info">
+          <p class="profile-name" id="profileName"></p>
+          <p class="profile-username" id="profileUsername"></p>
+          <p class="profile-bio" id="profileBio"></p>
+          <a class="profile-link" id="profileLink" href="#" target="_blank" rel="noopener" style="display:none;"></a>
+          <div class="profile-stats">
+            <span><b id="profileFollowers">0</b> seguidores</span>
+            <span><b id="profileFollowing">0</b> siguiendo</span>
+            <span class="profile-privacy-badge" id="profilePrivacyBadge" style="display:none;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+              Armario privado
+            </span>
+          </div>
+          <button class="btn-text" id="profileEditBtn" style="margin-top:8px;">Editar perfil</button>
         </div>
-        <button class="btn-text" id="profileEditBtn" style="margin-top:8px;">Editar perfil</button>
+        <div class="profile-header-stats">
+          <div class="profile-header-stat">
+            <div class="profile-header-stat-num" id="profileHeaderGarmentCount">0</div>
+            <div class="profile-header-stat-label">prendas</div>
+          </div>
+          <div class="profile-header-stat">
+            <div class="profile-header-stat-num" id="profileHeaderOutfitCount">0</div>
+            <div class="profile-header-stat-label">outfits</div>
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="section">
-      <div class="profile-section-title"><h2>Mi armario</h2><button class="btn-text" id="profileViewWardrobeBtn">Ver armario →</button></div>
-      <div class="profile-big-number" id="profileGarmentCount">0</div>
-      <p class="profile-big-number-label">prendas</p>
-      <div class="category-grid" id="profileCategoryGrid"></div>
-    </div>
-
-    <div class="section">
-      <div class="profile-section-title"><h2>Mi identidad</h2><button class="btn-text" id="profileIdentityDetailBtn">Ver detalle →</button></div>
+      <div class="profile-section-title"><h2>Mi identidad</h2><button class="btn-text" id="profileIdentityDetailBtn">Ver análisis →</button></div>
       <p class="sub" style="margin-bottom:16px;">La forma en la que vistes lo que tienes.</p>
       <div id="profileIdentitySliders"></div>
     </div>
 
     <div class="section">
+      <div class="profile-section-title"><h2>Mi armario</h2><button class="btn-text" id="profileViewWardrobeBtn">Ver armario →</button></div>
+      <div class="category-grid" id="profileCategoryGrid"></div>
+    </div>
+
+    <div class="section">
       <div class="profile-section-title"><h2>Mis Outfits</h2><button class="btn-text" id="profileViewOutfitsBtn">Ver todos →</button></div>
-      <p class="profile-big-number-label" id="profileOutfitCount" style="margin-bottom:14px;">0 looks creados</p>
       <div class="outfit-mini-row" id="profileOutfitsRow"></div>
     </div>
 
@@ -826,10 +883,31 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="coverPickerBackdrop">
-    <div class="modal" style="max-width:420px;">
-      <div class="modal-head"><h2 style="font-size:16px;">Elegir imagen de portada</h2><button class="modal-close" id="coverPickerClose">✕</button></div>
-      <div class="grid" style="grid-template-columns:repeat(auto-fill,90px); gap:10px; margin-bottom:0;" id="coverPickerGrid"></div>
+  <div id="viewGuardados" style="display:none;">
+    <div class="section">
+      <div class="profile-section-title"><h2>Prendas Guardadas</h2></div>
+      <p class="sub" id="savedGarmentsEmpty" style="margin-bottom:0;">Aún no has guardado ninguna prenda del armario de otras personas.</p>
+      <div class="category-grid" id="savedGarmentsGrid" style="margin-top:14px;"></div>
+    </div>
+
+    <div class="section" style="margin-bottom:0;">
+      <div class="profile-section-title"><h2>Outfits Guardados</h2></div>
+      <p class="sub" id="savedOutfitsEmpty" style="margin-bottom:0;">Aún no has guardado ningún outfit de otras personas.</p>
+      <div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:14px;" id="savedOutfitsGrid"></div>
+    </div>
+  </div>
+
+  <div id="viewVisitorProfile" style="display:none;">
+    <div class="section" style="margin-bottom:0; padding-bottom:0;">
+      <button class="btn-text" id="visitorProfileBackBtn">← Volver</button>
+    </div>
+    <div id="visitorProfileContent"></div>
+  </div>
+
+  <div class="modal-backdrop" id="identityAnalysisBackdrop">
+    <div class="modal" style="max-width:520px;">
+      <div class="modal-head"><h2 style="font-size:16px;">Análisis de tu identidad</h2><button class="modal-close" id="identityAnalysisClose">✕</button></div>
+      <div id="identityAnalysisContent"></div>
     </div>
   </div>
 
@@ -845,6 +923,38 @@
     <div class="modal" style="max-width:420px;">
       <div class="modal-head"><h2 id="collectionDetailTitle" style="font-size:16px;"></h2><button class="modal-close" id="collectionDetailClose">✕</button></div>
       <div id="collectionDetailList"></div>
+      <button class="btn-text" id="collectionDetailCoverBtn" style="margin-top:12px; display:none;">Elegir portada</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="outfitSelectBackdrop">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-head"><h2 style="font-size:16px;">Elige los outfits para la colección</h2><button class="modal-close" id="outfitSelectClose">✕</button></div>
+      <div id="outfitSelectList" style="max-height:340px; overflow-y:auto;"></div>
+      <div class="row" style="margin-top:14px; margin-bottom:0; justify-content:flex-end;">
+        <button class="btn btn-primary" id="outfitSelectConfirmBtn" disabled>Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="newCollectionBackdrop">
+    <div class="modal" style="max-width:340px;">
+      <div class="modal-head"><h2 style="font-size:16px;">Nueva colección</h2><button class="modal-close" id="newCollectionClose">✕</button></div>
+      <p style="font-size:13.5px; font-weight:600; color:var(--ink); margin-bottom:10px;">Nombre de la colección:</p>
+      <input type="text" id="newCollectionNameInput" style="width:100%;" maxlength="40">
+      <p style="font-size:13.5px; font-weight:600; color:var(--ink); margin:16px 0 0;">¿Quién puede verla?</p>
+      <div class="privacy-toggle" id="newCollectionPrivacyButtons"></div>
+      <div class="row" style="margin-top:18px; margin-bottom:0; justify-content:flex-end; gap:8px;">
+        <button class="btn-text" id="newCollectionCancelBtn">Cancelar</button>
+        <button class="btn btn-primary" id="newCollectionOkBtn">Crear</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="collectionCoverBackdrop">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-head"><h2 style="font-size:16px;">Elegir imagen de portada</h2><button class="modal-close" id="collectionCoverClose">✕</button></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,90px); gap:10px; margin-bottom:0;" id="collectionCoverGrid"></div>
     </div>
   </div>
 
@@ -972,6 +1082,20 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="userSearchBackdrop">
+  <div class="modal" style="max-width:340px;">
+    <div class="modal-head">
+      <h2 style="font-size:16px;">Buscar usuario</h2>
+      <button class="modal-close" id="userSearchClose">✕</button>
+    </div>
+    <div class="row" style="gap:8px; margin-bottom:4px;">
+      <input type="text" id="userSearchInput" placeholder="@usuario" style="flex:1;">
+      <button class="btn btn-primary" id="userSearchGoBtn" style="white-space:nowrap;">Buscar</button>
+    </div>
+    <p id="userSearchError" class="sub" style="color:var(--danger); display:none; margin-bottom:0;"></p>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="categoryPickerBackdrop">
   <div class="modal" style="max-width:340px;">
     <div class="modal-head">
@@ -1066,7 +1190,7 @@
     signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut,
     verifyPasswordResetCode, confirmPasswordReset
   } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, collection, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, collection, getDocs, writeBatch, query, where } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBnPDPZRPbWWd-6V8idGQVFFtNBImS5tNk",
@@ -1084,7 +1208,7 @@
 
   window.__drobrAuth = auth;
   window.__drobrDb = db;
-  window.__drobrFirestoreFns = { doc, getDoc, setDoc, collection, getDocs, writeBatch };
+  window.__drobrFirestoreFns = { doc, getDoc, setDoc, collection, getDocs, writeBatch, query, where };
   window.__drobrSignIn = (email, password) => signInWithEmailAndPassword(auth, email, password);
   window.__drobrSignUp = (email, password) => createUserWithEmailAndPassword(auth, email, password);
   window.__drobrSignOut = () => signOut(auth);
@@ -2484,6 +2608,54 @@ async function generateOutfitShareCanvas(top, bottom, shoes, accessories, style)
   return canvas;
 }
 
+// Versión "miniatura" del collage: mismo algoritmo de colocación de prendas
+// (drawGarments) que el de compartir en Stories, pero en formato tarjeta
+// (más cuadrado) y sin la cabecera de marca — pensada para verse pequeña en
+// una fila de mini-cards, no para compartirse.
+const THUMB_W = 400, THUMB_H = 500;
+const THUMB_CONTENT_FRAME = { x: 16, y: 16, w: 368, h: 468 };
+
+async function generateOutfitThumbCanvas(top, bottom, shoes, accessories, style) {
+  const W = THUMB_W, H = THUMB_H;
+
+  const [supImg, infImg, shoeImg, ...accImgs] = await Promise.all([
+    loadImageAsync(top.image), loadImageAsync(bottom.image), loadImageAsync(shoes.image),
+    ...(accessories || []).map(a => loadImageAsync(a.image)),
+  ]);
+  const imgs = {
+    supImg, infImg, shoeImg, accImgs,
+    supTrim: getOpaqueBounds(supImg), infTrim: getOpaqueBounds(infImg), shoeTrim: getOpaqueBounds(shoeImg),
+    accTrims: accImgs.map(img => getOpaqueBounds(img)),
+  };
+
+  const scratch = document.createElement("canvas");
+  scratch.width = 1600; scratch.height = 2600;
+  drawGarments(scratch.getContext("2d"), top, bottom, shoes, accessories, style, imgs);
+  const bounds = getCanvasContentBounds(scratch);
+  const contentW = bounds.maxX - bounds.minX, contentH = bounds.maxY - bounds.minY;
+
+  const F = THUMB_CONTENT_FRAME;
+  const frameBudget = style === "polaroid" ? 1.14 : 1;
+  let scale = Math.min((F.w * frameBudget) / contentW, (F.h * frameBudget) / contentH, 1);
+  scale = Math.min(scale, (W - 10) / contentW, (H - 10) / contentH);
+  const offsetX = F.x + (F.w * frameBudget - contentW * scale) / 2 - bounds.minX * scale;
+  const offsetY = F.y + (F.h * frameBudget - contentH * scale) / 2 - bounds.minY * scale;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#D9D5CE";
+  ctx.fillRect(0, 0, W, H);
+
+  ctx.save();
+  ctx.translate(offsetX, offsetY);
+  ctx.scale(scale, scale);
+  drawGarments(ctx, top, bottom, shoes, accessories, style, imgs);
+  ctx.restore();
+
+  return canvas;
+}
+
 let shareStyleContext = null;
 async function shareOutfitAsImage(top, bottom, shoes, outfitName, triggerBtn, accessories) {
   shareStyleContext = { top, bottom, shoes, outfitName, triggerBtn, accessories: accessories || [] };
@@ -3797,6 +3969,7 @@ const PAGE_META = {
   outfits: { title: "Mis outfits", subtitle: "Tu colección de outfits, lista para consultar cuando quieras.", action: false },
   shop: { title: "¿Me lo compro?", subtitle: "¿Dudas si esa prenda combinaría con lo que ya tienes? ¡Compruébalo antes de comprarla!", action: false },
   profile: { title: "Perfil", subtitle: "DROBR no muestra quién eres. Muestra cómo utilizas lo que tienes.", action: false },
+  guardados: { title: "Guardados", subtitle: "Prendas y outfits de otras personas que has guardado como inspiración.", action: false },
   settings: { title: "Configuración", subtitle: "Copia de seguridad de tu armario.", action: false },
 };
 
@@ -3806,6 +3979,7 @@ function switchView(view) {
   document.getElementById("viewOutfits").style.display = view === "outfits" ? "block" : "none";
   document.getElementById("viewShop").style.display = view === "shop" ? "block" : "none";
   document.getElementById("viewProfile").style.display = view === "profile" ? "block" : "none";
+  document.getElementById("viewGuardados").style.display = view === "guardados" ? "block" : "none";
   document.getElementById("viewSettings").style.display = view === "settings" ? "block" : "none";
   if (view === "wardrobe") {
     renderActions();
@@ -3822,17 +3996,26 @@ function switchView(view) {
   const oTab = document.getElementById("viewTabOutfits");
   const shTab = document.getElementById("viewTabShop");
   const pTab = document.getElementById("viewTabProfile");
+  const gTab = document.getElementById("viewTabGuardados");
   const sTab = document.getElementById("viewTabSettings");
-  [wTab, oTab, shTab, pTab, sTab].forEach(t => t.classList.remove("nav-active"));
-  ({ wardrobe: wTab, outfits: oTab, shop: shTab, profile: pTab, settings: sTab }[view]).classList.add("nav-active");
+  [wTab, oTab, shTab, pTab, gTab, sTab].forEach(t => t.classList.remove("nav-active"));
+  ({ wardrobe: wTab, outfits: oTab, shop: shTab, profile: pTab, guardados: gTab, settings: sTab }[view]).classList.add("nav-active");
   if (view === "outfits") renderOutfits();
   if (view === "shop") renderShopView();
   if (view === "profile") renderProfile();
+  if (view === "guardados") renderGuardados();
 }
 document.getElementById("viewTabWardrobe").addEventListener("click", () => switchView("wardrobe"));
 document.getElementById("viewTabOutfits").addEventListener("click", () => switchView("outfits"));
 document.getElementById("viewTabShop").addEventListener("click", () => switchView("shop"));
 document.getElementById("viewTabProfile").addEventListener("click", () => switchView("profile"));
+document.getElementById("viewTabGuardados").addEventListener("click", () => switchView("guardados"));
+document.getElementById("viewTabSearchUser").addEventListener("click", openUserSearchModal);
+document.getElementById("userSearchClose").addEventListener("click", closeUserSearchModal);
+document.getElementById("userSearchBackdrop").addEventListener("click", (e) => { if (e.target.id === "userSearchBackdrop") closeUserSearchModal(); });
+document.getElementById("userSearchGoBtn").addEventListener("click", performUserSearch);
+document.getElementById("userSearchInput").addEventListener("keydown", (e) => { if (e.key === "Enter") performUserSearch(); });
+document.getElementById("visitorProfileBackBtn").addEventListener("click", closeVisitorProfile);
 document.getElementById("viewTabSettings").addEventListener("click", () => switchView("settings"));
 document.getElementById("topbarSettingsBtn").addEventListener("click", () => switchView("settings"));
 document.getElementById("profileViewWardrobeBtn").addEventListener("click", () => switchView("wardrobe"));
@@ -4092,7 +4275,8 @@ function showSyncConflictModal(mensaje) {
 
 const SYNC_COLECCIONES = {
   wardrobe: { key: STORAGE_KEY, sub: "prendas" },
-  outfits: { key: OUTFITS_KEY, sub: "outfits" }
+  outfits: { key: OUTFITS_KEY, sub: "outfits" },
+  collections: { key: "armario_collections_v1", sub: "collections" }
 };
 
 function leerLocalParaSync() {
@@ -4135,10 +4319,229 @@ async function subirListaATandas(uid, sub, lista) {
   }
 }
 
-async function leerColeccion(uid, sub) {
-  const { collection, getDocs } = window.__drobrFirestoreFns;
-  const snap = await getDocs(collection(window.__drobrDb, "armarios", uid, sub));
+async function leerColeccion(uid, sub, opts) {
+  const { collection, getDocs, query, where } = window.__drobrFirestoreFns;
+  const base = collection(window.__drobrDb, "armarios", uid, sub);
+  // Firestore no filtra "list" queries por las reglas: si pedimos las colecciones
+  // de OTRO usuario hay que añadir explícitamente where("isPublic","==",true),
+  // si no la consulta entera se rechaza con permission-denied.
+  const ref = (opts && opts.onlyPublic) ? query(base, where("isPublic", "==", true)) : base;
+  const snap = await getDocs(ref);
   return snap.docs.map(d => d.data());
+}
+
+function openUserSearchModal() {
+  document.getElementById("userSearchInput").value = "";
+  document.getElementById("userSearchError").style.display = "none";
+  document.getElementById("userSearchBackdrop").classList.add("open");
+  setTimeout(() => document.getElementById("userSearchInput").focus(), 50);
+}
+function closeUserSearchModal() {
+  document.getElementById("userSearchBackdrop").classList.remove("open");
+}
+
+async function performUserSearch() {
+  const errorEl = document.getElementById("userSearchError");
+  errorEl.style.display = "none";
+
+  let raw = document.getElementById("userSearchInput").value.trim().toLowerCase();
+  if (raw.startsWith("@")) raw = raw.slice(1);
+  if (!raw) return;
+
+  const authUser = window.__drobrAuth && window.__drobrAuth.currentUser;
+  if (authUser && profileData.username && raw === profileData.username.toLowerCase()) {
+    errorEl.textContent = "Ese eres tú.";
+    errorEl.style.display = "block";
+    return;
+  }
+
+  const goBtn = document.getElementById("userSearchGoBtn");
+  goBtn.disabled = true;
+  goBtn.textContent = "Buscando...";
+  try {
+    const { doc, getDoc } = window.__drobrFirestoreFns;
+    const usernameSnap = await getDoc(doc(window.__drobrDb, "usernames", raw));
+    if (!usernameSnap.exists()) {
+      errorEl.textContent = "No se ha encontrado ningún usuario con ese @usuario.";
+      errorEl.style.display = "block";
+      return;
+    }
+    const targetUid = usernameSnap.data().uid;
+    closeUserSearchModal();
+    await openVisitorProfile(targetUid);
+  } catch (err) {
+    console.error(err);
+    errorEl.textContent = "Error al buscar. Inténtalo de nuevo.";
+    errorEl.style.display = "block";
+  } finally {
+    goBtn.disabled = false;
+    goBtn.textContent = "Buscar";
+  }
+}
+
+// Igual que categoryLabel/allSections pero para el armario de OTRO usuario,
+// usando el customCategories/categoryLabels que trae su doc meta en vez de los
+// del usuario local.
+function foreignCategoryLabel(id, meta) {
+  if (meta.categoryLabels && meta.categoryLabels[id]) return meta.categoryLabels[id];
+  const def = CATEGORIES.find(c => c.id === id);
+  if (def) return def.label;
+  const custom = (meta.customCategories || []).find(c => c.id === id);
+  return custom ? custom.label : id;
+}
+function foreignSections(meta) {
+  return [
+    ...CATEGORIES.map(c => ({ id: c.id, label: foreignCategoryLabel(c.id, meta), isCustom: false })),
+    ...(meta.customCategories || []).map(c => ({ id: c.id, label: foreignCategoryLabel(c.id, meta), isCustom: true })),
+  ];
+}
+
+let visitorProfilePreviousView = "profile";
+async function openVisitorProfile(targetUid) {
+  try {
+    const { doc, getDoc } = window.__drobrFirestoreFns;
+    const metaSnap = await getDoc(doc(window.__drobrDb, "armarios", targetUid));
+    const meta = metaSnap.exists() ? metaSnap.data() : {};
+    const [prendas, foreignOutfits, publicCollections] = await Promise.all([
+      leerColeccion(targetUid, "prendas"),
+      leerColeccion(targetUid, "outfits"),
+      leerColeccion(targetUid, "collections", { onlyPublic: true })
+    ]);
+    renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections);
+    visitorProfilePreviousView = currentView;
+    ["viewWardrobe", "viewOutfits", "viewShop", "viewProfile", "viewGuardados", "viewSettings"].forEach(id => {
+      document.getElementById(id).style.display = "none";
+    });
+    document.getElementById("wardrobeFab").style.display = "none";
+    document.getElementById("pageAction").style.display = "none";
+    document.getElementById("pageHead").style.display = "none";
+    closeFabMenu();
+    document.getElementById("viewVisitorProfile").style.display = "block";
+  } catch (err) {
+    console.error(err);
+    showAppToast("No se pudo abrir el perfil.");
+  }
+}
+function closeVisitorProfile() {
+  document.getElementById("viewVisitorProfile").style.display = "none";
+  switchView(visitorProfilePreviousView);
+}
+
+// Perfil de otro usuario: misma plantilla visual que el propio, pero de solo
+// lectura. Sin "Editar perfil" ni "Ver análisis" (es información personal del
+// dueño); con botón Seguir (stub, el sistema real de seguidores es el punto 4,
+// aún sin diseñar). Colecciones: solo las públicas.
+function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) {
+  const name = meta.name || meta.username || "Usuario";
+  const username = meta.username || "";
+  const avatarHTML = meta.avatar ? `<img src="${meta.avatar}" alt="">` : name.charAt(0).toUpperCase();
+  const identity = computeIdentityAxes(prendas, foreignOutfits);
+
+  const lockBadge = meta.isPrivate ? `
+    <span class="profile-privacy-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      Armario privado
+    </span>` : "";
+
+  const linkHTML = meta.link ? `<a class="profile-link" href="${/^https?:\/\//i.test(meta.link) ? meta.link : "https://" + meta.link}" target="_blank" rel="noopener">${meta.link.replace(/^https?:\/\//i, "")}</a>` : "";
+
+  const sectionsHTML = foreignSections(meta).map(sec => {
+    const items = garmentsInSection(prendas, sec);
+    if (items.length === 0) return "";
+    const coverGarment = items[items.length - 1];
+    return `
+      <div>
+        <div class="category-tile">
+          <div class="category-tile-img"><img src="${coverGarment.image}" alt="${sec.label}"></div>
+        </div>
+        <div class="category-tile-label">${sec.label}</div>
+        <div class="category-tile-count">${items.length} prenda${items.length === 1 ? "" : "s"}</div>
+      </div>`;
+  }).join("");
+
+  const outfitsHTML = foreignOutfits.slice(0, 10).map(o => `
+    <div class="outfit-mini-card">
+      <div class="outfit-mini-collage">${o.thumbCache ? `<img src="${o.thumbCache}" alt="">` : (o.top && o.top.image ? `<img src="${o.top.image}" alt="">` : "")}</div>
+      <p class="outfit-mini-name">${o.name || "Outfit sin nombre"}</p>
+      <p class="outfit-mini-sub">${o.label || ""}</p>
+    </div>`).join("");
+
+  const collectionsHTML = publicCollections.map(c => {
+    const cover = c.coverOutfitId ? foreignOutfits.find(o => o.id === c.coverOutfitId) : null;
+    const img = cover ? (cover.thumbCache || (cover.top && cover.top.image)) : null;
+    const count = (c.outfitIds || []).length;
+    return `
+      <div>
+        <div class="collection-tile">
+          <div class="collection-tile-img ${img ? "single" : ""}">${img ? `<img src="${img}" alt="">` : ""}</div>
+        </div>
+        <div class="collection-tile-label">${c.name}</div>
+        <div class="collection-tile-count">${count} outfit${count === 1 ? "" : "s"}</div>
+      </div>`;
+  }).join("");
+
+  document.getElementById("visitorProfileContent").innerHTML = `
+    <div class="section">
+      <div class="profile-header" style="margin-bottom:0;">
+        <div class="profile-avatar">${avatarHTML}</div>
+        <div class="profile-info">
+          <p class="profile-name">${name}</p>
+          <p class="profile-username">@${username}</p>
+          ${meta.bio ? `<p class="profile-bio">${meta.bio}</p>` : ""}
+          ${linkHTML}
+          <div class="profile-stats">
+            <span><b>${meta.followers ?? 0}</b> seguidores</span>
+            <span><b>${meta.following ?? 0}</b> siguiendo</span>
+            ${lockBadge}
+          </div>
+          <button class="btn-text" id="visitorFollowBtn" style="margin-top:8px;">Seguir</button>
+        </div>
+        <div class="profile-header-stats">
+          <div class="profile-header-stat">
+            <div class="profile-header-stat-num">${prendas.length}</div>
+            <div class="profile-header-stat-label">prendas</div>
+          </div>
+          <div class="profile-header-stat">
+            <div class="profile-header-stat-num">${foreignOutfits.length}</div>
+            <div class="profile-header-stat-label">outfits</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="profile-section-title"><h2>Identidad</h2></div>
+      <p class="sub" style="margin-bottom:16px;">La forma en la que ${name} viste lo que tiene.</p>
+      <div>${IDENTITY_AXES.map(axis => {
+        const v = identity[axis.id] ?? 50;
+        return `
+        <div class="identity-row">
+          <span class="identity-label">${axis.left}</span>
+          <div class="identity-track"><div class="identity-dot" style="left:${v}%;"></div></div>
+          <span class="identity-label right">${axis.right}</span>
+        </div>`;
+      }).join("")}</div>
+    </div>
+
+    <div class="section">
+      <div class="profile-section-title"><h2>Armario</h2></div>
+      <div class="category-grid">${sectionsHTML || `<p class="sub">Este usuario aún no tiene prendas.</p>`}</div>
+    </div>
+
+    <div class="section">
+      <div class="profile-section-title"><h2>Outfits</h2></div>
+      <div class="outfit-mini-row">${outfitsHTML || `<p class="sub">Este usuario aún no tiene outfits.</p>`}</div>
+    </div>
+
+    <div class="section" style="margin-bottom:0;">
+      <div class="profile-section-title"><h2>Colecciones públicas</h2></div>
+      <div class="collection-grid">${collectionsHTML || `<p class="sub">Este usuario no tiene colecciones públicas.</p>`}</div>
+    </div>
+  `;
+
+  document.getElementById("visitorFollowBtn").addEventListener("click", () => {
+    showAppToast("La función de seguir estará disponible próximamente.");
+  });
 }
 
 async function sincronizarConFirestore(user) {
@@ -4151,7 +4554,15 @@ async function sincronizarConFirestore(user) {
   if (metaSnap.exists()) {
     const metaData = metaSnap.data();
     if (metaData.username && !profileData.username) {
-      profileData = { ...profileData, username: metaData.username, name: metaData.name || profileData.name };
+      profileData = {
+        ...profileData,
+        username: metaData.username,
+        name: metaData.name || profileData.name,
+        bio: metaData.bio ?? profileData.bio,
+        avatar: metaData.avatar ?? profileData.avatar,
+        followers: metaData.followers ?? profileData.followers,
+        following: metaData.following ?? profileData.following
+      };
       saveProfile(profileData);
     }
   }
@@ -4159,6 +4570,7 @@ async function sincronizarConFirestore(user) {
   const remoto = {
     wardrobe: await leerColeccion(user.uid, "prendas"),
     outfits: await leerColeccion(user.uid, "outfits"),
+    collections: await leerColeccion(user.uid, "collections"),
     customCategories: metaSnap.exists() ? (metaSnap.data().customCategories || []) : [],
     categoryLabels: metaSnap.exists() ? (metaSnap.data().categoryLabels || {}) : {}
   };
@@ -4189,6 +4601,7 @@ async function sincronizarConFirestore(user) {
     const fusionado = {
       wardrobe: fusionarListas(local.wardrobe, remoto.wardrobe),
       outfits: fusionarListas(local.outfits, remoto.outfits),
+      collections: fusionarListas(local.collections, remoto.collections),
       customCategories: fusionarListas(local.customCategories, remoto.customCategories),
       categoryLabels: { ...remoto.categoryLabels, ...local.categoryLabels }
     };
@@ -4255,7 +4668,7 @@ splashFormEl.addEventListener("submit", async (e) => {
       submitBtn.textContent = "Creando cuenta...";
       cred = await window.__drobrSignUp(email, password);
       await setDoc(usernameRef, { uid: cred.user.uid });
-      await setDoc(doc(window.__drobrDb, "armarios", cred.user.uid), { username, name: username }, { merge: true });
+      await setDoc(doc(window.__drobrDb, "armarios", cred.user.uid), { username, name: username, bio: profileData.bio, avatar: profileData.avatar, followers: 0, following: 0 }, { merge: true });
       profileData = { ...profileData, username, name: username };
       saveProfile(profileData);
     } else {
@@ -4342,30 +4755,39 @@ let identityData = loadIdentity();
 // de su armario (colores, formalidad media) y los patrones que aparecen en sus outfits
 // guardados (variedad de categorías combinadas). Cuantas más prendas y looks tenga el
 // usuario, más fiable es esta señal; con un armario vacío se mantienen los valores por defecto.
+// Versión pura del cálculo de identidad: no toca identityData ni localStorage,
+// así se puede reutilizar tanto para el perfil propio como para el de otro usuario.
+// "base" son los valores de partida a conservar en los ejes que no se recalculan
+// (p.ej. constante_experimental si el usuario no tiene outfits).
+function computeIdentityAxes(garmentsArr, outfitsArr, base) {
+  const result = { ...(base || {}) };
+  IDENTITY_AXES.forEach(a => { if (result[a.id] === undefined) result[a.id] = 50; });
+  if (garmentsArr.length === 0) return result;
+  let coloridoScore = 0, formalitySum = 0, formalityCount = 0, notVersatileCount = 0;
+  garmentsArr.forEach(g => {
+    if (g.color && !NEUTRALS.has(g.color)) coloridoScore++;
+    if (typeof g.formality === "number") { formalitySum += g.formality; formalityCount++; }
+    if (!g.versatile) notVersatileCount++;
+  });
+  result.neutro_colorido = Math.round((coloridoScore / garmentsArr.length) * 100);
+  const avgFormality = formalityCount ? formalitySum / formalityCount : 3;
+  result.clasico_urbano = Math.round(Math.max(0, Math.min(100, ((avgFormality - 1) / 4) * 100)));
+  if (outfitsArr.length > 0) {
+    const uniqueCategoriesUsed = new Set(outfitsArr.flatMap(o => [o.top.category, o.bottom.category, o.shoes.category])).size;
+    result.constante_experimental = Math.min(100, Math.round((uniqueCategoriesUsed / 5) * 100));
+  }
+  const uniqueColors = new Set(garmentsArr.map(g => g.color).filter(Boolean)).size;
+  result.minimalista_expresivo = Math.min(100, Math.round((uniqueColors / 8) * 100));
+  result.esencial_atrevido = Math.round((notVersatileCount / garmentsArr.length) * 100);
+  return result;
+}
+
 function recalcInferredIdentity() {
   if (garments.length === 0) return identityData;
-  let coloridoScore = 0, formalitySum = 0, formalityCount = 0;
-  garments.forEach(g => {
-    if (g.color && !["blanco", "negro", "gris", "beige", "azul_marino", "marron"].includes(g.color)) coloridoScore++;
-    if (typeof g.formality === "number") { formalitySum += g.formality; formalityCount++; }
-  });
-  identityData.neutro_colorido = Math.round((coloridoScore / garments.length) * 100);
-  const avgFormality = formalityCount ? formalitySum / formalityCount : 3;
-  identityData.clasico_urbano = Math.round(Math.max(0, Math.min(100, ((avgFormality - 1) / 4) * 100)));
-  if (outfits.length > 0) {
-    const uniqueCategoriesUsed = new Set(outfits.flatMap(o => [o.top.category, o.bottom.category, o.shoes.category])).size;
-    identityData.constante_experimental = Math.min(100, Math.round((uniqueCategoriesUsed / 5) * 100));
-  }
+  identityData = computeIdentityAxes(garments, outfits, identityData);
   saveIdentity(identityData);
   return identityData;
 }
-
-const CATEGORY_COVERS_KEY = "armario_categoryCovers_v1";
-function loadCategoryCovers() {
-  try { const raw = localStorage.getItem(CATEGORY_COVERS_KEY); return raw ? JSON.parse(raw) : {}; } catch { return {}; }
-}
-function saveCategoryCovers(obj) { try { localStorage.setItem(CATEGORY_COVERS_KEY, JSON.stringify(obj)); } catch {} }
-let categoryCovers = loadCategoryCovers();
 
 const COLLECTIONS_KEY = "armario_collections_v1";
 function loadCollections() {
@@ -4413,7 +4835,8 @@ function renderProfile() {
   document.getElementById("profilePrivacyBadge").style.display = profileData.isPrivate ? "inline-flex" : "none";
   document.getElementById("profileFollowers").textContent = profileData.followers;
   document.getElementById("profileFollowing").textContent = profileData.following;
-  document.getElementById("profileGarmentCount").textContent = garments.length;
+  document.getElementById("profileHeaderGarmentCount").textContent = garments.length;
+  document.getElementById("profileHeaderOutfitCount").textContent = outfits.length;
   renderProfileCategories();
   renderProfileIdentitySliders();
   renderProfileOutfits();
@@ -4426,44 +4849,24 @@ function renderProfileCategories() {
   grid.innerHTML = sections.map(sec => {
     const items = garmentsInSection(garments, sec);
     if (items.length === 0) return "";
-    const coverId = categoryCovers[sec.id];
-    const coverGarment = (coverId && items.find(g => g.id === coverId)) || items[items.length - 1];
+    // La portada ya no se puede fijar a mano: siempre es la prenda añadida
+    // más recientemente en esa categoría (las nuevas van al final del array).
+    const coverGarment = items[items.length - 1];
     return `
       <div>
-        <div class="category-tile" data-cat-tile="${sec.id}" data-name="${(coverGarment.name ? coverGarment.name.charAt(0).toUpperCase() + coverGarment.name.slice(1) : sec.label)}">
+        <div class="category-tile" data-cat-tile="${sec.id}" data-garment-id="${coverGarment.id}">
           <div class="category-tile-img"><img src="${coverGarment.image}" alt="${sec.label}"></div>
-          <button class="category-tile-pin" data-pin-cat="${sec.id}" title="Fijar imagen de portada">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 3h6l1 6 3 3v2H5v-2l3-3z"/></svg>
-          </button>
         </div>
         <div class="category-tile-label">${sec.label}</div>
         <div class="category-tile-count">${items.length} prenda${items.length === 1 ? "" : "s"}</div>
       </div>`;
   }).join("");
-  grid.querySelectorAll("[data-pin-cat]").forEach(btn => {
-    btn.addEventListener("click", (e) => { e.stopPropagation(); openCoverPicker(btn.dataset.pinCat); });
-  });
   grid.querySelectorAll("[data-cat-tile]").forEach(tile => {
-    tile.addEventListener("click", () => openItemDetail(tile.dataset.name, "", [tile.querySelector("img").src]));
-  });
-}
-
-function openCoverPicker(categoryId) {
-  const sections = allSections();
-  const sec = sections.find(s => s.id === categoryId);
-  if (!sec) return;
-  const items = garmentsInSection(garments, sec);
-  const listEl = document.getElementById("coverPickerGrid");
-  listEl.innerHTML = items.map(g => `<div class="frame frame-minimal" data-cover-choice="${g.id}" style="cursor:pointer;"><div class="frame-inner"><div class="frame-img"><img src="${g.image}" alt=""></div></div></div>`).join("");
-  listEl.querySelectorAll("[data-cover-choice]").forEach(el => {
-    el.addEventListener("click", () => {
-      categoryCovers[categoryId] = el.dataset.coverChoice;
-      saveCategoryCovers(categoryCovers);
-      document.getElementById("coverPickerBackdrop").classList.remove("open");
-      renderProfileCategories();
+    tile.addEventListener("click", () => {
+      const g = garments.find(g => g.id === tile.dataset.garmentId);
+      if (g) openGarmentDetail(g);
     });
   });
-  document.getElementById("coverPickerBackdrop").classList.add("open");
 }
 
 function renderProfileIdentitySliders() {
@@ -4479,37 +4882,313 @@ function renderProfileIdentitySliders() {
   }).join("");
 }
 
+const DIST_PALETTE = ["#3B6E91", "#4FA6A0", "#E0763C", "#6A4C93", "#4C9A5B", "#D9B44A", "#9C3B3B", "#7FA6C9"];
+
+function interpretAxis(axis, value) {
+  if (value < 35) return `Tu armario es marcadamente ${axis.left.toLowerCase()}.`;
+  if (value > 65) return `Tu armario es marcadamente ${axis.right.toLowerCase()}.`;
+  return `Tienes un equilibrio entre ${axis.left.toLowerCase()} y ${axis.right.toLowerCase()}.`;
+}
+
+// Modal visual "Ver análisis": solo para el propietario del perfil (¿Me lo compro?,
+// prendas sin usar, etc. son datos de utilidad personal, no tiene sentido que los
+// vea alguien visitando el perfil). Todo se calcula al vuelo a partir de garments/outfits.
+function renderIdentityAnalysis() {
+  recalcInferredIdentity();
+  const sections = allSections().map(sec => ({ sec, items: garmentsInSection(garments, sec) })).filter(s => s.items.length > 0);
+  const total = garments.length || 1;
+
+  const distBarHTML = sections.map((s, i) => `<div class="dist-bar-seg" style="width:${(s.items.length / total) * 100}%; background:${DIST_PALETTE[i % DIST_PALETTE.length]};"></div>`).join("");
+  const distLegendHTML = sections.map((s, i) => `<div class="dist-legend-item"><span class="dist-legend-dot" style="background:${DIST_PALETTE[i % DIST_PALETTE.length]};"></span>${s.sec.label} (${s.items.length})</div>`).join("");
+  let distNote = "";
+  if (sections.length >= 2) {
+    const sorted = [...sections].sort((a, b) => b.items.length - a.items.length);
+    const most = sorted[0], least = sorted[sorted.length - 1];
+    if (most.items.length >= least.items.length * 3) {
+      distNote = `Tienes ${most.items.length} en ${most.sec.label.toLowerCase()} pero solo ${least.items.length} en ${least.sec.label.toLowerCase()}: eso limita cuántos outfits distintos puedes montar.`;
+    }
+  }
+
+  const withCounts = garments.map(g => ({ g, count: countOutfitsWithGarment(g.id) }));
+  const star = withCounts.filter(x => x.count > 0).sort((a, b) => b.count - a.count)[0];
+  const unused = withCounts.filter(x => x.count === 0).map(x => x.g);
+
+  const analysisEl = document.getElementById("identityAnalysisContent");
+  analysisEl.innerHTML = `
+    <div class="analysis-grid">
+      <div class="analysis-card" style="grid-column: 1 / -1;">
+        <div class="analysis-card-title">Distribución del armario</div>
+        <div class="dist-bar">${distBarHTML}</div>
+        <div class="dist-legend">${distLegendHTML}</div>
+        ${distNote ? `<p class="analysis-card-text" style="margin-top:10px;">${distNote}</p>` : ""}
+      </div>
+
+      ${star ? `
+      <div class="analysis-card">
+        <div class="analysis-card-title">Tu prenda estrella</div>
+        <div class="analysis-star-row">
+          <div class="frame-img"><img src="${star.g.image}" alt=""></div>
+          <div>
+            <div class="analysis-card-text" style="color:var(--ink); font-weight:600;">${star.g.name || (CATEGORIES.find(c => c.id === star.g.category)?.label || star.g.category)}</div>
+            <div class="analysis-card-text">Aparece en ${star.count} outfit${star.count === 1 ? "" : "s"}</div>
+          </div>
+        </div>
+      </div>` : ""}
+
+      <div class="analysis-card">
+        <div class="analysis-card-title">Prendas sin usar</div>
+        <div class="analysis-big-num">${unused.length}</div>
+        <p class="analysis-card-text">${unused.length > 0 ? "No aparecen en ningún outfit guardado todavía." : "¡Le estás sacando partido a todo tu armario!"}</p>
+        ${unused.length > 0 ? `<div class="analysis-unused-grid">${unused.slice(0, 6).map(g => `<div class="frame-img"><img src="${g.image}" alt=""></div>`).join("")}</div>` : ""}
+      </div>
+    </div>
+
+    <div class="section-plain">
+      <div class="analysis-card-title" style="margin-bottom:14px;">Tus ejes de identidad</div>
+      ${IDENTITY_AXES.map(axis => {
+        const v = identityData[axis.id] ?? 50;
+        return `
+        <div class="identity-bar-row">
+          <div class="identity-bar-labels"><span>${axis.left}</span><span>${axis.right}</span></div>
+          <div class="identity-bar-track"><div class="identity-bar-fill" style="width:${v}%;"></div></div>
+          <p class="identity-bar-text">${interpretAxis(axis, v)}</p>
+        </div>`;
+      }).join("")}
+    </div>`;
+  document.getElementById("identityAnalysisBackdrop").classList.add("open");
+}
+
 function outfitMiniCardHTML(entry) {
-  const accessories = entryAccessories(entry);
-  const imgs = [entry.top, entry.bottom, entry.shoes, ...accessories].filter(Boolean).slice(0, 3);
   const inCollectionCount = collections.filter(c => (c.outfitIds || []).includes(entry.id)).length;
   return `
     <div class="outfit-mini-card" data-outfit-mini="${entry.id}">
       <button class="bookmark-btn" data-save-outfit="${entry.id}" title="Guardar en colección">
         <svg viewBox="0 0 24 24" fill="${inCollectionCount ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
       </button>
-      <div class="outfit-mini-imgs">${imgs.map(g => `<div class="frame-img"><img src="${g.image}" alt=""></div>`).join("")}</div>
+      <div class="outfit-mini-collage" data-thumb-slot="${entry.id}">${entry.thumbCache ? `<img src="${entry.thumbCache}" alt="">` : `<div class="outfit-mini-collage-loading"></div>`}</div>
       <p class="outfit-mini-name">${entry.name || "Outfit sin nombre"}</p>
       <p class="outfit-mini-sub">${entry.label || ""}</p>
     </div>`;
 }
 
+// Genera (o recupera de caché) la imagen compuesta tipo "flat-lay" de un outfit,
+// reutilizando el mismo posicionamiento de prendas que la función de compartir en
+// Stories, pero en formato tarjeta y sin la cabecera de marca. Se cachea en el
+// propio outfit para no tener que recalcularla en cada visita al perfil.
+async function generateAndCacheOutfitThumb(entry) {
+  try {
+    const accessories = entryAccessories(entry);
+    const [topImg, bottomImg, shoesImg, ...accImgs] = await Promise.all([
+      ensureBgRemovedImage(entry.top), ensureBgRemovedImage(entry.bottom), ensureBgRemovedImage(entry.shoes),
+      ...accessories.map(ensureBgRemovedImage),
+    ]);
+    const topReady = { ...entry.top, image: topImg };
+    const bottomReady = { ...entry.bottom, image: bottomImg };
+    const shoesReady = { ...entry.shoes, image: shoesImg };
+    const accReady = accessories.map((a, i) => ({ ...a, image: accImgs[i] }));
+    const canvas = await generateOutfitThumbCanvas(topReady, bottomReady, shoesReady, accReady, "flat");
+    const url = canvas.toDataURL("image/jpeg", 0.85);
+    entry.thumbCache = url;
+    saveOutfits(outfits);
+    return url;
+  } catch (err) {
+    console.error("No se pudo generar el collage del outfit:", err);
+    return null;
+  }
+}
+
 function renderProfileOutfits() {
-  document.getElementById("profileOutfitCount").textContent = `${outfits.length} look${outfits.length === 1 ? "" : "s"} creados`;
   const row = document.getElementById("profileOutfitsRow");
-  row.innerHTML = outfits.slice(0, 10).map(outfitMiniCardHTML).join("") || `<p class="sub">Aún no has creado ninguna combinación.</p>`;
+  const list = outfits.slice(0, 10);
+  row.innerHTML = list.map(outfitMiniCardHTML).join("") || `<p class="sub">Aún no has creado ninguna combinación.</p>`;
   row.querySelectorAll("[data-save-outfit]").forEach(btn => {
     btn.addEventListener("click", (e) => { e.stopPropagation(); openCollectionPicker(btn.dataset.saveOutfit); });
   });
   row.querySelectorAll("[data-outfit-mini]").forEach(card => {
-    card.addEventListener("click", () => {
-      const entry = outfits.find(o => o.id === card.dataset.outfitMini);
-      if (!entry) return;
-      const accessories = entryAccessories(entry);
-      const imgs = [entry.top, entry.bottom, entry.shoes, ...accessories].filter(Boolean).map(g => g.image);
-      openItemDetail(entry.name || "Outfit sin nombre", entry.label || "", imgs);
+    card.addEventListener("click", () => openOutfitDetail(card.dataset.outfitMini));
+  });
+  // Los collages que falten se generan en segundo plano, sin bloquear el resto del perfil.
+  list.filter(entry => !entry.thumbCache).forEach(entry => {
+    generateAndCacheOutfitThumb(entry).then(url => {
+      if (!url) return;
+      const slot = row.querySelector(`[data-thumb-slot="${entry.id}"]`);
+      if (slot) slot.innerHTML = `<img src="${url}" alt="">`;
     });
   });
+}
+
+// Neutro/Colorido de un outfit completo: % de sus prendas cuyo color no es neutro.
+function outfitPalette(entry) {
+  const accessories = entryAccessories(entry);
+  const allGarments = [entry.top, entry.bottom, entry.shoes, ...accessories].filter(Boolean);
+  const coloridoCount = allGarments.filter(g => g.color && !NEUTRALS.has(g.color)).length;
+  const pct = allGarments.length ? Math.round((coloridoCount / allGarments.length) * 100) : 0;
+  return { pct, allGarments, label: pct >= 50 ? "Colorido" : "Neutro" };
+}
+
+// HTML del desglose de un outfit (chips por prenda + Neutro/Colorido del conjunto).
+// Reutilizado tanto por el detalle de "Mis Outfits" como por el de "Outfits Guardados".
+function outfitDetailContentHTML(entry) {
+  const palette = outfitPalette(entry);
+  return `
+    <div class="outfit-detail-palette">
+      <span class="mini-chip" style="background:${palette.label === "Colorido" ? "#C97A3D" : "#8C8465"};">${palette.label}</span>
+      <span class="sub" style="margin:0;">${palette.pct}% de las prendas tienen color</span>
+    </div>
+    <div class="outfit-detail-list">
+      ${palette.allGarments.map(g => {
+        const cat = CATEGORIES.find(c => c.id === g.category);
+        const title = g.name ? g.name.charAt(0).toUpperCase() + g.name.slice(1) : (cat ? cat.label : g.category);
+        return `
+        <div class="outfit-detail-row">
+          <div class="frame-img"><img src="${g.image}" alt=""></div>
+          <div style="flex:1; min-width:0;">
+            <div class="frame-label">${title}</div>
+            <div style="margin-top:3px;">${metaChipsHTML(g)}</div>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>`;
+}
+
+function openOutfitDetail(outfitId) {
+  const entry = outfits.find(o => o.id === outfitId);
+  if (!entry) return;
+  document.getElementById("itemDetailTitle").textContent = entry.name || "Outfit sin nombre";
+  document.getElementById("itemDetailImages").innerHTML = `<img src="${entry.thumbCache || entry.top?.image || ""}" class="detail-img" alt="">`;
+  document.getElementById("itemDetailSubtitle").textContent = entry.label || "";
+  document.getElementById("itemDetailActions").innerHTML = outfitDetailContentHTML(entry);
+  document.getElementById("itemDetailBackdrop").classList.add("open");
+}
+
+/* ---------------- Guardados ---------------- */
+// Prendas y outfits de OTRAS personas que el usuario decide guardar como
+// inspiración (desde el armario ajeno, próximamente). No son IDs a tus propios
+// arrays — son una copia completa ("snapshot") de la prenda/outfit tal cual
+// estaban en el momento de guardarlos, porque no viven en tu armario ni en tus
+// outfits. Es siempre privado: no hay opción de hacerlo público.
+const GUARDADOS_KEY = "armario_guardados_v1";
+function loadGuardados() {
+  try {
+    const raw = localStorage.getItem(GUARDADOS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { prendas: [], outfits: [] };
+}
+function saveGuardados(obj) { try { localStorage.setItem(GUARDADOS_KEY, JSON.stringify(obj)); } catch {} }
+let guardados = loadGuardados();
+
+// Helpers listos para cuando exista la vista de armario/outfits ajenos: guardan
+// una copia completa de la prenda u outfit ajeno tal cual llega.
+function saveGarmentToGuardados(garmentSnapshot) {
+  guardados.prendas.push({ ...garmentSnapshot, id: `saved-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` });
+  saveGuardados(guardados);
+  if (currentView === "guardados") renderSavedGarments();
+}
+function saveOutfitToGuardados(outfitSnapshot) {
+  guardados.outfits.push({ ...outfitSnapshot, id: `saved-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` });
+  saveGuardados(guardados);
+  if (currentView === "guardados") renderSavedOutfits();
+}
+
+function renderGuardados() {
+  renderSavedGarments();
+  renderSavedOutfits();
+}
+
+function renderSavedGarments() {
+  const grid = document.getElementById("savedGarmentsGrid");
+  const items = guardados.prendas || [];
+  document.getElementById("savedGarmentsEmpty").style.display = items.length ? "none" : "block";
+  grid.innerHTML = items.map(g => {
+    const cat = CATEGORIES.find(c => c.id === g.category);
+    const title = g.name ? g.name.charAt(0).toUpperCase() + g.name.slice(1) : (cat ? cat.label : g.category);
+    return `
+      <div>
+        <div class="category-tile" data-saved-garment="${g.id}">
+          <div class="category-tile-img"><img src="${g.image}" alt="${title}"></div>
+          <button class="del-btn" data-remove-saved-garment="${g.id}" title="Quitar de Guardados">✕</button>
+        </div>
+        <div class="category-tile-label">${title}</div>
+      </div>`;
+  }).join("");
+  grid.querySelectorAll("[data-remove-saved-garment]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      guardados.prendas = guardados.prendas.filter(g => g.id !== btn.dataset.removeSavedGarment);
+      saveGuardados(guardados);
+      renderSavedGarments();
+    });
+  });
+  grid.querySelectorAll("[data-saved-garment]").forEach(tile => {
+    tile.addEventListener("click", () => {
+      const g = items.find(g => g.id === tile.dataset.savedGarment);
+      if (g) openSavedGarmentDetail(g);
+    });
+  });
+}
+
+function renderSavedOutfits() {
+  const grid = document.getElementById("savedOutfitsGrid");
+  const items = guardados.outfits || [];
+  document.getElementById("savedOutfitsEmpty").style.display = items.length ? "none" : "block";
+  grid.innerHTML = items.map(entry => `
+    <div class="outfit-mini-card" data-saved-outfit="${entry.id}">
+      <button class="del-btn" data-remove-saved-outfit="${entry.id}" title="Quitar de Guardados">✕</button>
+      <div class="outfit-mini-collage">${entry.thumbCache ? `<img src="${entry.thumbCache}" alt="">` : `<div class="outfit-mini-collage-loading"></div>`}</div>
+      <p class="outfit-mini-name">${entry.name || "Outfit sin nombre"}</p>
+      <p class="outfit-mini-sub">${entry.label || ""}</p>
+    </div>`).join("");
+  grid.querySelectorAll("[data-remove-saved-outfit]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      guardados.outfits = guardados.outfits.filter(o => o.id !== btn.dataset.removeSavedOutfit);
+      saveGuardados(guardados);
+      renderSavedOutfits();
+    });
+  });
+  grid.querySelectorAll("[data-saved-outfit]").forEach(card => {
+    card.addEventListener("click", () => {
+      const entry = items.find(o => o.id === card.dataset.savedOutfit);
+      if (entry) openSavedOutfitDetail(entry);
+    });
+  });
+}
+
+function openSavedGarmentDetail(garment) {
+  const cat = CATEGORIES.find(c => c.id === garment.category);
+  const title = garment.name ? garment.name.charAt(0).toUpperCase() + garment.name.slice(1) : (cat ? cat.label : garment.category);
+  document.getElementById("itemDetailTitle").textContent = title;
+  document.getElementById("itemDetailImages").innerHTML = `<img src="${garment.image}" class="detail-img" alt="">`;
+  document.getElementById("itemDetailSubtitle").textContent = garment.savedFrom?.username ? `Guardada de @${garment.savedFrom.username}` : "";
+  document.getElementById("itemDetailActions").innerHTML = `
+    <div style="display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:4px;">
+      ${swatchHTML(garment.color, 16)}
+      ${metaChipsHTML(garment)}
+    </div>
+    <button class="btn btn-outline" style="width:100%; margin-top:16px; color:#fff; background:var(--danger); border-color:var(--danger);" id="removeSavedGarmentDetailBtn">Quitar de Guardados</button>`;
+  document.getElementById("removeSavedGarmentDetailBtn").addEventListener("click", () => {
+    guardados.prendas = guardados.prendas.filter(g => g.id !== garment.id);
+    saveGuardados(guardados);
+    document.getElementById("itemDetailBackdrop").classList.remove("open");
+    renderSavedGarments();
+  });
+  document.getElementById("itemDetailBackdrop").classList.add("open");
+}
+
+function openSavedOutfitDetail(entry) {
+  document.getElementById("itemDetailTitle").textContent = entry.name || "Outfit sin nombre";
+  document.getElementById("itemDetailImages").innerHTML = `<img src="${entry.thumbCache || entry.top?.image || ""}" class="detail-img" alt="">`;
+  document.getElementById("itemDetailSubtitle").textContent = entry.savedFrom?.username ? `Guardado de @${entry.savedFrom.username}` : (entry.label || "");
+  document.getElementById("itemDetailActions").innerHTML = outfitDetailContentHTML(entry) + `
+    <button class="btn btn-outline" style="width:100%; margin-top:14px; color:#fff; background:var(--danger); border-color:var(--danger);" id="removeSavedOutfitDetailBtn">Quitar de Guardados</button>`;
+  document.getElementById("removeSavedOutfitDetailBtn").addEventListener("click", () => {
+    guardados.outfits = guardados.outfits.filter(o => o.id !== entry.id);
+    saveGuardados(guardados);
+    document.getElementById("itemDetailBackdrop").classList.remove("open");
+    renderSavedOutfits();
+  });
+  document.getElementById("itemDetailBackdrop").classList.add("open");
 }
 
 function openCollectionPicker(outfitId) {
@@ -4540,28 +5219,106 @@ function openCollectionPicker(outfitId) {
   };
   render();
   document.getElementById("collectionPickerNewBtn").onclick = () => {
-    showTextPromptModal("Nombre de la nueva colección:", "", (name) => {
-      if (!name || !name.trim()) return;
-      collections.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, name: name.trim().slice(0, 40), outfitIds: [outfitId], garmentIds: [] });
-      saveCollections(collections);
-      render();
-      renderProfileOutfits();
-      renderProfileCollections();
-    });
+    // Ya viene con un outfit (el que se estaba guardando), así que no hace
+    // falta pasar por el paso de "elegir outfits": nunca se crea vacía.
+    openNewCollectionModal([outfitId], () => { render(); renderProfileOutfits(); renderProfileCollections(); });
   };
   document.getElementById("collectionPickerBackdrop").classList.add("open");
 }
 
+// Paso previo obligatorio para crear una colección desde "Mis colecciones":
+// como no se pueden crear vacías, primero hay que elegir con qué outfits arranca.
+function openOutfitSelectForCollection() {
+  if (outfits.length === 0) {
+    showAppToast("Primero crea algún outfit para poder guardarlo en una colección.");
+    return;
+  }
+  const listEl = document.getElementById("outfitSelectList");
+  const selected = new Set();
+  const confirmBtn = document.getElementById("outfitSelectConfirmBtn");
+  confirmBtn.disabled = true;
+  listEl.innerHTML = outfits.map(o => `
+    <label class="collection-item-row" style="cursor:pointer;">
+      <input type="checkbox" data-outfit-select="${o.id}">
+      <img src="${o.thumbCache || o.top?.image || ""}" alt="">
+      <span>${o.name || "Outfit sin nombre"}</span>
+    </label>`).join("");
+  listEl.querySelectorAll("[data-outfit-select]").forEach(cb => {
+    cb.addEventListener("change", () => {
+      if (cb.checked) selected.add(cb.dataset.outfitSelect);
+      else selected.delete(cb.dataset.outfitSelect);
+      confirmBtn.disabled = selected.size === 0;
+    });
+  });
+  confirmBtn.onclick = () => {
+    document.getElementById("outfitSelectBackdrop").classList.remove("open");
+    openNewCollectionModal([...selected], () => renderProfileCollections());
+  };
+  document.getElementById("outfitSelectBackdrop").classList.add("open");
+}
+
+// Modal de nombre + público/privado, paso final común a ambas formas de crear
+// una colección. "outfitIds" nunca llega vacío a este punto.
+let newCollectionPending = null;
+function openNewCollectionModal(outfitIds, onCreated) {
+  newCollectionPending = { outfitIds, isPublic: false, onCreated };
+  document.getElementById("newCollectionNameInput").value = "";
+  renderNewCollectionPrivacyButtons();
+  document.getElementById("newCollectionBackdrop").classList.add("open");
+  setTimeout(() => document.getElementById("newCollectionNameInput").focus(), 50);
+}
+function renderNewCollectionPrivacyButtons() {
+  const el = document.getElementById("newCollectionPrivacyButtons");
+  el.innerHTML = `
+    <button class="formality-btn ${!newCollectionPending.isPublic ? "selected" : ""}" data-privacy="private" style="flex:1;">🔒 Privada</button>
+    <button class="formality-btn ${newCollectionPending.isPublic ? "selected" : ""}" data-privacy="public" style="flex:1;">🌐 Pública</button>`;
+  el.querySelectorAll("[data-privacy]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      newCollectionPending.isPublic = btn.dataset.privacy === "public";
+      renderNewCollectionPrivacyButtons();
+    });
+  });
+}
+function closeNewCollectionModal() {
+  document.getElementById("newCollectionBackdrop").classList.remove("open");
+  newCollectionPending = null;
+}
+function confirmNewCollection() {
+  if (!newCollectionPending) return;
+  const name = document.getElementById("newCollectionNameInput").value.trim();
+  if (!name) return;
+  const col = {
+    id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    name: name.slice(0, 40),
+    outfitIds: [...newCollectionPending.outfitIds],
+    garmentIds: [],
+    isPublic: newCollectionPending.isPublic,
+    coverOutfitId: newCollectionPending.outfitIds[0] || null,
+  };
+  collections.push(col);
+  saveCollections(collections);
+  const onCreated = newCollectionPending.onCreated;
+  closeNewCollectionModal();
+  if (onCreated) onCreated();
+}
+document.getElementById("newCollectionCancelBtn").addEventListener("click", closeNewCollectionModal);
+document.getElementById("newCollectionClose").addEventListener("click", closeNewCollectionModal);
+document.getElementById("newCollectionOkBtn").addEventListener("click", confirmNewCollection);
+document.getElementById("outfitSelectClose").addEventListener("click", () => document.getElementById("outfitSelectBackdrop").classList.remove("open"));
+
 function renderProfileCollections() {
   const grid = document.getElementById("profileCollectionsGrid");
+  const lockIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>`;
   const tiles = collections.map(c => {
-    const previewOutfits = (c.outfitIds || []).map(id => outfits.find(o => o.id === id)).filter(Boolean).slice(0, 2);
-    const imgs = previewOutfits.map(o => o.top?.image).filter(Boolean);
+    const coverOutfit = c.coverOutfitId ? outfits.find(o => o.id === c.coverOutfitId) : null;
+    const previewOutfits = coverOutfit ? [coverOutfit] : (c.outfitIds || []).map(id => outfits.find(o => o.id === id)).filter(Boolean).slice(0, 2);
+    const imgs = previewOutfits.map(o => o.thumbCache || o.top?.image).filter(Boolean);
     const count = (c.outfitIds || []).length + (c.garmentIds || []).length;
     return `
       <div>
         <div class="collection-tile" data-collection-tile="${c.id}">
-          <div class="collection-tile-img">${imgs.length ? imgs.map(src => `<img src="${src}" alt="">`).join("") : ""}</div>
+          ${!c.isPublic ? `<div class="collection-tile-lock" title="Colección privada">${lockIcon}</div>` : ""}
+          <div class="collection-tile-img ${imgs.length === 1 ? "single" : ""}">${imgs.length ? imgs.map(src => `<img src="${src}" alt="">`).join("") : ""}</div>
         </div>
         <div class="collection-tile-label">${c.name}</div>
         <div class="collection-tile-count">${count} elemento${count === 1 ? "" : "s"}</div>
@@ -4575,27 +5332,42 @@ function renderProfileCollections() {
   grid.querySelectorAll("[data-collection-tile]").forEach(tile => {
     tile.addEventListener("click", () => openCollectionDetail(tile.dataset.collectionTile));
   });
-  document.getElementById("newCollectionTile").addEventListener("click", () => {
-    showTextPromptModal("Nombre de la nueva colección:", "", (name) => {
-      if (!name || !name.trim()) return;
-      collections.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, name: name.trim().slice(0, 40), outfitIds: [], garmentIds: [] });
+  document.getElementById("newCollectionTile").addEventListener("click", openOutfitSelectForCollection);
+}
+
+function openCollectionCoverPicker(collectionId) {
+  const col = collections.find(c => c.id === collectionId);
+  if (!col || !(col.outfitIds || []).length) return;
+  const listEl = document.getElementById("collectionCoverGrid");
+  listEl.innerHTML = col.outfitIds.map(id => {
+    const o = outfits.find(o => o.id === id);
+    if (!o) return "";
+    return `<div class="frame frame-minimal" data-cover-outfit="${id}" style="cursor:pointer;"><div class="frame-inner"><div class="frame-img"><img src="${o.thumbCache || o.top?.image || ""}" alt=""></div></div></div>`;
+  }).join("");
+  listEl.querySelectorAll("[data-cover-outfit]").forEach(el => {
+    el.addEventListener("click", () => {
+      col.coverOutfitId = el.dataset.coverOutfit;
       saveCollections(collections);
+      document.getElementById("collectionCoverBackdrop").classList.remove("open");
       renderProfileCollections();
     });
   });
+  document.getElementById("collectionCoverBackdrop").classList.add("open");
 }
+document.getElementById("collectionCoverClose").addEventListener("click", () => document.getElementById("collectionCoverBackdrop").classList.remove("open"));
 
 function openCollectionDetail(collectionId) {
   const col = collections.find(c => c.id === collectionId);
   if (!col) return;
   document.getElementById("collectionDetailTitle").textContent = col.name;
   const listEl = document.getElementById("collectionDetailList");
+  const coverBtn = document.getElementById("collectionDetailCoverBtn");
   const render = () => {
     const outfitRows = (col.outfitIds || []).map(id => {
       const o = outfits.find(o => o.id === id);
       if (!o) return "";
       return `<div class="collection-item-row">
-        <img src="${o.top?.image || ""}" alt="">
+        <img src="${o.thumbCache || o.top?.image || ""}" alt="">
         <span>${o.name || "Outfit sin nombre"}</span>
         <button class="del-btn" style="position:static;" data-remove-collection-outfit="${id}">✕</button>
       </div>`;
@@ -4604,33 +5376,46 @@ function openCollectionDetail(collectionId) {
     listEl.querySelectorAll("[data-remove-collection-outfit]").forEach(btn => {
       btn.addEventListener("click", () => {
         col.outfitIds = (col.outfitIds || []).filter(id => id !== btn.dataset.removeCollectionOutfit);
+        if (col.coverOutfitId === btn.dataset.removeCollectionOutfit) col.coverOutfitId = col.outfitIds[0] || null;
         saveCollections(collections);
         render();
         renderProfileOutfits();
         renderProfileCollections();
       });
     });
+    coverBtn.style.display = (col.outfitIds || []).length > 0 ? "block" : "none";
   };
   render();
+  coverBtn.onclick = () => openCollectionCoverPicker(collectionId);
   document.getElementById("collectionDetailBackdrop").classList.add("open");
 }
 
-document.getElementById("coverPickerClose").addEventListener("click", () => document.getElementById("coverPickerBackdrop").classList.remove("open"));
 document.getElementById("collectionPickerClose").addEventListener("click", () => document.getElementById("collectionPickerBackdrop").classList.remove("open"));
 document.getElementById("collectionDetailClose").addEventListener("click", () => document.getElementById("collectionDetailBackdrop").classList.remove("open"));
-document.getElementById("profileIdentityDetailBtn").addEventListener("click", () => showAppToast("Detalle de identidad: próximamente"));
+document.getElementById("profileIdentityDetailBtn").addEventListener("click", renderIdentityAnalysis);
+document.getElementById("identityAnalysisClose").addEventListener("click", () => document.getElementById("identityAnalysisBackdrop").classList.remove("open"));
 
-// Tarjeta genérica de foto ampliada, reutilizada tanto para una prenda individual (Mi armario)
-// como para un outfit completo (Mis Outfits). El div itemDetailActions queda vacío a propósito:
-// aquí irán las acciones (editar, compartir, etc.) que se añadan más adelante.
-function openItemDetail(title, subtitle, images) {
-  document.getElementById("itemDetailTitle").textContent = title || "";
-  document.getElementById("itemDetailSubtitle").textContent = subtitle || "";
-  const multi = images.length > 1;
-  document.getElementById("itemDetailImages").innerHTML = images
-    .map(src => `<img src="${src}" class="${multi ? "detail-img-multi" : "detail-img"}" alt="">`)
-    .join("");
-  document.getElementById("itemDetailActions").innerHTML = "";
+function countOutfitsWithGarment(garmentId) {
+  return outfits.filter(o => [o.top, o.bottom, o.shoes, ...entryAccessories(o)].filter(Boolean).some(g => g.id === garmentId)).length;
+}
+
+// Modal informativo de una prenda (vista Perfil): imagen, nombre, chips de
+// formalidad/color/temporada y en cuántos outfits aparece. Sin acciones de
+// edición — esas viven solo en la pestaña Armario.
+function openGarmentDetail(garment) {
+  const cat = CATEGORIES.find(c => c.id === garment.category);
+  const title = garment.name ? garment.name.charAt(0).toUpperCase() + garment.name.slice(1) : (cat ? cat.label : garment.category);
+  const outfitCount = countOutfitsWithGarment(garment.id);
+  document.getElementById("itemDetailTitle").textContent = title;
+  document.getElementById("itemDetailImages").innerHTML = `<img src="${garment.image}" class="detail-img" alt="">`;
+  document.getElementById("itemDetailSubtitle").textContent = outfitCount > 0
+    ? `Aparece en ${outfitCount} outfit${outfitCount === 1 ? "" : "s"}`
+    : "Aún no aparece en ningún outfit";
+  document.getElementById("itemDetailActions").innerHTML = `
+    <div style="display:flex; gap:6px; justify-content:center; align-items:center; flex-wrap:wrap; margin-top:4px;">
+      ${swatchHTML(garment.color, 16)}
+      ${metaChipsHTML(garment)}
+    </div>`;
   document.getElementById("itemDetailBackdrop").classList.add("open");
 }
 document.getElementById("itemDetailClose").addEventListener("click", () => document.getElementById("itemDetailBackdrop").classList.remove("open"));
@@ -4683,6 +5468,7 @@ document.getElementById("editProfileSaveBtn").addEventListener("click", async ()
   saveBtn.disabled = true;
   saveBtn.textContent = "Guardando...";
   try {
+    const avatarToSave = editProfilePendingAvatar !== null ? editProfilePendingAvatar : profileData.avatar;
     const authUser = window.__drobrAuth && window.__drobrAuth.currentUser;
     if (authUser && username !== profileData.username) {
       const { doc, getDoc, setDoc } = window.__drobrFirestoreFns;
@@ -4696,12 +5482,12 @@ document.getElementById("editProfileSaveBtn").addEventListener("click", async ()
         return;
       }
       await setDoc(usernameRef, { uid: authUser.uid });
-      await setDoc(doc(window.__drobrDb, "armarios", authUser.uid), { username, name, link, isPrivate }, { merge: true });
+      await setDoc(doc(window.__drobrDb, "armarios", authUser.uid), { username, name, link, isPrivate, bio, avatar: avatarToSave, followers: profileData.followers, following: profileData.following }, { merge: true });
     } else if (authUser) {
       const { doc, setDoc } = window.__drobrFirestoreFns;
-      await setDoc(doc(window.__drobrDb, "armarios", authUser.uid), { username, name, link, isPrivate }, { merge: true });
+      await setDoc(doc(window.__drobrDb, "armarios", authUser.uid), { username, name, link, isPrivate, bio, avatar: avatarToSave, followers: profileData.followers, following: profileData.following }, { merge: true });
     }
-    profileData = { ...profileData, name, username, bio, link, isPrivate, avatar: editProfilePendingAvatar !== null ? editProfilePendingAvatar : profileData.avatar };
+    profileData = { ...profileData, name, username, bio, link, isPrivate, avatar: avatarToSave };
     saveProfile(profileData);
     document.getElementById("editProfileBackdrop").classList.remove("open");
     renderProfile();
