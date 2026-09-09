@@ -26,6 +26,7 @@
     --accent: #2F4858;
     --success: #2E7D32;
     --gold: #B08D57;
+    --warning: #C1752E;
     --danger: #C0392B;
     --radius: 14px;
     --radius-sm: 10px;
@@ -68,6 +69,7 @@
   }
   .nav-item svg { width: 17px; height: 17px; flex-shrink: 0; opacity: 0.85; }
   .nav-item:hover { background: rgba(255,255,255,0.05); }
+  .nav-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 6px 10px; }
   .nav-item.nav-active { background: var(--sidebar-active); color: #fff; }
   .nav-item.nav-active svg { opacity: 1; }
   .sidebar-footer { margin-top: auto; }
@@ -374,6 +376,7 @@
     .brand { display: none; }
     .sidebar-footer { display: none; }
     .nav-list { flex-direction: row; width: 100%; justify-content: space-around; gap: 2px; }
+    .nav-divider { display: none; }
     .nav-item {
       flex-direction: column; gap: 3px; padding: 7px 2px; font-size: 10px; line-height: 1.15;
       text-align: center; flex: 1;
@@ -408,7 +411,7 @@
   .topbar-settings-btn svg { width: 21px; height: 21px; }
   @media (max-width: 720px) and (orientation: portrait) {
     .mobile-topbar { display: flex; }
-    .wrap { padding-top: 84px; }
+    .wrap { padding-top: 20px; }
   }
 
   /* ---- Perfil ---- */
@@ -421,6 +424,7 @@
   .profile-bio { font-size:13.5px; color:var(--ink); margin:0 0 8px; }
   .profile-stats { display:flex; gap:16px; font-size:13px; color:var(--ink-soft); }
   .profile-stats b { color:var(--ink); }
+  .profile-stats b.stat-inactive { color:var(--ink-soft); font-weight:500; }
   .profile-link { display:inline-block; font-size:13px; color:var(--accent); margin:0 0 8px; text-decoration:none; word-break:break-all; }
   .profile-link:hover { text-decoration:underline; }
   .profile-privacy-badge { display:inline-flex; align-items:center; gap:4px; }
@@ -633,6 +637,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6"/></svg>
         Perfil
       </button>
+      <div class="nav-divider"></div>
       <button class="nav-item" id="viewTabSearchUser">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         Buscar
@@ -818,6 +823,7 @@
   <div id="viewShop" style="display:none;">
     <div id="shopUploadSection" class="empty">
       <input type="file" id="shopFileInput" accept="image/*" style="display:none;">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--line-strong)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px;"><path d="M9 5H4.5a1 1 0 0 0-1 1.11l1 9A2 2 0 0 0 6.48 17H16.5a2 2 0 0 0 2-1.83l.85-9.06A1 1 0 0 0 18.35 5H9Z"/><path d="M9 5a3 3 0 0 1 6 0"/><circle cx="9" cy="10" r=".6" fill="var(--line-strong)" stroke="none"/><circle cx="15" cy="10" r=".6" fill="var(--line-strong)" stroke="none"/></svg>
       <p style="margin: 0 0 12px; color: var(--ink); font-weight: 600;">Sube una foto de la prenda que estás pensando comprar</p>
       <p class="sub" style="margin: 0 auto 16px; text-align:center;">Sube una foto o captura de pantalla — no se guarda en tu armario hasta que tú decidas.</p>
       <button class="btn btn-primary" id="shopUploadBtn" style="margin: 0 auto;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Subir foto de la prenda</button>
@@ -826,17 +832,21 @@
   </div>
 
   <div id="viewSettings" style="display:none;">
-    <h2 style="font-size:15px; margin-bottom:8px;">Copia de seguridad</h2>
-    <p class="sub" style="margin-bottom:12px;">¡No pierdas tu armario! Exporta el archivo antes de borrar los datos de navegación o cambiar de dispositivo.</p>
-    <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-      <input type="file" id="backupFileInput" accept="application/json" style="display:none;">
-      <button class="btn btn-outline" id="exportBackupBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Hacer copia de seguridad</button>
-      <button class="btn btn-outline" id="importBackupBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg> Cargar copia de seguridad</button>
+    <div class="section">
+      <div class="profile-section-title"><h2>Copia de seguridad</h2></div>
+      <p class="sub" style="margin-bottom:14px;">¡No pierdas tu armario! Exporta el archivo antes de borrar los datos de navegación o cambiar de dispositivo.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <input type="file" id="backupFileInput" accept="application/json" style="display:none;">
+        <button class="btn btn-outline" id="exportBackupBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Hacer copia de seguridad</button>
+        <button class="btn btn-outline" id="importBackupBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg> Cargar copia de seguridad</button>
+      </div>
+      <div class="ai-status" id="backupStatus" style="display:none;"></div>
     </div>
-    <div class="ai-status" id="backupStatus" style="display:none;"></div>
 
-    <h2 style="font-size:15px; margin-bottom:8px; margin-top:26px;">Cuenta</h2>
-    <button class="btn btn-outline" id="logoutBtn" style="color:#fff; background:var(--danger); border-color:var(--danger);">Cerrar sesión</button>
+    <div class="section" style="margin-bottom:0;">
+      <div class="profile-section-title"><h2>Cuenta</h2></div>
+      <button class="btn btn-outline" id="logoutBtn" style="color:var(--danger); border-color:var(--danger);">Cerrar sesión</button>
+    </div>
   </div>
 
   <div id="viewProfile" style="display:none;">
@@ -849,14 +859,17 @@
           <p class="profile-bio" id="profileBio"></p>
           <a class="profile-link" id="profileLink" href="#" target="_blank" rel="noopener" style="display:none;"></a>
           <div class="profile-stats">
-            <span><b id="profileFollowers">0</b> seguidores</span>
-            <span><b id="profileFollowing">0</b> siguiendo</span>
+            <span><b class="stat-inactive" id="profileFollowers">0</b> seguidores</span>
+            <span><b class="stat-inactive" id="profileFollowing">0</b> siguiendo</span>
             <span class="profile-privacy-badge" id="profilePrivacyBadge" style="display:none;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
               Armario privado
             </span>
           </div>
-          <button class="btn-text" id="profileEditBtn" style="margin-top:8px;">Editar perfil</button>
+          <button class="btn btn-outline" id="profileEditBtn" style="margin-top:10px; padding:6px 14px; font-size:12.5px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+            Editar perfil
+          </button>
         </div>
         <div class="profile-header-stats">
           <div class="profile-header-stat">
@@ -2835,7 +2848,7 @@ async function handleSuggest(contextId, seasonId) {
   const titleHTML = `<div class="verdict-label">✨ ¿Por qué funciona?</div>`;
   const text = localOutfitText(outfit.top, outfit.bottom, outfit.shoes, outfit.evalRes);
   explainEl.innerHTML = titleHTML + `<div class="verdict-text">${text}</div>` + (approximate ? `<div class="fallback-note">(No había ninguna combinación 100% válida para estos filtros; esta es la más cercana)</div>` : "") + badgesHTML;
-  const meta = outfit.evalRes.ok ? { label: "Combina", color: "var(--success)" } : { label: "Aproximada (no combina del todo)", color: "var(--gold)" };
+  const meta = outfit.evalRes.ok ? { label: "Combina", color: "var(--success)" } : { label: "Aproximada (no combina del todo)", color: "var(--warning)" };
   saveBtn.style.display = "inline-flex";
   saveBtn.onclick = async () => {
     saveBtn.disabled = true;
@@ -4694,11 +4707,11 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
           ${meta.bio ? `<p class="profile-bio">${meta.bio}</p>` : ""}
           ${linkHTML}
           <div class="profile-stats">
-            <span><b>${meta.followers ?? 0}</b> seguidores</span>
-            <span><b>${meta.following ?? 0}</b> siguiendo</span>
+            <span><b class="stat-inactive">${meta.followers ?? 0}</b> seguidores</span>
+            <span><b class="stat-inactive">${meta.following ?? 0}</b> siguiendo</span>
             ${lockBadge}
           </div>
-          <button class="btn-text" id="visitorFollowBtn" style="margin-top:8px;">Seguir</button>
+          <button class="btn btn-outline" id="visitorFollowBtn" style="margin-top:10px; padding:6px 14px; font-size:12.5px;">Seguir</button>
         </div>
         <div class="profile-header-stats">
           <div class="profile-header-stat">
