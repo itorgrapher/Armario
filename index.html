@@ -404,6 +404,80 @@
     .mobile-topbar { display: flex; }
     .wrap { padding-top: 84px; }
   }
+
+  /* ---- Perfil ---- */
+  .profile-header { display:flex; align-items:flex-start; gap:16px; margin-bottom:26px; }
+  .profile-avatar { width:64px; height:64px; border-radius:50%; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; flex-shrink:0; font-family:"Poppins",sans-serif; overflow:hidden; }
+  .profile-avatar img { width:100%; height:100%; object-fit:cover; }
+  .profile-info { flex:1; min-width:0; }
+  .profile-name { font-size:17px; font-weight:700; margin:0 0 2px; }
+  .profile-username { font-size:13px; color:var(--ink-soft); margin:0 0 6px; }
+  .profile-bio { font-size:13.5px; color:var(--ink); margin:0 0 8px; }
+  .profile-stats { display:flex; gap:16px; font-size:13px; color:var(--ink-soft); }
+  .profile-stats b { color:var(--ink); }
+  .profile-link { display:inline-block; font-size:13px; color:var(--accent); margin:0 0 8px; text-decoration:none; word-break:break-all; }
+  .profile-link:hover { text-decoration:underline; }
+  .profile-privacy-badge { display:inline-flex; align-items:center; gap:4px; }
+  .profile-privacy-badge svg { width:13px; height:13px; }
+
+  .edit-avatar-row { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+  .edit-avatar-preview { width:72px; height:72px; border-radius:50%; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:600; flex-shrink:0; font-family:"Poppins",sans-serif; overflow:hidden; }
+  .edit-avatar-preview img { width:100%; height:100%; object-fit:cover; }
+  .edit-username-row { display:flex; align-items:center; border:1px solid var(--line-strong); border-radius:8px; overflow:hidden; margin-top:4px; }
+  .edit-username-row span { padding:9px 0 9px 12px; color:var(--ink-soft); font-size:13px; }
+  .edit-username-row input { border:none; margin:0; padding:9px 12px 9px 2px; flex:1; }
+
+  .profile-section-title { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; gap:10px; }
+  .profile-section-title h2 { font-size:15px; margin:0; }
+  .profile-big-number { font-size:32px; font-weight:700; line-height:1; margin:6px 0 2px; font-family:"Poppins",sans-serif; }
+  .profile-big-number-label { font-size:12.5px; color:var(--ink-soft); margin:0 0 14px; }
+
+  .category-grid { display:grid; grid-template-columns: repeat(auto-fill, 96px); gap:12px 14px; }
+  .category-tile { position:relative; cursor:pointer; }
+  .category-tile-img { width:96px; height:96px; border-radius:var(--radius-sm); background:#EFEFEC; overflow:hidden; border:1px solid var(--line); }
+  .category-tile-img img { width:100%; height:100%; object-fit:contain; padding:8px; }
+  .category-tile-label { font-size:12px; font-weight:600; margin-top:6px; }
+  .category-tile-count { font-size:11.5px; color:var(--ink-soft); }
+  .category-tile-pin { position:absolute; top:4px; right:4px; width:22px; height:22px; border-radius:50%; background:rgba(255,255,255,0.92); border:1px solid var(--line-strong); display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .category-tile-pin svg { width:12px; height:12px; }
+
+  .identity-row { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .identity-row:last-child { margin-bottom:0; }
+  .identity-label { font-size:11px; color:var(--ink-soft); width:74px; flex-shrink:0; text-transform:uppercase; letter-spacing:0.02em; }
+  .identity-label.right { text-align:right; }
+  .identity-track { flex:1; height:2px; background:var(--line-strong); position:relative; border-radius:2px; }
+  .identity-dot { position:absolute; top:50%; width:9px; height:9px; border-radius:50%; background:var(--ink); transform:translate(-50%,-50%); }
+
+  .outfit-mini-row { display:flex; gap:14px; overflow-x:auto; padding-bottom:4px; }
+  .outfit-mini-card { flex:0 0 150px; background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; position:relative; }
+  .outfit-mini-imgs { display:flex; gap:3px; height:74px; margin-bottom:8px; }
+  .outfit-mini-imgs .frame-img { flex:1; border-radius:6px; }
+  .outfit-mini-name { font-size:12.5px; font-weight:600; margin:0 0 1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .outfit-mini-sub { font-size:11px; color:var(--ink-soft); margin:0; }
+  .bookmark-btn { position:absolute; top:8px; right:8px; background:rgba(255,255,255,0.92); border:1px solid var(--line-strong); border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
+  .bookmark-btn svg { width:13px; height:13px; }
+
+  .collection-grid { display:grid; grid-template-columns: repeat(auto-fill, 140px); gap:14px; }
+  .collection-tile { cursor:pointer; }
+  .collection-tile-img { width:140px; height:110px; border-radius:var(--radius-sm); background:#EFEFEC; overflow:hidden; border:1px solid var(--line); display:flex; }
+  .collection-tile-img img { width:50%; height:100%; object-fit:cover; }
+  .collection-tile-label { font-size:12.5px; font-weight:600; margin-top:6px; }
+  .collection-tile-count { font-size:11.5px; color:var(--ink-soft); }
+  .new-collection-tile { width:140px; height:110px; border:1.5px dashed var(--line-strong); border-radius:var(--radius-sm); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; cursor:pointer; color:var(--ink-soft); font-size:12px; }
+  .new-collection-tile .plus { font-size:20px; color:var(--ink); }
+
+  .collection-item-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--line); }
+  .collection-item-row:last-child { border-bottom:none; }
+  .collection-item-row img { width:44px; height:44px; object-fit:cover; border-radius:8px; background:#EFEFEC; flex-shrink:0; }
+  .collection-item-row span { flex:1; font-size:13px; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  .app-toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--ink); color:#fff; padding:10px 18px; border-radius:999px; font-size:13px; z-index:100; opacity:0; pointer-events:none; transition:opacity 0.2s ease, transform 0.2s ease; }
+  .app-toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  @media (max-width: 720px) {
+    .category-grid { grid-template-columns: repeat(auto-fill, 84px); }
+    .category-tile-img { width:84px; height:84px; }
+  }
 </style>
 </head>
 <body>
@@ -431,6 +505,19 @@
     background: #fff; color: var(--sidebar-bg); border: none; border-radius: 999px; padding: 14px 34px;
     font-size: 15px; font-weight: 700; cursor: pointer; font-family: "Poppins", sans-serif;
   }
+  .splash-login-form { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 260px; }
+  .splash-login-form[hidden] { display: none; }
+  #resetPasswordBtn {
+    background: #fff; color: var(--sidebar-bg); border: none; border-radius: 999px; padding: 14px 34px;
+    font-size: 15px; font-weight: 700; cursor: pointer; font-family: "Poppins", sans-serif;
+  }
+  .splash-login-form input {
+    width: 100%; box-sizing: border-box; padding: 12px 16px; border-radius: 999px; border: none;
+    font-family: "Poppins", sans-serif; font-size: 14px; text-align: center;
+  }
+  .splash-login-form input:focus { outline: 2px solid rgba(255,255,255,0.6); }
+  .splash-login-error { color: #ffb3b3; font-size: 13px; margin: 0; min-height: 16px; }
+  .splash-forgot-link { color: rgba(255,255,255,0.75); font-size: 13px; margin-top: 2px; text-decoration: underline; cursor: pointer; }
   #splashScreen.opening .splash-seam { height: 100%; opacity: 0; }
   #splashScreen.opening .splash-door-left { transform: translateX(-100%); }
   #splashScreen.opening .splash-door-right { transform: translateX(100%); }
@@ -445,7 +532,24 @@
     <img src="data:image/png;base64,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" alt="" class="splash-logo">
     <h1 class="splash-title">¡Bienvenido a DROBR!</h1>
     <p class="splash-subtitle">Tu armario virtual</p>
-    <button id="splashOpenBtn">Abrir armario</button>
+    <form id="splashLoginForm" class="splash-login-form" novalidate>
+      <input type="email" id="splashEmail" placeholder="Correo electrónico" required autocomplete="username">
+      <input type="text" id="splashUsername" placeholder="Nombre de usuario" autocomplete="off" hidden>
+      <input type="password" id="splashPassword" placeholder="Contraseña" required autocomplete="current-password">
+      <input type="password" id="splashPasswordConfirm" placeholder="Confirmar contraseña" autocomplete="new-password" hidden>
+      <p id="splashLoginError" class="splash-login-error" hidden></p>
+      <button type="submit" id="splashOpenBtn">Abrir armario</button>
+      <a href="#" id="splashForgotLink" class="splash-forgot-link">¿Has olvidado tu contraseña?</a>
+      <a href="#" id="splashToggleModeLink" class="splash-forgot-link">¿No tienes cuenta? Regístrate</a>
+    </form>
+
+    <form id="resetPasswordForm" class="splash-login-form" novalidate hidden>
+      <p class="splash-subtitle" id="resetPasswordEmailLabel" style="margin-bottom:6px;"></p>
+      <input type="password" id="resetNewPassword" placeholder="Nueva contraseña" required autocomplete="new-password">
+      <input type="password" id="resetNewPasswordConfirm" placeholder="Confirmar nueva contraseña" required autocomplete="new-password">
+      <p id="resetPasswordError" class="splash-login-error" hidden></p>
+      <button type="submit" id="resetPasswordBtn">Guardar contraseña</button>
+    </form>
   </div>
 </div>
 <div class="mobile-topbar">
@@ -470,6 +574,10 @@
       <button class="nav-item" id="viewTabShop">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H4.5a1 1 0 0 0-1 1.11l1 9A2 2 0 0 0 6.48 17H16.5a2 2 0 0 0 2-1.83l.85-9.06A1 1 0 0 0 18.35 5H9Z"/><path d="M9 5a3 3 0 0 1 6 0"/><circle cx="9" cy="10" r=".6" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r=".6" fill="currentColor" stroke="none"/></svg>
         ¿Me lo compro?
+      </button>
+      <button class="nav-item" id="viewTabProfile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6"/></svg>
+        Perfil
       </button>
       <button class="nav-item" id="viewTabSettings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -607,6 +715,19 @@
       <div id="combineCheckResults"></div>
     </div>
   </div>
+
+  <div class="modal-backdrop" id="styleVariationsBackdrop">
+    <div class="modal" style="max-width:460px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+        <h2 style="font-size:17px;">Una prenda, varias formas</h2>
+        <button class="modal-close" id="styleVariationsClose">✕</button>
+      </div>
+      <p class="sub" style="margin-bottom:14px;">Saca el máximo partido a lo que tienes.</p>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;" id="styleVariationsGarment"></div>
+      <div id="styleVariationsGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap:14px;"></div>
+      <p class="sub" id="styleVariationsEmpty" style="display:none;">Aún no tienes suficientes prendas para generar variaciones con esta pieza.</p>
+    </div>
+  </div>
   </div>
 
   <div id="viewOutfits" style="display:none;">
@@ -655,6 +776,106 @@
       <button class="btn btn-outline" id="importBackupBtn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg> Cargar copia de seguridad</button>
     </div>
     <div class="ai-status" id="backupStatus" style="display:none;"></div>
+
+    <h2 style="font-size:15px; margin-bottom:8px; margin-top:26px;">Cuenta</h2>
+    <button class="btn btn-outline" id="logoutBtn" style="color:#fff; background:var(--danger); border-color:var(--danger);">Cerrar sesión</button>
+  </div>
+
+  <div id="viewProfile" style="display:none;">
+    <div class="profile-header">
+      <div class="profile-avatar" id="profileAvatar">?</div>
+      <div class="profile-info">
+        <p class="profile-name" id="profileName"></p>
+        <p class="profile-username" id="profileUsername"></p>
+        <p class="profile-bio" id="profileBio"></p>
+        <a class="profile-link" id="profileLink" href="#" target="_blank" rel="noopener" style="display:none;"></a>
+        <div class="profile-stats">
+          <span><b id="profileFollowers">0</b> seguidores</span>
+          <span><b id="profileFollowing">0</b> siguiendo</span>
+          <span class="profile-privacy-badge" id="profilePrivacyBadge" style="display:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            Armario privado
+          </span>
+        </div>
+        <button class="btn-text" id="profileEditBtn" style="margin-top:8px;">Editar perfil</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="profile-section-title"><h2>Mi armario</h2><button class="btn-text" id="profileViewWardrobeBtn">Ver armario →</button></div>
+      <div class="profile-big-number" id="profileGarmentCount">0</div>
+      <p class="profile-big-number-label">prendas</p>
+      <div class="category-grid" id="profileCategoryGrid"></div>
+    </div>
+
+    <div class="section">
+      <div class="profile-section-title"><h2>Mi identidad</h2><button class="btn-text" id="profileIdentityDetailBtn">Ver detalle →</button></div>
+      <p class="sub" style="margin-bottom:16px;">La forma en la que vistes lo que tienes.</p>
+      <div id="profileIdentitySliders"></div>
+    </div>
+
+    <div class="section">
+      <div class="profile-section-title"><h2>Mis combinaciones</h2><button class="btn-text" id="profileViewOutfitsBtn">Ver todos →</button></div>
+      <p class="profile-big-number-label" id="profileOutfitCount" style="margin-bottom:14px;">0 looks creados</p>
+      <div class="outfit-mini-row" id="profileOutfitsRow"></div>
+    </div>
+
+    <div class="section" style="margin-bottom:0;">
+      <div class="profile-section-title"><h2>Mis colecciones</h2></div>
+      <p class="sub" style="margin-bottom:14px;">Guarda y organiza tus looks y prendas favoritas.</p>
+      <div class="collection-grid" id="profileCollectionsGrid"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="coverPickerBackdrop">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-head"><h2 style="font-size:16px;">Elegir imagen de portada</h2><button class="modal-close" id="coverPickerClose">✕</button></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fill,90px); gap:10px; margin-bottom:0;" id="coverPickerGrid"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="collectionPickerBackdrop">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-head"><h2 style="font-size:16px;">Guardar este look en:</h2><button class="modal-close" id="collectionPickerClose">✕</button></div>
+      <div id="collectionPickerList"></div>
+      <button class="btn-text" id="collectionPickerNewBtn" style="margin-top:10px;">+ Crear nueva colección</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="collectionDetailBackdrop">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-head"><h2 id="collectionDetailTitle" style="font-size:16px;"></h2><button class="modal-close" id="collectionDetailClose">✕</button></div>
+      <div id="collectionDetailList"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="editProfileBackdrop">
+    <div class="modal" style="max-width:400px;">
+      <div class="modal-head"><h2 style="font-size:16px;">Editar perfil</h2><button class="modal-close" id="editProfileClose">✕</button></div>
+      <div class="edit-avatar-row">
+        <div class="edit-avatar-preview" id="editProfileAvatarPreview">?</div>
+        <input type="file" id="editProfileAvatarInput" accept="image/*" style="display:none;">
+        <button class="btn btn-outline" id="editProfileAvatarBtn" style="padding:8px 14px; font-size:12.5px;">Cambiar foto</button>
+      </div>
+      <label class="field">Nombre
+        <input type="text" id="editProfileName" maxlength="40" placeholder="Tu nombre">
+      </label>
+      <label class="field">Nombre de usuario
+        <div class="edit-username-row"><span>@</span><input type="text" id="editProfileUsername" maxlength="20" placeholder="usuario"></div>
+      </label>
+      <label class="field">Bio
+        <input type="text" id="editProfileBio" maxlength="90" placeholder="Cuéntanos algo sobre tu estilo">
+      </label>
+      <label class="field">Enlace externo
+        <input type="text" id="editProfileLink" maxlength="120" placeholder="instagram.com/tuusuario">
+      </label>
+      <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-soft); margin-bottom:16px;">
+        <input type="checkbox" id="editProfilePrivate">
+        Armario privado (solo tú puedes verlo por ahora)
+      </label>
+      <p class="error-msg" id="editProfileError" style="display:none;"></p>
+      <button class="btn btn-primary" id="editProfileSaveBtn" style="width:100%;">Guardar cambios</button>
+    </div>
   </div>
   </div>
   </main>
@@ -707,6 +928,17 @@
       <button class="btn btn-outline" data-share-style="flat">Plano</button>
       <button class="btn btn-outline" data-share-style="outline">Contorno blanco</button>
       <button class="btn btn-outline" data-share-style="polaroid">Polaroids</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="syncConflictBackdrop">
+  <div class="modal" style="max-width:380px; text-align:center;">
+    <h2 style="font-size:17px; margin-bottom:10px;">Tienes prendas en dos sitios</h2>
+    <p class="sub" id="syncConflictMessage" style="margin-bottom:20px;"></p>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <button class="btn btn-primary" id="syncUseAccountBtn">Usar los de mi cuenta</button>
+      <button class="btn btn-outline" id="syncMergeBtn">Fusionar ambos</button>
     </div>
   </div>
 </div>
@@ -819,6 +1051,46 @@
   </div>
 </div>
 
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+  import {
+    getAuth, setPersistence, browserLocalPersistence,
+    signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut,
+    verifyPasswordResetCode, confirmPasswordReset
+  } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, collection, getDocs, writeBatch } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBnPDPZRPbWWd-6V8idGQVFFtNBImS5tNk",
+    authDomain: "drobr-app.firebaseapp.com",
+    projectId: "drobr-app",
+    storageBucket: "drobr-app.firebasestorage.app",
+    messagingSenderId: "359868777037",
+    appId: "1:359868777037:web:3c67ed9c9292b51c871204"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  await setPersistence(auth, browserLocalPersistence);
+
+  window.__drobrAuth = auth;
+  window.__drobrDb = db;
+  window.__drobrFirestoreFns = { doc, getDoc, setDoc, collection, getDocs, writeBatch };
+  window.__drobrSignIn = (email, password) => signInWithEmailAndPassword(auth, email, password);
+  window.__drobrSignUp = (email, password) => createUserWithEmailAndPassword(auth, email, password);
+  window.__drobrSignOut = () => signOut(auth);
+  window.__drobrSendPasswordReset = (email) => sendPasswordResetEmail(auth, email, {
+    url: "https://drobr-app.web.app",
+    handleCodeInApp: true
+  });
+  window.__drobrVerifyResetCode = (oobCode) => verifyPasswordResetCode(auth, oobCode);
+  window.__drobrConfirmReset = (oobCode, newPassword) => confirmPasswordReset(auth, oobCode, newPassword);
+
+  onAuthStateChanged(auth, (user) => {
+    document.dispatchEvent(new CustomEvent("drobrAuthChecked", { detail: { user } }));
+  });
+</script>
 <script>
 /* ---------------- Data ---------------- */
 const CATEGORIES = [
@@ -1141,7 +1413,7 @@ let garments = loadGarments();
 let outfits = loadOutfits();
 let pending = null;
 let editingId = null;
-let manualPicks = { top: null, bottom: null, shoes: null, accessory: null };
+let manualPicks = { top: null, bottom: null, shoes: null, accessories: [] };
 let manualAccessoryVisible = false;
 let selectedForMatch = new Set();
 let selectedOutfits = new Set();
@@ -1329,6 +1601,7 @@ function frameHTML(g, index, opts = {}) {
             <div class="frame-actions-left">
               ${opts.duplicable ? `<button class="frame-action-btn" data-dup="${g.id}" title="Duplicar prenda">⧉</button>` : ""}
               ${opts.editable ? `<button class="frame-action-btn" data-edit="${g.id}" title="Editar prenda">✎</button>` : ""}
+              ${opts.editable ? `<button class="frame-action-btn" data-styles="${g.id}" title="Varias formas de llevarla">🎨</button>` : ""}
             </div>
           </div>` : ""}
         </div>
@@ -1506,6 +1779,13 @@ function renderGrid() {
       if (garment) openEditModal(garment);
     });
   });
+  gridEl.querySelectorAll("[data-styles]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const garment = garments.find(g => g.id === btn.dataset.styles);
+      if (garment) openStyleVariations(garment);
+    });
+  });
   gridEl.querySelectorAll("[data-select]").forEach(btn => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -1678,7 +1958,7 @@ function renderOutfitFab() {
     const entry = outfits.find(o => o.id === id);
     if (entry) {
       const realName = entry.name && entry.name !== "Outfit sin nombre" ? entry.name : null;
-      shareOutfitAsImage(entry.top, entry.bottom, entry.shoes, realName, shareBtn, entry.accessory ? [entry.accessory] : []);
+      shareOutfitAsImage(entry.top, entry.bottom, entry.shoes, realName, shareBtn, entryAccessories(entry));
     }
   });
   const organizeBtn = document.getElementById("fabOrganizeOutfitsBtn");
@@ -2387,7 +2667,9 @@ function renderPicker() {
     const options = garments.filter(g => g.category === catId);
     const isMinor = catId === "accessory";
     const items = options.map(g => {
-      const selected = manualPicks[catId] && manualPicks[catId].id === g.id;
+      const selected = isMinor
+        ? manualPicks.accessories.some(a => a.id === g.id)
+        : manualPicks[catId] && manualPicks[catId].id === g.id;
       return `
         <div class="picker-item ${isMinor ? "picker-item-minor" : ""} ${selected ? "selected" : ""}" data-pick="${catId}" data-id="${g.id}">
           <div class="frame-img"><img src="${g.image}" alt=""></div>
@@ -2405,7 +2687,12 @@ function renderPicker() {
     el.addEventListener("click", () => {
       const cat = el.dataset.pick, id = el.dataset.id;
       const garment = garments.find(g => g.id === id);
-      manualPicks[cat] = (manualPicks[cat] && manualPicks[cat].id === id) ? null : garment;
+      if (cat === "accessory") {
+        const already = manualPicks.accessories.some(a => a.id === id);
+        manualPicks.accessories = already ? manualPicks.accessories.filter(a => a.id !== id) : [...manualPicks.accessories, garment];
+      } else {
+        manualPicks[cat] = (manualPicks[cat] && manualPicks[cat].id === id) ? null : garment;
+      }
       document.getElementById("manualResult").innerHTML = "";
       renderPicker();
       updateCheckManualBtn();
@@ -2495,7 +2782,7 @@ async function handleCheckManual() {
   });
 
   const manualShareBtn = document.getElementById("manualShareBtn");
-  manualShareBtn.addEventListener("click", () => shareOutfitAsImage(top, bottom, shoes, null, manualShareBtn, manualPicks.accessory ? [manualPicks.accessory] : []));
+  manualShareBtn.addEventListener("click", () => shareOutfitAsImage(top, bottom, shoes, null, manualShareBtn, manualPicks.accessories));
 }
 
 /* ---------------- ¿Qué combina con esto? ---------------- */
@@ -2589,6 +2876,10 @@ function formatDate(iso) {
   } catch { return iso; }
 }
 
+function entryAccessories(entry) {
+  if (Array.isArray(entry.accessories)) return entry.accessories;
+  return entry.accessory ? [entry.accessory] : [];
+}
 function outfitTagChipHTML(entry) {
   let html = "";
   if (entry.taggedSeason) {
@@ -2612,7 +2903,8 @@ function moveOutfit(id, direction) {
 }
 function outfitEntryHTML(entry) {
   const isSelected = selectedOutfits.has(entry.id);
-  const cardsHTML = `${frameHTML(entry.top, 0, { compact: true })}${frameHTML(entry.bottom, 0, { compact: true })}${frameHTML(entry.shoes, 0, { compact: true })}${entry.accessory ? frameHTML(entry.accessory, 0, { compact: true }) : ""}`;
+  const accessories = entryAccessories(entry);
+  const cardsHTML = `${frameHTML(entry.top, 0, { compact: true })}${frameHTML(entry.bottom, 0, { compact: true })}${frameHTML(entry.shoes, 0, { compact: true })}${accessories.map(a => frameHTML(a, 0, { compact: true })).join("")}`;
   const leadControl = outfitsOrganizeMode
     ? `<div style="display:flex; flex-direction:column; gap:1px; flex-shrink:0;">
          <button class="frame-action-btn" data-move-outfit-up="${entry.id}" title="Subir" style="line-height:1;">▲</button>
@@ -2628,6 +2920,7 @@ function outfitEntryHTML(entry) {
           <button class="btn-text" data-rename-outfit="${entry.id}" title="Nombrar outfit" style="flex-shrink:0;">✎</button>
         </div>
         <button class="fav-star-btn ${entry.favorite ? "active" : ""}" data-fav-outfit="${entry.id}" title="${entry.favorite ? "Quitar de favoritos" : "Marcar como favorito"}" style="flex-shrink:0;">${entry.favorite ? "★" : "☆"}</button>
+        <button class="btn-text" data-add-to-collection="${entry.id}" title="Añadir a colección" style="flex-shrink:0;">+ Colección</button>
       </div>
       <div style="display:flex; gap:8px; flex-wrap:wrap;">
         <span class="verdict-chip" style="background:${entry.color}; display:inline-block;">${entry.label}</span>
@@ -2729,6 +3022,9 @@ function renderOutfits() {
   });
   listEl.querySelectorAll("[data-move-outfit-down]").forEach(btn => {
     btn.addEventListener("click", () => moveOutfit(btn.dataset.moveOutfitDown, 1));
+  });
+  listEl.querySelectorAll("[data-add-to-collection]").forEach(btn => {
+    btn.addEventListener("click", () => openCollectionPicker(btn.dataset.addToCollection));
   });
   listEl.querySelectorAll("[data-fav-outfit]").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -3081,18 +3377,19 @@ function flipAnimate(containerEl, renderFn) {
     }
   });
 }
-function showSavedOutfitCard(top, bottom, shoes, outfitName, accessory) {
+function showSavedOutfitCard(top, bottom, shoes, outfitName, accessories) {
   closeAllActionOverlays();
+  const list = accessories || [];
   const gridEl = document.getElementById("savedOutfitGrid");
   gridEl.innerHTML = frameHTML(top, 0, { minimal: true }) + frameHTML(bottom, 0, { minimal: true }) + frameHTML(shoes, 0, { minimal: true }) +
-    (accessory ? frameHTML(accessory, 0, { minimal: true }) : "");
+    list.map(a => frameHTML(a, 0, { minimal: true })).join("");
   document.getElementById("savedOutfitBackdrop").classList.add("open");
   document.getElementById("savedOutfitGoBtn").onclick = () => {
     document.getElementById("savedOutfitBackdrop").classList.remove("open");
     switchView("outfits");
   };
   document.getElementById("savedOutfitShareBtn").onclick = () => {
-    shareOutfitAsImage(top, bottom, shoes, outfitName, document.getElementById("savedOutfitShareBtn"), accessory);
+    shareOutfitAsImage(top, bottom, shoes, outfitName, document.getElementById("savedOutfitShareBtn"), list);
   };
 }
 document.getElementById("savedOutfitClose").addEventListener("click", () => document.getElementById("savedOutfitBackdrop").classList.remove("open"));
@@ -3274,12 +3571,12 @@ document.getElementById("outfitTagSaveBtn").addEventListener("click", () => {
 document.getElementById("builderToggleBtn").addEventListener("click", () => {
   closeAllActionOverlays();
   const preselected = garments.filter(g => selectedForMatch.has(g.id));
-  manualPicks = { top: null, bottom: null, shoes: null, accessory: null };
+  manualPicks = { top: null, bottom: null, shoes: null, accessories: [] };
   preselected.forEach(g => {
     if (g.category === "top" || g.category === "bottom" || g.category === "shoes") manualPicks[g.category] = g;
-    else if (g.category === "accessory" && !manualPicks.accessory) manualPicks.accessory = g;
+    else if (g.category === "accessory") manualPicks.accessories.push(g);
   });
-  manualAccessoryVisible = !!manualPicks.accessory;
+  manualAccessoryVisible = manualPicks.accessories.length > 0;
   document.getElementById("toggleManualAccessoryBtn").textContent = manualAccessoryVisible ? "− Quitar complemento" : "+ Añadir complemento";
   document.getElementById("toggleManualAccessoryBtn").style.display = garments.some(g => g.category === "accessory") ? "block" : "none";
   renderPicker();
@@ -3289,7 +3586,7 @@ document.getElementById("builderToggleBtn").addEventListener("click", () => {
 });
 document.getElementById("toggleManualAccessoryBtn").addEventListener("click", () => {
   manualAccessoryVisible = !manualAccessoryVisible;
-  if (!manualAccessoryVisible) manualPicks.accessory = null;
+  if (!manualAccessoryVisible) manualPicks.accessories = [];
   document.getElementById("toggleManualAccessoryBtn").textContent = manualAccessoryVisible ? "− Quitar complemento" : "+ Añadir complemento";
   document.getElementById("manualResult").innerHTML = "";
   renderPicker();
@@ -3313,7 +3610,7 @@ document.getElementById("combineCheckOverlayClose").addEventListener("click", ()
 document.getElementById("combineCheckOverlayBackdrop").addEventListener("click", (e) => { if (e.target.id === "combineCheckOverlayBackdrop") document.getElementById("combineCheckOverlayBackdrop").classList.remove("open"); });
 document.getElementById("checkManualBtn").addEventListener("click", handleCheckManual);
 document.getElementById("manualSaveBtnTop").addEventListener("click", async () => {
-  const { top, bottom, shoes, accessory } = manualPicks;
+  const { top, bottom, shoes, accessories } = manualPicks;
   if (!top || !bottom || !shoes) return;
   const btn = document.getElementById("manualSaveBtnTop");
   btn.disabled = true;
@@ -3322,10 +3619,10 @@ document.getElementById("manualSaveBtnTop").addEventListener("click", async () =
   const text = localOutfitText(top, bottom, shoes, evalRes);
   const meta = evalRes.ok ? { label: "Combina", color: "var(--success)" } : { label: "No combina", color: "var(--danger)" };
   const name = await generateOutfitName(top, bottom, shoes);
-  addOutfit({ top, bottom, shoes, accessory: accessory || null, label: meta.label, color: meta.color, text, name });
+  addOutfit({ top, bottom, shoes, accessories, label: meta.label, color: meta.color, text, name });
   btn.textContent = "Guardar outfit";
   btn.disabled = false;
-  showSavedOutfitCard(top, bottom, shoes, name, accessory);
+  showSavedOutfitCard(top, bottom, shoes, name, accessories);
 });
 document.getElementById("againBtn").addEventListener("click", () => handleSuggest(document.getElementById("contextSelect").value, document.getElementById("seasonSuggestSelect").value));
 document.getElementById("generateOutfitBtn").addEventListener("click", () => {
@@ -3487,6 +3784,7 @@ const PAGE_META = {
   wardrobe: { title: "Mi armario", subtitle: "Gestiona tu ropa y crea combinaciones que realmente vayan con tu estilo.", action: true },
   outfits: { title: "Mis outfits", subtitle: "Tu colección de outfits, lista para consultar cuando quieras.", action: false },
   shop: { title: "¿Me lo compro?", subtitle: "¿Dudas si esa prenda combinaría con lo que ya tienes? ¡Compruébalo antes de comprarla!", action: false },
+  profile: { title: "Perfil", subtitle: "DROBR no muestra quién eres. Muestra cómo utilizas lo que tienes.", action: false },
   settings: { title: "Configuración", subtitle: "Copia de seguridad de tu armario.", action: false },
 };
 
@@ -3495,6 +3793,7 @@ function switchView(view) {
   document.getElementById("viewWardrobe").style.display = view === "wardrobe" ? "block" : "none";
   document.getElementById("viewOutfits").style.display = view === "outfits" ? "block" : "none";
   document.getElementById("viewShop").style.display = view === "shop" ? "block" : "none";
+  document.getElementById("viewProfile").style.display = view === "profile" ? "block" : "none";
   document.getElementById("viewSettings").style.display = view === "settings" ? "block" : "none";
   if (view === "wardrobe") {
     renderActions();
@@ -3511,17 +3810,22 @@ function switchView(view) {
   const wTab = document.getElementById("viewTabWardrobe");
   const oTab = document.getElementById("viewTabOutfits");
   const shTab = document.getElementById("viewTabShop");
+  const pTab = document.getElementById("viewTabProfile");
   const sTab = document.getElementById("viewTabSettings");
-  [wTab, oTab, shTab, sTab].forEach(t => t.classList.remove("nav-active"));
-  ({ wardrobe: wTab, outfits: oTab, shop: shTab, settings: sTab }[view]).classList.add("nav-active");
+  [wTab, oTab, shTab, pTab, sTab].forEach(t => t.classList.remove("nav-active"));
+  ({ wardrobe: wTab, outfits: oTab, shop: shTab, profile: pTab, settings: sTab }[view]).classList.add("nav-active");
   if (view === "outfits") renderOutfits();
   if (view === "shop") renderShopView();
+  if (view === "profile") renderProfile();
 }
 document.getElementById("viewTabWardrobe").addEventListener("click", () => switchView("wardrobe"));
 document.getElementById("viewTabOutfits").addEventListener("click", () => switchView("outfits"));
 document.getElementById("viewTabShop").addEventListener("click", () => switchView("shop"));
+document.getElementById("viewTabProfile").addEventListener("click", () => switchView("profile"));
 document.getElementById("viewTabSettings").addEventListener("click", () => switchView("settings"));
 document.getElementById("topbarSettingsBtn").addEventListener("click", () => switchView("settings"));
+document.getElementById("profileViewWardrobeBtn").addEventListener("click", () => switchView("wardrobe"));
+document.getElementById("profileViewOutfitsBtn").addEventListener("click", () => switchView("outfits"));
 
 document.getElementById("shopUploadBtn").addEventListener("click", () => document.getElementById("shopFileInput").click());
 document.getElementById("shopFileInput").addEventListener("change", async (e) => {
@@ -3637,19 +3941,783 @@ try {
     document.getElementById("onboardingBackdrop").classList.add("open");
   }
 } catch {}
-const SPLASH_SESSION_KEY = "drobr_splashShown_v1";
-let splashAlreadySeen = false;
-try { splashAlreadySeen = sessionStorage.getItem(SPLASH_SESSION_KEY) === "1"; } catch {}
-if (splashAlreadySeen) {
-  document.getElementById("splashScreen").classList.add("gone");
-} else {
-  try { sessionStorage.setItem(SPLASH_SESSION_KEY, "1"); } catch {}
+const splashEl = document.getElementById("splashScreen");
+const splashFormEl = document.getElementById("splashLoginForm");
+let splashModo = "login";
+
+function openSplashDoors(skipAnim) {
+  if (skipAnim) { splashEl.classList.add("gone"); return; }
+  splashEl.classList.add("opening");
+  setTimeout(() => { splashEl.classList.add("gone"); }, 1400);
 }
-document.getElementById("splashOpenBtn").addEventListener("click", () => {
-  const splash = document.getElementById("splashScreen");
-  splash.classList.add("opening");
-  setTimeout(() => { splash.classList.add("gone"); }, 1400);
+
+function actualizarModoSplash() {
+  const confirmEl = document.getElementById("splashPasswordConfirm");
+  const usernameEl = document.getElementById("splashUsername");
+  const btnEl = document.getElementById("splashOpenBtn");
+  const toggleEl = document.getElementById("splashToggleModeLink");
+  const forgotEl = document.getElementById("splashForgotLink");
+  if (splashModo === "registro") {
+    confirmEl.hidden = false;
+    usernameEl.hidden = false;
+    btnEl.textContent = "Crear cuenta";
+    toggleEl.textContent = "¿Ya tienes cuenta? Inicia sesión";
+    forgotEl.hidden = true;
+  } else {
+    confirmEl.hidden = true;
+    usernameEl.hidden = true;
+    btnEl.textContent = "Abrir armario";
+    toggleEl.textContent = "¿No tienes cuenta? Regístrate";
+    forgotEl.hidden = false;
+  }
+}
+
+document.getElementById("splashToggleModeLink").addEventListener("click", (e) => {
+  e.preventDefault();
+  splashModo = splashModo === "login" ? "registro" : "login";
+  document.getElementById("splashLoginError").hidden = true;
+  actualizarModoSplash();
 });
+
+// --- Restablecer contraseña desde el enlace del correo ---
+const urlParamsReset = new URLSearchParams(location.search);
+const modoAccionAuth = urlParamsReset.get("mode");
+const oobCodeReset = urlParamsReset.get("oobCode");
+let enFlujoResetPassword = false;
+
+if (modoAccionAuth === "resetPassword" && oobCodeReset) {
+  enFlujoResetPassword = true;
+  document.getElementById("splashLoginForm").hidden = true;
+  const resetForm = document.getElementById("resetPasswordForm");
+  const emailLabel = document.getElementById("resetPasswordEmailLabel");
+  const resetErrorEl = document.getElementById("resetPasswordError");
+  resetForm.hidden = false;
+
+  window.__drobrVerifyResetCode(oobCodeReset).then((email) => {
+    emailLabel.textContent = `Restableciendo contraseña de ${email}`;
+  }).catch(() => {
+    emailLabel.textContent = "";
+    resetErrorEl.textContent = "Este enlace no es válido o ha caducado. Solicita uno nuevo desde la app.";
+    resetErrorEl.hidden = false;
+    resetForm.querySelector("button").disabled = true;
+  });
+
+  resetForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const pass1 = document.getElementById("resetNewPassword").value;
+    const pass2 = document.getElementById("resetNewPasswordConfirm").value;
+    resetErrorEl.hidden = true;
+    if (pass1.length < 6) {
+      resetErrorEl.textContent = "La contraseña debe tener al menos 6 caracteres.";
+      resetErrorEl.hidden = false;
+      return;
+    }
+    if (pass1 !== pass2) {
+      resetErrorEl.textContent = "Las contraseñas no coinciden.";
+      resetErrorEl.hidden = false;
+      return;
+    }
+    const btn = document.getElementById("resetPasswordBtn");
+    btn.disabled = true;
+    btn.textContent = "Guardando...";
+    try {
+      await window.__drobrConfirmReset(oobCodeReset, pass1);
+      resetForm.hidden = true;
+      history.replaceState({}, "", location.pathname);
+      const loginForm = document.getElementById("splashLoginForm");
+      loginForm.hidden = false;
+      const loginError = document.getElementById("splashLoginError");
+      loginError.style.color = "#b3ffb3";
+      loginError.textContent = "¡Contraseña actualizada! Ya puedes iniciar sesión.";
+      loginError.hidden = false;
+    } catch (err) {
+      resetErrorEl.textContent = "No se pudo actualizar la contraseña. El enlace puede haber caducado.";
+      resetErrorEl.hidden = false;
+      btn.disabled = false;
+      btn.textContent = "Guardar contraseña";
+    }
+  });
+}
+
+// Espera a que Firebase confirme si ya hay sesión iniciada antes de decidir
+document.addEventListener("drobrAuthChecked", (e) => {
+  if (enFlujoResetPassword) return;
+  const SPLASH_SESSION_KEY = "drobr_splashShown_v1";
+  if (e.detail.user) {
+    let yaVisto = false;
+    try { yaVisto = sessionStorage.getItem(SPLASH_SESSION_KEY) === "1"; } catch {}
+    try { sessionStorage.setItem(SPLASH_SESSION_KEY, "1"); } catch {}
+    openSplashDoors(yaVisto);
+  }
+}, { once: true });
+
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  try {
+    await window.__drobrSignOut();
+    location.reload();
+  } catch (err) {
+    alert("No se pudo cerrar sesión. Inténtalo de nuevo.");
+  }
+});
+
+function showSyncConflictModal(mensaje) {
+  return new Promise((resolve) => {
+    const backdrop = document.getElementById("syncConflictBackdrop");
+    document.getElementById("syncConflictMessage").textContent = mensaje;
+    backdrop.classList.add("open");
+    const useBtn = document.getElementById("syncUseAccountBtn");
+    const mergeBtn = document.getElementById("syncMergeBtn");
+    const cleanup = () => {
+      backdrop.classList.remove("open");
+      useBtn.removeEventListener("click", onUse);
+      mergeBtn.removeEventListener("click", onMerge);
+    };
+    const onUse = () => { cleanup(); resolve("cuenta"); };
+    const onMerge = () => { cleanup(); resolve("fusionar"); };
+    useBtn.addEventListener("click", onUse);
+    mergeBtn.addEventListener("click", onMerge);
+  });
+}
+
+const SYNC_COLECCIONES = {
+  wardrobe: { key: STORAGE_KEY, sub: "prendas" },
+  outfits: { key: OUTFITS_KEY, sub: "outfits" }
+};
+
+function leerLocalParaSync() {
+  const out = {};
+  for (const [campo, { key }] of Object.entries(SYNC_COLECCIONES)) {
+    try { out[campo] = JSON.parse(localStorage.getItem(key) || "[]"); } catch { out[campo] = []; }
+  }
+  try { out.customCategories = JSON.parse(localStorage.getItem(CUSTOM_CATEGORIES_KEY) || "[]"); } catch { out.customCategories = []; }
+  try { out.categoryLabels = JSON.parse(localStorage.getItem(CATEGORY_LABELS_KEY) || "{}"); } catch { out.categoryLabels = {}; }
+  return out;
+}
+
+function escribirLocalDesdeSync(datos) {
+  for (const [campo, { key }] of Object.entries(SYNC_COLECCIONES)) {
+    localStorage.setItem(key, JSON.stringify(datos[campo] || []));
+  }
+  localStorage.setItem(CUSTOM_CATEGORIES_KEY, JSON.stringify(datos.customCategories || []));
+  localStorage.setItem(CATEGORY_LABELS_KEY, JSON.stringify(datos.categoryLabels || {}));
+}
+
+function fusionarListas(local, remoto) {
+  const combinados = [...local];
+  const idsExistentes = new Set(local.map(item => item && item.id));
+  for (const item of remoto) {
+    if (item && !idsExistentes.has(item.id)) combinados.push(item);
+  }
+  return combinados;
+}
+
+async function subirListaATandas(uid, sub, lista) {
+  const { doc, collection, writeBatch } = window.__drobrFirestoreFns;
+  for (let i = 0; i < lista.length; i += 400) {
+    const tanda = lista.slice(i, i + 400);
+    const batch = writeBatch(window.__drobrDb);
+    for (const item of tanda) {
+      if (!item || !item.id) continue;
+      batch.set(doc(collection(window.__drobrDb, "armarios", uid, sub), String(item.id)), item);
+    }
+    await batch.commit();
+  }
+}
+
+async function leerColeccion(uid, sub) {
+  const { collection, getDocs } = window.__drobrFirestoreFns;
+  const snap = await getDocs(collection(window.__drobrDb, "armarios", uid, sub));
+  return snap.docs.map(d => d.data());
+}
+
+async function sincronizarConFirestore(user) {
+  const { doc, getDoc, setDoc } = window.__drobrFirestoreFns;
+  const metaRef = doc(window.__drobrDb, "armarios", user.uid);
+  const metaSnap = await getDoc(metaRef);
+  const local = leerLocalParaSync();
+  const localTieneDatos = local.wardrobe.length > 0;
+
+  if (metaSnap.exists()) {
+    const metaData = metaSnap.data();
+    if (metaData.username && !profileData.username) {
+      profileData = { ...profileData, username: metaData.username, name: metaData.name || profileData.name };
+      saveProfile(profileData);
+    }
+  }
+
+  const remoto = {
+    wardrobe: await leerColeccion(user.uid, "prendas"),
+    outfits: await leerColeccion(user.uid, "outfits"),
+    customCategories: metaSnap.exists() ? (metaSnap.data().customCategories || []) : [],
+    categoryLabels: metaSnap.exists() ? (metaSnap.data().categoryLabels || {}) : {}
+  };
+  const remotoTieneDatos = remoto.wardrobe.length > 0;
+
+  async function subirTodo(datos) {
+    await setDoc(metaRef, { customCategories: datos.customCategories, categoryLabels: datos.categoryLabels });
+    for (const [campo, { sub }] of Object.entries(SYNC_COLECCIONES)) {
+      await subirListaATandas(user.uid, sub, datos[campo]);
+    }
+  }
+
+  if (!remotoTieneDatos) {
+    await subirTodo(local);
+    return;
+  }
+  if (!localTieneDatos) {
+    escribirLocalDesdeSync(remoto);
+    return;
+  }
+
+  const eleccion = await showSyncConflictModal(
+    "Tienes prendas guardadas tanto en tu cuenta como en este dispositivo. ¿Qué quieres hacer?"
+  );
+  if (eleccion === "cuenta") {
+    escribirLocalDesdeSync(remoto);
+  } else {
+    const fusionado = {
+      wardrobe: fusionarListas(local.wardrobe, remoto.wardrobe),
+      outfits: fusionarListas(local.outfits, remoto.outfits),
+      customCategories: fusionarListas(local.customCategories, remoto.customCategories),
+      categoryLabels: { ...remoto.categoryLabels, ...local.categoryLabels }
+    };
+    await subirTodo(fusionado);
+    escribirLocalDesdeSync(fusionado);
+  }
+}
+
+splashFormEl.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("splashEmail").value.trim();
+  const password = document.getElementById("splashPassword").value;
+  const passwordConfirm = document.getElementById("splashPasswordConfirm").value;
+  const username = document.getElementById("splashUsername").value.trim().toLowerCase();
+  const errorEl = document.getElementById("splashLoginError");
+  errorEl.style.color = "";
+  errorEl.hidden = true;
+
+  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  if (!email || !password) {
+    errorEl.textContent = "Rellena correo y contraseña.";
+    errorEl.hidden = false;
+    return;
+  }
+  if (!emailValido) {
+    errorEl.textContent = "Correo no válido.";
+    errorEl.hidden = false;
+    return;
+  }
+  if (splashModo === "registro") {
+    if (password.length < 6) {
+      errorEl.textContent = "La contraseña debe tener al menos 6 caracteres.";
+      errorEl.hidden = false;
+      return;
+    }
+    if (password !== passwordConfirm) {
+      errorEl.textContent = "Las contraseñas no coinciden.";
+      errorEl.hidden = false;
+      return;
+    }
+    if (!/^[a-z0-9_.]{3,20}$/.test(username)) {
+      errorEl.textContent = "El nombre de usuario debe tener entre 3 y 20 caracteres (letras, números, puntos o guiones bajos, sin espacios).";
+      errorEl.hidden = false;
+      return;
+    }
+  }
+
+  const submitBtn = document.getElementById("splashOpenBtn");
+  submitBtn.disabled = true;
+  submitBtn.textContent = splashModo === "registro" ? "Comprobando disponibilidad..." : "Entrando...";
+  try {
+    let cred;
+    if (splashModo === "registro") {
+      const { doc, getDoc, setDoc } = window.__drobrFirestoreFns;
+      const usernameRef = doc(window.__drobrDb, "usernames", username);
+      const usernameSnap = await getDoc(usernameRef);
+      if (usernameSnap.exists()) {
+        errorEl.textContent = "Ese nombre de usuario ya está en uso. Prueba con otro.";
+        errorEl.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Crear cuenta";
+        return;
+      }
+      submitBtn.textContent = "Creando cuenta...";
+      cred = await window.__drobrSignUp(email, password);
+      await setDoc(usernameRef, { uid: cred.user.uid });
+      await setDoc(doc(window.__drobrDb, "armarios", cred.user.uid), { username, name: username }, { merge: true });
+      profileData = { ...profileData, username, name: username };
+      saveProfile(profileData);
+    } else {
+      cred = await window.__drobrSignIn(email, password);
+    }
+    submitBtn.textContent = "Sincronizando armario...";
+    await sincronizarConFirestore(cred.user);
+    location.reload();
+  } catch (err) {
+    if (splashModo === "registro") {
+      const mapa = {
+        "auth/email-already-in-use": "Ese correo ya tiene una cuenta. Inicia sesión.",
+        "auth/weak-password": "La contraseña es demasiado débil.",
+        "auth/invalid-email": "Correo no válido."
+      };
+      errorEl.textContent = mapa[err.code] || "No se pudo crear la cuenta. Inténtalo de nuevo.";
+    } else {
+      const codigosConocidos = ["auth/invalid-email", "auth/user-not-found", "auth/wrong-password", "auth/invalid-credential"];
+      errorEl.textContent = codigosConocidos.includes(err.code)
+        ? "Correo o contraseña incorrectos."
+        : "No se pudo iniciar sesión. Inténtalo de nuevo.";
+    }
+    errorEl.hidden = false;
+    submitBtn.disabled = false;
+    submitBtn.textContent = splashModo === "registro" ? "Crear cuenta" : "Abrir armario";
+  }
+});
+
+document.getElementById("splashForgotLink").addEventListener("click", async (e) => {
+  e.preventDefault();
+  const email = document.getElementById("splashEmail").value.trim();
+  const errorEl = document.getElementById("splashLoginError");
+  errorEl.hidden = true;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errorEl.textContent = "Escribe tu correo arriba para recuperar la contraseña.";
+    errorEl.hidden = false;
+    return;
+  }
+  try {
+    await window.__drobrSendPasswordReset(email);
+    errorEl.style.color = "#b3ffb3";
+    errorEl.textContent = "Te hemos enviado un correo para restablecer la contraseña.";
+    errorEl.hidden = false;
+  } catch (err) {
+    errorEl.style.color = "";
+    errorEl.textContent = "No se pudo enviar el correo. Comprueba que sea correcto.";
+    errorEl.hidden = false;
+  }
+});
+
+/* ================= PERFIL ================= */
+const PROFILE_KEY = "armario_profile_v1";
+function loadProfile() {
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  return { name: "Tu nombre", username: "usuario", bio: "La misma ropa, más posibilidades.", followers: 0, following: 0, avatar: null, link: "", isPrivate: false };
+}
+function saveProfile(p) { try { localStorage.setItem(PROFILE_KEY, JSON.stringify(p)); } catch {} }
+let profileData = loadProfile();
+
+const IDENTITY_KEY = "armario_identity_v1";
+const IDENTITY_AXES = [
+  { id: "minimalista_expresivo", left: "Minimalista", right: "Expresivo" },
+  { id: "neutro_colorido", left: "Neutro", right: "Colorido" },
+  { id: "clasico_urbano", left: "Clásico", right: "Urbano" },
+  { id: "esencial_atrevido", left: "Esencial", right: "Atrevido" },
+  { id: "constante_experimental", left: "Constante", right: "Experimental" },
+];
+function loadIdentity() {
+  try {
+    const raw = localStorage.getItem(IDENTITY_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch {}
+  const def = {};
+  IDENTITY_AXES.forEach(a => def[a.id] = 50);
+  return def;
+}
+function saveIdentity(obj) { try { localStorage.setItem(IDENTITY_KEY, JSON.stringify(obj)); } catch {} }
+let identityData = loadIdentity();
+
+// La identidad se recalcula a partir del comportamiento real del usuario: la composición
+// de su armario (colores, formalidad media) y los patrones que aparecen en sus outfits
+// guardados (variedad de categorías combinadas). Cuantas más prendas y looks tenga el
+// usuario, más fiable es esta señal; con un armario vacío se mantienen los valores por defecto.
+function recalcInferredIdentity() {
+  if (garments.length === 0) return identityData;
+  let coloridoScore = 0, formalitySum = 0, formalityCount = 0;
+  garments.forEach(g => {
+    if (g.color && !["blanco", "negro", "gris", "beige", "azul_marino", "marron"].includes(g.color)) coloridoScore++;
+    if (typeof g.formality === "number") { formalitySum += g.formality; formalityCount++; }
+  });
+  identityData.neutro_colorido = Math.round((coloridoScore / garments.length) * 100);
+  const avgFormality = formalityCount ? formalitySum / formalityCount : 3;
+  identityData.clasico_urbano = Math.round(Math.max(0, Math.min(100, ((avgFormality - 1) / 4) * 100)));
+  if (outfits.length > 0) {
+    const uniqueCategoriesUsed = new Set(outfits.flatMap(o => [o.top.category, o.bottom.category, o.shoes.category])).size;
+    identityData.constante_experimental = Math.min(100, Math.round((uniqueCategoriesUsed / 5) * 100));
+  }
+  saveIdentity(identityData);
+  return identityData;
+}
+
+const CATEGORY_COVERS_KEY = "armario_categoryCovers_v1";
+function loadCategoryCovers() {
+  try { const raw = localStorage.getItem(CATEGORY_COVERS_KEY); return raw ? JSON.parse(raw) : {}; } catch { return {}; }
+}
+function saveCategoryCovers(obj) { try { localStorage.setItem(CATEGORY_COVERS_KEY, JSON.stringify(obj)); } catch {} }
+let categoryCovers = loadCategoryCovers();
+
+const COLLECTIONS_KEY = "armario_collections_v1";
+function loadCollections() {
+  try { const raw = localStorage.getItem(COLLECTIONS_KEY); return raw ? JSON.parse(raw) : []; } catch { return []; }
+}
+function saveCollections(list) { try { localStorage.setItem(COLLECTIONS_KEY, JSON.stringify(list)); } catch {} }
+let collections = loadCollections();
+
+function showAppToast(msg) {
+  let el = document.getElementById("appToast");
+  if (!el) {
+    el = document.createElement("div");
+    el.id = "appToast";
+    el.className = "app-toast";
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.classList.remove("show");
+  void el.offsetWidth;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.classList.remove("show"), 2400);
+}
+
+function profileAvatarHTML(size) {
+  return profileData.avatar
+    ? `<img src="${profileData.avatar}" alt="">`
+    : (profileData.name || "?").charAt(0).toUpperCase();
+}
+function renderProfile() {
+  recalcInferredIdentity();
+  document.getElementById("profileAvatar").innerHTML = profileAvatarHTML();
+  document.getElementById("profileName").textContent = profileData.name;
+  document.getElementById("profileUsername").textContent = "@" + profileData.username;
+  document.getElementById("profileBio").textContent = profileData.bio;
+  const linkEl = document.getElementById("profileLink");
+  if (profileData.link) {
+    const href = /^https?:\/\//i.test(profileData.link) ? profileData.link : `https://${profileData.link}`;
+    linkEl.href = href;
+    linkEl.textContent = profileData.link.replace(/^https?:\/\//i, "");
+    linkEl.style.display = "inline-block";
+  } else {
+    linkEl.style.display = "none";
+  }
+  document.getElementById("profilePrivacyBadge").style.display = profileData.isPrivate ? "inline-flex" : "none";
+  document.getElementById("profileFollowers").textContent = profileData.followers;
+  document.getElementById("profileFollowing").textContent = profileData.following;
+  document.getElementById("profileGarmentCount").textContent = garments.length;
+  renderProfileCategories();
+  renderProfileIdentitySliders();
+  renderProfileOutfits();
+  renderProfileCollections();
+}
+
+function renderProfileCategories() {
+  const grid = document.getElementById("profileCategoryGrid");
+  const sections = allSections();
+  grid.innerHTML = sections.map(sec => {
+    const items = garmentsInSection(garments, sec);
+    if (items.length === 0) return "";
+    const coverId = categoryCovers[sec.id];
+    const coverGarment = (coverId && items.find(g => g.id === coverId)) || items[items.length - 1];
+    return `
+      <div>
+        <div class="category-tile" data-cat-tile="${sec.id}">
+          <div class="category-tile-img"><img src="${coverGarment.image}" alt="${sec.label}"></div>
+          <button class="category-tile-pin" data-pin-cat="${sec.id}" title="Fijar imagen de portada">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 3h6l1 6 3 3v2H5v-2l3-3z"/></svg>
+          </button>
+        </div>
+        <div class="category-tile-label">${sec.label}</div>
+        <div class="category-tile-count">${items.length} prenda${items.length === 1 ? "" : "s"}</div>
+      </div>`;
+  }).join("");
+  grid.querySelectorAll("[data-pin-cat]").forEach(btn => {
+    btn.addEventListener("click", (e) => { e.stopPropagation(); openCoverPicker(btn.dataset.pinCat); });
+  });
+  grid.querySelectorAll("[data-cat-tile]").forEach(tile => {
+    tile.addEventListener("click", () => switchView("wardrobe"));
+  });
+}
+
+function openCoverPicker(categoryId) {
+  const sections = allSections();
+  const sec = sections.find(s => s.id === categoryId);
+  if (!sec) return;
+  const items = garmentsInSection(garments, sec);
+  const listEl = document.getElementById("coverPickerGrid");
+  listEl.innerHTML = items.map(g => `<div class="frame frame-minimal" data-cover-choice="${g.id}" style="cursor:pointer;"><div class="frame-inner"><div class="frame-img"><img src="${g.image}" alt=""></div></div></div>`).join("");
+  listEl.querySelectorAll("[data-cover-choice]").forEach(el => {
+    el.addEventListener("click", () => {
+      categoryCovers[categoryId] = el.dataset.coverChoice;
+      saveCategoryCovers(categoryCovers);
+      document.getElementById("coverPickerBackdrop").classList.remove("open");
+      renderProfileCategories();
+    });
+  });
+  document.getElementById("coverPickerBackdrop").classList.add("open");
+}
+
+function renderProfileIdentitySliders() {
+  const el = document.getElementById("profileIdentitySliders");
+  el.innerHTML = IDENTITY_AXES.map(axis => {
+    const v = identityData[axis.id] ?? 50;
+    return `
+    <div class="identity-row">
+      <span class="identity-label">${axis.left}</span>
+      <div class="identity-track"><div class="identity-dot" style="left:${v}%;"></div></div>
+      <span class="identity-label right">${axis.right}</span>
+    </div>`;
+  }).join("");
+}
+
+function outfitMiniCardHTML(entry) {
+  const accessories = entryAccessories(entry);
+  const imgs = [entry.top, entry.bottom, entry.shoes, ...accessories].filter(Boolean).slice(0, 3);
+  const inCollectionCount = collections.filter(c => (c.outfitIds || []).includes(entry.id)).length;
+  return `
+    <div class="outfit-mini-card" data-outfit-mini="${entry.id}">
+      <button class="bookmark-btn" data-save-outfit="${entry.id}" title="Guardar en colección">
+        <svg viewBox="0 0 24 24" fill="${inCollectionCount ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </button>
+      <div class="outfit-mini-imgs">${imgs.map(g => `<div class="frame-img"><img src="${g.image}" alt=""></div>`).join("")}</div>
+      <p class="outfit-mini-name">${entry.name || "Outfit sin nombre"}</p>
+      <p class="outfit-mini-sub">${entry.label || ""}</p>
+    </div>`;
+}
+
+function renderProfileOutfits() {
+  document.getElementById("profileOutfitCount").textContent = `${outfits.length} look${outfits.length === 1 ? "" : "s"} creados`;
+  const row = document.getElementById("profileOutfitsRow");
+  row.innerHTML = outfits.slice(0, 10).map(outfitMiniCardHTML).join("") || `<p class="sub">Aún no has creado ninguna combinación.</p>`;
+  row.querySelectorAll("[data-save-outfit]").forEach(btn => {
+    btn.addEventListener("click", (e) => { e.stopPropagation(); openCollectionPicker(btn.dataset.saveOutfit); });
+  });
+}
+
+function openCollectionPicker(outfitId) {
+  const listEl = document.getElementById("collectionPickerList");
+  const render = () => {
+    listEl.innerHTML = collections.length
+      ? collections.map(c => {
+          const checked = (c.outfitIds || []).includes(outfitId);
+          return `<label class="collection-item-row" style="cursor:pointer;">
+            <input type="checkbox" data-collection-check="${c.id}" ${checked ? "checked" : ""}>
+            <span>${c.name}</span>
+            <span style="flex:0 0 auto; color:var(--ink-soft); font-size:12px;">${(c.outfitIds || []).length} looks</span>
+          </label>`;
+        }).join("")
+      : `<p class="sub">Aún no tienes colecciones.</p>`;
+    listEl.querySelectorAll("[data-collection-check]").forEach(cb => {
+      cb.addEventListener("change", () => {
+        const col = collections.find(c => c.id === cb.dataset.collectionCheck);
+        if (!col) return;
+        col.outfitIds = col.outfitIds || [];
+        if (cb.checked) { if (!col.outfitIds.includes(outfitId)) col.outfitIds.push(outfitId); }
+        else { col.outfitIds = col.outfitIds.filter(id => id !== outfitId); }
+        saveCollections(collections);
+        renderProfileOutfits();
+        renderProfileCollections();
+      });
+    });
+  };
+  render();
+  document.getElementById("collectionPickerNewBtn").onclick = () => {
+    const name = prompt("Nombre de la nueva colección:");
+    if (!name || !name.trim()) return;
+    collections.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, name: name.trim().slice(0, 40), outfitIds: [outfitId], garmentIds: [] });
+    saveCollections(collections);
+    render();
+    renderProfileOutfits();
+    renderProfileCollections();
+  };
+  document.getElementById("collectionPickerBackdrop").classList.add("open");
+}
+
+function renderProfileCollections() {
+  const grid = document.getElementById("profileCollectionsGrid");
+  const tiles = collections.map(c => {
+    const previewOutfits = (c.outfitIds || []).map(id => outfits.find(o => o.id === id)).filter(Boolean).slice(0, 2);
+    const imgs = previewOutfits.map(o => o.top?.image).filter(Boolean);
+    const count = (c.outfitIds || []).length + (c.garmentIds || []).length;
+    return `
+      <div>
+        <div class="collection-tile" data-collection-tile="${c.id}">
+          <div class="collection-tile-img">${imgs.length ? imgs.map(src => `<img src="${src}" alt="">`).join("") : ""}</div>
+        </div>
+        <div class="collection-tile-label">${c.name}</div>
+        <div class="collection-tile-count">${count} elemento${count === 1 ? "" : "s"}</div>
+      </div>`;
+  }).join("");
+  grid.innerHTML = tiles + `
+    <div class="new-collection-tile" id="newCollectionTile">
+      <span class="plus">+</span>
+      <span>Nueva colección</span>
+    </div>`;
+  grid.querySelectorAll("[data-collection-tile]").forEach(tile => {
+    tile.addEventListener("click", () => openCollectionDetail(tile.dataset.collectionTile));
+  });
+  document.getElementById("newCollectionTile").addEventListener("click", () => {
+    const name = prompt("Nombre de la nueva colección:");
+    if (!name || !name.trim()) return;
+    collections.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, name: name.trim().slice(0, 40), outfitIds: [], garmentIds: [] });
+    saveCollections(collections);
+    renderProfileCollections();
+  });
+}
+
+function openCollectionDetail(collectionId) {
+  const col = collections.find(c => c.id === collectionId);
+  if (!col) return;
+  document.getElementById("collectionDetailTitle").textContent = col.name;
+  const listEl = document.getElementById("collectionDetailList");
+  const render = () => {
+    const outfitRows = (col.outfitIds || []).map(id => {
+      const o = outfits.find(o => o.id === id);
+      if (!o) return "";
+      return `<div class="collection-item-row">
+        <img src="${o.top?.image || ""}" alt="">
+        <span>${o.name || "Outfit sin nombre"}</span>
+        <button class="del-btn" style="position:static;" data-remove-collection-outfit="${id}">✕</button>
+      </div>`;
+    }).join("");
+    listEl.innerHTML = outfitRows || `<p class="sub">Esta colección aún no tiene looks guardados.</p>`;
+    listEl.querySelectorAll("[data-remove-collection-outfit]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        col.outfitIds = (col.outfitIds || []).filter(id => id !== btn.dataset.removeCollectionOutfit);
+        saveCollections(collections);
+        render();
+        renderProfileOutfits();
+        renderProfileCollections();
+      });
+    });
+  };
+  render();
+  document.getElementById("collectionDetailBackdrop").classList.add("open");
+}
+
+document.getElementById("coverPickerClose").addEventListener("click", () => document.getElementById("coverPickerBackdrop").classList.remove("open"));
+document.getElementById("collectionPickerClose").addEventListener("click", () => document.getElementById("collectionPickerBackdrop").classList.remove("open"));
+document.getElementById("collectionDetailClose").addEventListener("click", () => document.getElementById("collectionDetailBackdrop").classList.remove("open"));
+document.getElementById("profileIdentityDetailBtn").addEventListener("click", () => showAppToast("Detalle de identidad: próximamente"));
+
+/* ---- Editar perfil ---- */
+let editProfilePendingAvatar = null;
+function openEditProfileModal() {
+  editProfilePendingAvatar = null;
+  document.getElementById("editProfileAvatarPreview").innerHTML = profileAvatarHTML();
+  document.getElementById("editProfileName").value = profileData.name || "";
+  document.getElementById("editProfileUsername").value = profileData.username || "";
+  document.getElementById("editProfileBio").value = profileData.bio || "";
+  document.getElementById("editProfileLink").value = profileData.link || "";
+  document.getElementById("editProfilePrivate").checked = !!profileData.isPrivate;
+  document.getElementById("editProfileError").style.display = "none";
+  document.getElementById("editProfileBackdrop").classList.add("open");
+}
+document.getElementById("profileEditBtn").addEventListener("click", openEditProfileModal);
+document.getElementById("editProfileClose").addEventListener("click", () => document.getElementById("editProfileBackdrop").classList.remove("open"));
+document.getElementById("editProfileAvatarBtn").addEventListener("click", () => document.getElementById("editProfileAvatarInput").click());
+document.getElementById("editProfileAvatarInput").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    editProfilePendingAvatar = await resizeImage(file, 240, 0.85);
+    document.getElementById("editProfileAvatarPreview").innerHTML = `<img src="${editProfilePendingAvatar}" alt="">`;
+  } catch (err) {
+    console.error("No se pudo procesar la foto de perfil:", err);
+  }
+});
+document.getElementById("editProfileSaveBtn").addEventListener("click", async () => {
+  const errorEl = document.getElementById("editProfileError");
+  errorEl.style.display = "none";
+  const name = document.getElementById("editProfileName").value.trim();
+  const username = document.getElementById("editProfileUsername").value.trim().toLowerCase();
+  const bio = document.getElementById("editProfileBio").value.trim();
+  const link = document.getElementById("editProfileLink").value.trim();
+  const isPrivate = document.getElementById("editProfilePrivate").checked;
+  if (!name) {
+    errorEl.textContent = "El nombre no puede estar vacío.";
+    errorEl.style.display = "block";
+    return;
+  }
+  if (!/^[a-z0-9_.]{3,20}$/.test(username)) {
+    errorEl.textContent = "El nombre de usuario debe tener entre 3 y 20 caracteres (letras, números, puntos o guiones bajos, sin espacios).";
+    errorEl.style.display = "block";
+    return;
+  }
+  const saveBtn = document.getElementById("editProfileSaveBtn");
+  saveBtn.disabled = true;
+  saveBtn.textContent = "Guardando...";
+  try {
+    const authUser = window.__drobrAuth && window.__drobrAuth.currentUser;
+    if (authUser && username !== profileData.username) {
+      const { doc, getDoc, setDoc } = window.__drobrFirestoreFns;
+      const usernameRef = doc(window.__drobrDb, "usernames", username);
+      const usernameSnap = await getDoc(usernameRef);
+      if (usernameSnap.exists() && usernameSnap.data().uid !== authUser.uid) {
+        errorEl.textContent = "Ese nombre de usuario ya está en uso. Prueba con otro.";
+        errorEl.style.display = "block";
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Guardar cambios";
+        return;
+      }
+      await setDoc(usernameRef, { uid: authUser.uid });
+      await setDoc(doc(window.__drobrDb, "armarios", authUser.uid), { username, name, link, isPrivate }, { merge: true });
+    } else if (authUser) {
+      const { doc, setDoc } = window.__drobrFirestoreFns;
+      await setDoc(doc(window.__drobrDb, "armarios", authUser.uid), { username, name, link, isPrivate }, { merge: true });
+    }
+    profileData = { ...profileData, name, username, bio, link, isPrivate, avatar: editProfilePendingAvatar !== null ? editProfilePendingAvatar : profileData.avatar };
+    saveProfile(profileData);
+    document.getElementById("editProfileBackdrop").classList.remove("open");
+    renderProfile();
+  } catch (err) {
+    console.error(err);
+    errorEl.textContent = "No se pudieron guardar los cambios. Inténtalo de nuevo.";
+    errorEl.style.display = "block";
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.textContent = "Guardar cambios";
+  }
+});
+
+/* ---- Una prenda, varias formas ---- */
+// Reutiliza el motor de sugerencias existente (buildOutfit) fijando la prenda elegida
+// y variando el contexto (deporte, casual, trabajo, evento, etiqueta) para mostrar
+// distintas formas reales de llevarla con el resto del armario del usuario.
+function openStyleVariations(garment) {
+  const garmentEl = document.getElementById("styleVariationsGarment");
+  garmentEl.innerHTML = `
+    <div style="width:56px; height:56px; border-radius:10px; overflow:hidden; background:#EFEFEC; flex-shrink:0;"><img src="${garment.image}" alt="" style="width:100%; height:100%; object-fit:contain;"></div>
+    <div>
+      <div style="font-size:14px; font-weight:700;">${garment.name || categoryLabel(garment.category)}</div>
+      <div style="font-size:12px; color:var(--ink-soft);">${categoryLabel(garment.category)}</div>
+    </div>`;
+
+  const gridEl = document.getElementById("styleVariationsGrid");
+  const emptyEl = document.getElementById("styleVariationsEmpty");
+  const seen = new Set();
+  const cards = [];
+  CONTEXTS.forEach(ctx => {
+    const locked = { [garment.category]: garment };
+    const { outfit } = buildOutfit(ctx.id, "any", locked);
+    if (!outfit) return;
+    const key = [outfit.top.id, outfit.bottom.id, outfit.shoes.id].sort().join("-");
+    if (seen.has(key)) return;
+    seen.add(key);
+    cards.push(`
+      <div>
+        <div class="outfit-frame-row" style="margin:0 0 6px;">${frameHTML(outfit.top, 0, { minimal: true })}${frameHTML(outfit.bottom, 0, { minimal: true })}${frameHTML(outfit.shoes, 0, { minimal: true })}</div>
+        <div style="font-size:12.5px; font-weight:600;">${ctx.label}</div>
+      </div>`);
+  });
+  if (cards.length === 0) {
+    gridEl.innerHTML = "";
+    emptyEl.style.display = "block";
+  } else {
+    emptyEl.style.display = "none";
+    gridEl.innerHTML = cards.join("");
+  }
+  document.getElementById("styleVariationsBackdrop").classList.add("open");
+}
+document.getElementById("styleVariationsClose").addEventListener("click", () => document.getElementById("styleVariationsBackdrop").classList.remove("open"));
 </script>
 <script>
 if ("serviceWorker" in navigator) {
