@@ -4593,9 +4593,17 @@ function openForeignOutfitDetail(entry, meta) {
   document.getElementById("itemDetailSubtitle").textContent = meta.username ? `Outfit de @${meta.username}` : (entry.label || "");
   document.getElementById("itemDetailActions").innerHTML = outfitDetailContentHTML(entry) + `
     <button class="btn btn-primary" style="width:100%; margin-top:14px;" id="foreignOutfitSaveBtn">Guardar outfit</button>`;
-  document.getElementById("foreignOutfitSaveBtn").addEventListener("click", () => {
+  document.getElementById("foreignOutfitSaveBtn").addEventListener("click", async (e) => {
+    const btn = e.currentTarget;
+    btn.disabled = true;
+    if (!entry.thumbCache) {
+      btn.textContent = "Guardando...";
+      await generateAndCacheOutfitThumb(entry);
+    }
     saveOutfitToGuardados({ ...entry, savedFrom: { username: meta.username || "" } });
     showAppToast("Outfit guardado.");
+    btn.disabled = false;
+    btn.textContent = "Guardar outfit";
   });
   document.getElementById("itemDetailBackdrop").classList.add("open");
 }
