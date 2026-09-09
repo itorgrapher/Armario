@@ -427,6 +427,9 @@
   .edit-username-row span { padding:9px 0 9px 12px; color:var(--ink-soft); font-size:13px; }
   .edit-username-row input { border:none; margin:0; padding:9px 12px 9px 2px; flex:1; }
 
+  .detail-img { width:100%; max-width:300px; aspect-ratio:1; object-fit:contain; background:#EFEFEC; border-radius:var(--radius-sm); border:1px solid var(--line); }
+  .detail-img-multi { flex:1; min-width:0; max-width:150px; aspect-ratio:1; object-fit:contain; background:#EFEFEC; border-radius:var(--radius-sm); border:1px solid var(--line); }
+
   .profile-section-title { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; gap:10px; }
   .profile-section-title h2 { font-size:15px; margin:0; }
   .profile-big-number { font-size:32px; font-weight:700; line-height:1; margin:6px 0 2px; font-family:"Poppins",sans-serif; }
@@ -449,7 +452,7 @@
   .identity-dot { position:absolute; top:50%; width:9px; height:9px; border-radius:50%; background:var(--ink); transform:translate(-50%,-50%); }
 
   .outfit-mini-row { display:flex; gap:14px; overflow-x:auto; padding-bottom:4px; }
-  .outfit-mini-card { flex:0 0 150px; background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; position:relative; }
+  .outfit-mini-card { flex:0 0 150px; background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; position:relative; cursor:pointer; }
   .outfit-mini-imgs { display:flex; gap:3px; height:74px; margin-bottom:8px; }
   .outfit-mini-imgs .frame-img { flex:1; border-radius:6px; }
   .outfit-mini-name { font-size:12.5px; font-weight:600; margin:0 0 1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -811,7 +814,7 @@
     </div>
 
     <div class="section">
-      <div class="profile-section-title"><h2>Mis combinaciones</h2><button class="btn-text" id="profileViewOutfitsBtn">Ver todos →</button></div>
+      <div class="profile-section-title"><h2>Mis Outfits</h2><button class="btn-text" id="profileViewOutfitsBtn">Ver todos →</button></div>
       <p class="profile-big-number-label" id="profileOutfitCount" style="margin-bottom:14px;">0 looks creados</p>
       <div class="outfit-mini-row" id="profileOutfitsRow"></div>
     </div>
@@ -871,6 +874,15 @@
       </label>
       <p class="error-msg" id="editProfileError" style="display:none;"></p>
       <button class="btn btn-primary" id="editProfileSaveBtn" style="width:100%;">Guardar cambios</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="itemDetailBackdrop">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-head"><h2 id="itemDetailTitle" style="font-size:16px;"></h2><button class="modal-close" id="itemDetailClose">✕</button></div>
+      <div id="itemDetailImages" style="display:flex; gap:8px; justify-content:center; margin-bottom:12px;"></div>
+      <p class="sub" id="itemDetailSubtitle" style="text-align:center; margin:0 0 4px;"></p>
+      <div id="itemDetailActions"></div>
     </div>
   </div>
   </div>
@@ -1475,8 +1487,8 @@ async function getBgRemovalSession() {
     // Al importar desde un blob:, la resolución automática de rutas relativas dentro del
     // bundle deja de funcionar, así que le indicamos explícitamente dónde están sus archivos compañeros.
     bgRemovalModule.env.wasm.wasmPaths = {
-      mjs: BG_REMOVAL_ASSETS + "ort-wasm-simd-threaded.mjs",
-      wasm: BG_REMOVAL_ASSETS + "ort-wasm-simd-threaded.wasm",
+      mjs: new URL(BG_REMOVAL_ASSETS + "ort-wasm-simd-threaded.mjs", location.href).href,
+      wasm: new URL(BG_REMOVAL_ASSETS + "ort-wasm-simd-threaded.wasm", location.href).href,
     };
   }
   bgRemovalSession = await bgRemovalModule.InferenceSession.create(BG_REMOVAL_ASSETS + "u2netp.onnx");
@@ -4414,7 +4426,7 @@ function renderProfileCategories() {
     const coverGarment = (coverId && items.find(g => g.id === coverId)) || items[items.length - 1];
     return `
       <div>
-        <div class="category-tile" data-cat-tile="${sec.id}">
+        <div class="category-tile" data-cat-tile="${sec.id}" data-name="${(coverGarment.name ? coverGarment.name.charAt(0).toUpperCase() + coverGarment.name.slice(1) : sec.label)}">
           <div class="category-tile-img"><img src="${coverGarment.image}" alt="${sec.label}"></div>
           <button class="category-tile-pin" data-pin-cat="${sec.id}" title="Fijar imagen de portada">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M9 3h6l1 6 3 3v2H5v-2l3-3z"/></svg>
@@ -4428,7 +4440,7 @@ function renderProfileCategories() {
     btn.addEventListener("click", (e) => { e.stopPropagation(); openCoverPicker(btn.dataset.pinCat); });
   });
   grid.querySelectorAll("[data-cat-tile]").forEach(tile => {
-    tile.addEventListener("click", () => switchView("wardrobe"));
+    tile.addEventListener("click", () => openItemDetail(tile.dataset.name, "", [tile.querySelector("img").src]));
   });
 }
 
@@ -4484,6 +4496,15 @@ function renderProfileOutfits() {
   row.innerHTML = outfits.slice(0, 10).map(outfitMiniCardHTML).join("") || `<p class="sub">Aún no has creado ninguna combinación.</p>`;
   row.querySelectorAll("[data-save-outfit]").forEach(btn => {
     btn.addEventListener("click", (e) => { e.stopPropagation(); openCollectionPicker(btn.dataset.saveOutfit); });
+  });
+  row.querySelectorAll("[data-outfit-mini]").forEach(card => {
+    card.addEventListener("click", () => {
+      const entry = outfits.find(o => o.id === card.dataset.outfitMini);
+      if (!entry) return;
+      const accessories = entryAccessories(entry);
+      const imgs = [entry.top, entry.bottom, entry.shoes, ...accessories].filter(Boolean).map(g => g.image);
+      openItemDetail(entry.name || "Outfit sin nombre", entry.label || "", imgs);
+    });
   });
 }
 
@@ -4594,6 +4615,21 @@ document.getElementById("coverPickerClose").addEventListener("click", () => docu
 document.getElementById("collectionPickerClose").addEventListener("click", () => document.getElementById("collectionPickerBackdrop").classList.remove("open"));
 document.getElementById("collectionDetailClose").addEventListener("click", () => document.getElementById("collectionDetailBackdrop").classList.remove("open"));
 document.getElementById("profileIdentityDetailBtn").addEventListener("click", () => showAppToast("Detalle de identidad: próximamente"));
+
+// Tarjeta genérica de foto ampliada, reutilizada tanto para una prenda individual (Mi armario)
+// como para un outfit completo (Mis Outfits). El div itemDetailActions queda vacío a propósito:
+// aquí irán las acciones (editar, compartir, etc.) que se añadan más adelante.
+function openItemDetail(title, subtitle, images) {
+  document.getElementById("itemDetailTitle").textContent = title || "";
+  document.getElementById("itemDetailSubtitle").textContent = subtitle || "";
+  const multi = images.length > 1;
+  document.getElementById("itemDetailImages").innerHTML = images
+    .map(src => `<img src="${src}" class="${multi ? "detail-img-multi" : "detail-img"}" alt="">`)
+    .join("");
+  document.getElementById("itemDetailActions").innerHTML = "";
+  document.getElementById("itemDetailBackdrop").classList.add("open");
+}
+document.getElementById("itemDetailClose").addEventListener("click", () => document.getElementById("itemDetailBackdrop").classList.remove("open"));
 
 /* ---- Editar perfil ---- */
 let editProfilePendingAvatar = null;
