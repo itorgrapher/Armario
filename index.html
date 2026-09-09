@@ -4515,13 +4515,14 @@ function openCollectionPicker(outfitId) {
   };
   render();
   document.getElementById("collectionPickerNewBtn").onclick = () => {
-    const name = prompt("Nombre de la nueva colección:");
-    if (!name || !name.trim()) return;
-    collections.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, name: name.trim().slice(0, 40), outfitIds: [outfitId], garmentIds: [] });
-    saveCollections(collections);
-    render();
-    renderProfileOutfits();
-    renderProfileCollections();
+    showTextPromptModal("Nombre de la nueva colección:", "", (name) => {
+      if (!name || !name.trim()) return;
+      collections.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, name: name.trim().slice(0, 40), outfitIds: [outfitId], garmentIds: [] });
+      saveCollections(collections);
+      render();
+      renderProfileOutfits();
+      renderProfileCollections();
+    });
   };
   document.getElementById("collectionPickerBackdrop").classList.add("open");
 }
@@ -4550,11 +4551,12 @@ function renderProfileCollections() {
     tile.addEventListener("click", () => openCollectionDetail(tile.dataset.collectionTile));
   });
   document.getElementById("newCollectionTile").addEventListener("click", () => {
-    const name = prompt("Nombre de la nueva colección:");
-    if (!name || !name.trim()) return;
-    collections.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, name: name.trim().slice(0, 40), outfitIds: [], garmentIds: [] });
-    saveCollections(collections);
-    renderProfileCollections();
+    showTextPromptModal("Nombre de la nueva colección:", "", (name) => {
+      if (!name || !name.trim()) return;
+      collections.push({ id: `${Date.now()}-${Math.random().toString(36).slice(2,8)}`, name: name.trim().slice(0, 40), outfitIds: [], garmentIds: [] });
+      saveCollections(collections);
+      renderProfileCollections();
+    });
   });
 }
 
