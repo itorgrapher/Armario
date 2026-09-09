@@ -422,9 +422,15 @@
   .profile-name { font-size:17px; font-weight:700; margin:0 0 2px; }
   .profile-username { font-size:13px; color:var(--ink-soft); margin:0 0 6px; }
   .profile-bio { font-size:13.5px; color:var(--ink); margin:0 0 8px; }
-  .profile-stats { display:flex; gap:16px; font-size:13px; color:var(--ink-soft); }
+  .profile-stats { display:flex; gap:16px; font-size:11.5px; color:var(--ink-soft); margin-top:6px; }
   .profile-stats b { color:var(--ink); }
   .profile-stats b.stat-inactive { color:var(--ink-soft); font-weight:500; }
+  .profile-stats-main { display:flex; align-items:baseline; gap:10px; font-size:13.5px; color:var(--ink-soft); margin:3px 0 0; }
+  .profile-stats-main b { font-size:15px; font-weight:700; color:var(--ink); margin-right:4px; font-family:"Poppins",sans-serif; }
+  .stat-divider { width:1px; height:12px; background:var(--line-strong); align-self:center; }
+  .category-scroll-row { display:flex; gap:14px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; }
+  .category-scroll-row::-webkit-scrollbar { display:none; }
+  .category-scroll-row > div { flex-shrink:0; }
   .profile-link { display:inline-block; font-size:13px; color:var(--accent); margin:0 0 8px; text-decoration:none; word-break:break-all; }
   .profile-link:hover { text-decoration:underline; }
   .profile-privacy-badge { display:inline-flex; align-items:center; gap:4px; }
@@ -442,6 +448,13 @@
 
   .profile-section-title { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; gap:10px; }
   .profile-section-title h2 { font-size:15px; margin:0; }
+  .section-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:18px; }
+  .section-icon-badge { width:36px; height:36px; border-radius:50%; background:#EFEFEC; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--ink-soft); }
+  .section-icon-badge svg { width:17px; height:17px; }
+  .section-header-text { flex:1; min-width:0; }
+  .section-header-text h2 { font-size:15px; margin:0 0 2px; }
+  .section-header-sub { font-size:12px; color:var(--ink-soft); margin:0; }
+  .section-header .btn-text { flex-shrink:0; margin-top:3px; }
   .profile-big-number { font-size:32px; font-weight:700; line-height:1; margin:6px 0 2px; font-family:"Poppins",sans-serif; }
   .profile-big-number-label { font-size:12.5px; color:var(--ink-soft); margin:0 0 14px; }
 
@@ -502,10 +515,11 @@
   .identity-label { font-size:11px; color:var(--ink-soft); width:74px; flex-shrink:0; text-transform:uppercase; letter-spacing:0.02em; }
   .identity-label.right { text-align:right; }
   .identity-track { flex:1; height:2px; background:var(--line-strong); position:relative; border-radius:2px; }
+  .identity-fill { position:absolute; top:0; left:0; height:100%; background:var(--ink); border-radius:2px; }
   .identity-dot { position:absolute; top:50%; width:9px; height:9px; border-radius:50%; background:var(--ink); transform:translate(-50%,-50%); }
 
   .outfit-mini-row { display:flex; gap:14px; overflow-x:auto; padding-bottom:4px; }
-  .outfit-mini-card { flex:0 0 150px; background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; position:relative; cursor:pointer; }
+  .outfit-mini-card { flex:0 0 168px; background:#fff; border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; position:relative; cursor:pointer; }
   .outfit-mini-name { font-size:12.5px; font-weight:600; margin:0 0 1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .outfit-mini-sub { font-size:11px; color:var(--ink-soft); margin:0; }
   .bookmark-btn { position:absolute; top:8px; right:8px; background:rgba(255,255,255,0.92); border:1px solid var(--line-strong); border-radius:50%; width:26px; height:26px; display:flex; align-items:center; justify-content:center; cursor:pointer; padding:0; }
@@ -858,6 +872,11 @@
           <p class="profile-username" id="profileUsername"></p>
           <p class="profile-bio" id="profileBio"></p>
           <a class="profile-link" id="profileLink" href="#" target="_blank" rel="noopener" style="display:none;"></a>
+          <div class="profile-stats-main">
+            <span><b id="profileHeaderGarmentCount">0</b>prendas</span>
+            <span class="stat-divider"></span>
+            <span><b id="profileHeaderOutfitCount">0</b>outfits</span>
+          </div>
           <div class="profile-stats">
             <span><b class="stat-inactive" id="profileFollowers">0</b> seguidores</span>
             <span><b class="stat-inactive" id="profileFollowing">0</b> siguiendo</span>
@@ -866,56 +885,83 @@
               Armario privado
             </span>
           </div>
-          <button class="btn btn-outline" id="profileEditBtn" style="margin-top:10px; padding:6px 14px; font-size:12.5px;">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
-            Editar perfil
-          </button>
         </div>
-        <div class="profile-header-stats">
-          <div class="profile-header-stat">
-            <div class="profile-header-stat-num" id="profileHeaderGarmentCount">0</div>
-            <div class="profile-header-stat-label">prendas</div>
-          </div>
-          <div class="profile-header-stat">
-            <div class="profile-header-stat-num" id="profileHeaderOutfitCount">0</div>
-            <div class="profile-header-stat-label">outfits</div>
-          </div>
-        </div>
+        <button class="btn btn-outline" id="profileEditBtn" style="flex-shrink:0; padding:7px 14px; font-size:12.5px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+          Editar perfil
+        </button>
       </div>
     </div>
 
     <div class="section">
-      <div class="profile-section-title"><h2>Mi identidad</h2><button class="btn-text" id="profileIdentityDetailBtn">Ver análisis →</button></div>
-      <p class="sub" style="margin-bottom:16px;">La forma en la que vistes lo que tienes.</p>
+      <div class="section-header">
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6"/></svg></div>
+        <div class="section-header-text">
+          <h2>Mi identidad</h2>
+          <p class="section-header-sub">La forma en la que vistes lo que tienes.</p>
+        </div>
+        <button class="btn-text" id="profileIdentityDetailBtn">Ver análisis →</button>
+      </div>
       <div id="profileIdentitySliders"></div>
     </div>
 
     <div class="section">
-      <div class="profile-section-title"><h2>Mi armario</h2><button class="btn-text" id="profileViewWardrobeBtn">Ver armario →</button></div>
-      <div class="category-grid" id="profileCategoryGrid"></div>
+      <div class="section-header">
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a1.5 1.5 0 1 1-1.5 1.5"/><path d="M12 6v2"/><path d="M4.5 17 11 12a1.6 1.6 0 0 1 2 0l6.5 5"/><path d="M3 19.5h18"/></svg></div>
+        <div class="section-header-text">
+          <h2>Mi armario</h2>
+          <p class="section-header-sub">Tu ropa, siempre a mano.</p>
+        </div>
+        <button class="btn-text" id="profileViewWardrobeBtn">Ver armario →</button>
+      </div>
+      <div class="category-scroll-row" id="profileCategoryGrid"></div>
     </div>
 
     <div class="section">
-      <div class="profile-section-title"><h2>Mis Outfits</h2><button class="btn-text" id="profileViewOutfitsBtn">Ver todos →</button></div>
+      <div class="section-header">
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg></div>
+        <div class="section-header-text">
+          <h2>Mis Outfits</h2>
+          <p class="section-header-sub">Looks que ya has creado.</p>
+        </div>
+        <button class="btn-text" id="profileViewOutfitsBtn">Ver todos →</button>
+      </div>
       <div class="outfit-mini-row" id="profileOutfitsRow"></div>
     </div>
 
     <div class="section" style="margin-bottom:0;">
-      <div class="profile-section-title"><h2>Mis colecciones</h2></div>
-      <p class="sub" style="margin-bottom:14px;">Guarda y organiza tus looks y prendas favoritas.</p>
+      <div class="section-header">
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="section-header-text">
+          <h2>Mis colecciones</h2>
+          <p class="section-header-sub">Guarda y organiza tus looks y prendas favoritas.</p>
+        </div>
+      </div>
       <div class="collection-grid" id="profileCollectionsGrid"></div>
     </div>
   </div>
 
   <div id="viewGuardados" style="display:none;">
     <div class="section">
-      <div class="profile-section-title"><h2>Prendas Guardadas</h2></div>
+      <div class="section-header">
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a1.5 1.5 0 1 1-1.5 1.5"/><path d="M12 6v2"/><path d="M4.5 17 11 12a1.6 1.6 0 0 1 2 0l6.5 5"/><path d="M3 19.5h18"/></svg></div>
+        <div class="section-header-text">
+          <h2>Prendas Guardadas</h2>
+          <p class="section-header-sub">Prendas que has guardado del armario de otras personas.</p>
+        </div>
+      </div>
       <p class="sub" id="savedGarmentsEmpty" style="margin-bottom:0;">Aún no has guardado ninguna prenda del armario de otras personas.</p>
       <div class="category-grid" id="savedGarmentsGrid" style="margin-top:14px;"></div>
     </div>
 
     <div class="section" style="margin-bottom:0;">
-      <div class="profile-section-title"><h2>Outfits Guardados</h2></div>
+      <div class="section-header">
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg></div>
+        <div class="section-header-text">
+          <h2>Outfits Guardados</h2>
+          <p class="section-header-sub">Outfits que has guardado de otras personas.</p>
+        </div>
+      </div>
       <p class="sub" id="savedOutfitsEmpty" style="margin-bottom:0;">Aún no has guardado ningún outfit de otras personas.</p>
       <div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:14px;" id="savedOutfitsGrid"></div>
     </div>
@@ -950,6 +996,7 @@
     </div>
     <div id="foreignOutfitsContent"></div>
   </div>
+
 
   <div class="modal-backdrop" id="identityAnalysisBackdrop">
     <div class="modal" style="max-width:520px;">
@@ -4680,7 +4727,7 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
     <div class="outfit-mini-card" data-outfit-mini="${o.id}">
       <div class="outfit-mini-collage">${o.thumbCache ? `<img src="${o.thumbCache}" alt="">` : (o.top && o.top.image ? `<img src="${o.top.image}" alt="">` : "")}</div>
       <p class="outfit-mini-name">${o.name || "Outfit sin nombre"}</p>
-      <p class="outfit-mini-sub">${o.label || ""}</p>
+      ${o.label ? `<span class="mini-chip" style="background:${o.color || "var(--ink-soft)"};">${o.label}</span>` : ""}
     </div>`).join("");
 
   const collectionsHTML = publicCollections.map(c => {
@@ -4706,52 +4753,72 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
           <p class="profile-username">@${username}</p>
           ${meta.bio ? `<p class="profile-bio">${meta.bio}</p>` : ""}
           ${linkHTML}
+          <div class="profile-stats-main">
+            <span><b>${prendas.length}</b>prendas</span>
+            <span class="stat-divider"></span>
+            <span><b>${foreignOutfits.length}</b>outfits</span>
+          </div>
           <div class="profile-stats">
             <span><b class="stat-inactive">${meta.followers ?? 0}</b> seguidores</span>
             <span><b class="stat-inactive">${meta.following ?? 0}</b> siguiendo</span>
             ${lockBadge}
           </div>
-          <button class="btn btn-outline" id="visitorFollowBtn" style="margin-top:10px; padding:6px 14px; font-size:12.5px;">Seguir</button>
         </div>
-        <div class="profile-header-stats">
-          <div class="profile-header-stat">
-            <div class="profile-header-stat-num">${prendas.length}</div>
-            <div class="profile-header-stat-label">prendas</div>
-          </div>
-          <div class="profile-header-stat">
-            <div class="profile-header-stat-num">${foreignOutfits.length}</div>
-            <div class="profile-header-stat-label">outfits</div>
-          </div>
-        </div>
+        <button class="btn btn-outline" id="visitorFollowBtn" style="flex-shrink:0; padding:7px 14px; font-size:12.5px;">Seguir</button>
       </div>
     </div>
 
     <div class="section">
-      <div class="profile-section-title"><h2>Identidad</h2></div>
-      <p class="sub" style="margin-bottom:16px;">La forma en la que ${name} viste lo que tiene.</p>
+      <div class="section-header">
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6"/></svg></div>
+        <div class="section-header-text">
+          <h2>Identidad</h2>
+          <p class="section-header-sub">La forma en la que ${name} viste lo que tiene.</p>
+        </div>
+      </div>
       <div>${IDENTITY_AXES.map(axis => {
         const v = identity[axis.id] ?? 50;
         return `
         <div class="identity-row">
           <span class="identity-label">${axis.left}</span>
-          <div class="identity-track"><div class="identity-dot" style="left:${v}%;"></div></div>
+          <div class="identity-track"><div class="identity-fill" style="width:${v}%;"></div><div class="identity-dot" style="left:${v}%;"></div></div>
           <span class="identity-label right">${axis.right}</span>
         </div>`;
       }).join("")}</div>
     </div>
 
     <div class="section">
-      <div class="profile-section-title"><h2>Armario</h2>${prendas.length ? `<button class="btn-text" id="visitorViewWardrobeBtn">Ver armario →</button>` : ""}</div>
-      <div class="category-grid">${sectionsHTML || `<p class="sub">Este usuario aún no tiene prendas.</p>`}</div>
+      <div class="section-header">
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a1.5 1.5 0 1 1-1.5 1.5"/><path d="M12 6v2"/><path d="M4.5 17 11 12a1.6 1.6 0 0 1 2 0l6.5 5"/><path d="M3 19.5h18"/></svg></div>
+        <div class="section-header-text">
+          <h2>Armario</h2>
+          <p class="section-header-sub">Explora su armario.</p>
+        </div>
+        ${prendas.length ? `<button class="btn-text" id="visitorViewWardrobeBtn">Ver armario →</button>` : ""}
+      </div>
+      <div class="category-scroll-row">${sectionsHTML || `<p class="sub">Este usuario aún no tiene prendas.</p>`}</div>
     </div>
 
     <div class="section">
-      <div class="profile-section-title"><h2>Outfits</h2>${foreignOutfits.length ? `<button class="btn-text" id="visitorViewOutfitsBtn">Ver todos →</button>` : ""}</div>
+      <div class="section-header">
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg></div>
+        <div class="section-header-text">
+          <h2>Outfits</h2>
+          <p class="section-header-sub">Sus combinaciones guardadas.</p>
+        </div>
+        ${foreignOutfits.length ? `<button class="btn-text" id="visitorViewOutfitsBtn">Ver todos →</button>` : ""}
+      </div>
       <div class="outfit-mini-row">${outfitsHTML || `<p class="sub">Este usuario aún no tiene outfits.</p>`}</div>
     </div>
 
     <div class="section" style="margin-bottom:0;">
-      <div class="profile-section-title"><h2>Colecciones públicas</h2></div>
+      <div class="section-header">
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="section-header-text">
+          <h2>Colecciones públicas</h2>
+          <p class="section-header-sub">Colecciones que ha hecho públicas.</p>
+        </div>
+      </div>
       <div class="collection-grid">${collectionsHTML || `<p class="sub">Este usuario no tiene colecciones públicas.</p>`}</div>
     </div>
   `;
@@ -5115,7 +5182,7 @@ function renderProfileIdentitySliders() {
     return `
     <div class="identity-row">
       <span class="identity-label">${axis.left}</span>
-      <div class="identity-track"><div class="identity-dot" style="left:${v}%;"></div></div>
+      <div class="identity-track"><div class="identity-fill" style="width:${v}%;"></div><div class="identity-dot" style="left:${v}%;"></div></div>
       <span class="identity-label right">${axis.right}</span>
     </div>`;
   }).join("");
@@ -5206,7 +5273,7 @@ function outfitMiniCardHTML(entry) {
       </button>
       <div class="outfit-mini-collage" data-thumb-slot="${entry.id}">${entry.thumbCache ? `<img src="${entry.thumbCache}" alt="">` : `<div class="outfit-mini-collage-loading"></div>`}</div>
       <p class="outfit-mini-name">${entry.name || "Outfit sin nombre"}</p>
-      <p class="outfit-mini-sub">${entry.label || ""}</p>
+      ${entry.label ? `<span class="mini-chip" style="background:${entry.color || "var(--ink-soft)"};">${entry.label}</span>` : ""}
     </div>`;
 }
 
