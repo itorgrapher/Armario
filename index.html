@@ -170,6 +170,12 @@
   .frame-sub { font-size: 11px; color: var(--ink-soft); margin-top: 4px; line-height: 1.3; }
   .frame-chip-row { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
   .mini-chip { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; color: #fff; line-height: 1.4; }
+  .back-chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px 7px 10px;
+    border-radius: 999px; border: 1px solid var(--line-strong); background: #fff;
+    font-size: 12.5px; font-weight: 600; color: var(--ink); cursor: pointer; font-family: inherit;
+  }
+  .back-chip svg { width: 15px; height: 15px; flex-shrink: 0; }
   .del-btn {
     position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; border-radius: 50%;
     border: none; background: rgba(255,255,255,0.92); display: flex; align-items: center;
@@ -899,7 +905,10 @@
 
   <div id="viewVisitorProfile" style="display:none;">
     <div class="section" style="margin-bottom:0; padding-bottom:0;">
-      <button class="btn-text" id="visitorProfileBackBtn">← Volver</button>
+      <button class="back-chip" id="visitorProfileBackBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        Volver
+      </button>
     </div>
     <div id="visitorProfileContent"></div>
   </div>
@@ -3975,6 +3984,7 @@ const PAGE_META = {
 
 function switchView(view) {
   currentView = view;
+  document.getElementById("viewVisitorProfile").style.display = "none";
   document.getElementById("viewWardrobe").style.display = view === "wardrobe" ? "block" : "none";
   document.getElementById("viewOutfits").style.display = view === "outfits" ? "block" : "none";
   document.getElementById("viewShop").style.display = view === "shop" ? "block" : "none";
