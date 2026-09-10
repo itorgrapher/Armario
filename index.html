@@ -171,6 +171,7 @@
   }
   .outfit-frame-row > .frame { flex: 0 0 100px; }
   .frame { position: relative; height: 100%; }
+  #foreignWardrobeContent .frame { cursor: pointer; }
   .frame-inner { border: 1px solid var(--line); background: var(--paper); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; height: 100%; display: flex; flex-direction: column; }
   .frame-inner.selected { outline: 2px solid var(--accent); outline-offset: -2px; }
   .frame-img { width: 100%; aspect-ratio: 1; overflow: hidden; background: #EFEFEC; flex-shrink: 0; }
@@ -476,7 +477,6 @@
   .profile-bio { font-size:13.5px; color:var(--ink); margin:0 0 8px; }
   .profile-stats { display:flex; gap:16px; font-size:11.5px; color:var(--ink-soft); margin-top:6px; }
   .profile-stats b { color:var(--ink); }
-  .profile-stats b.stat-inactive { color:var(--ink-soft); font-weight:500; }
   .profile-stats-main { display:flex; align-items:baseline; gap:10px; font-size:13.5px; color:var(--ink-soft); margin:3px 0 0; }
   .profile-stats-main b { font-size:15px; font-weight:700; color:var(--ink); margin-right:4px; font-family:"Poppins",sans-serif; }
   .stat-divider { width:1px; height:12px; background:var(--line-strong); align-self:center; }
@@ -497,6 +497,12 @@
 
   .detail-img { width:100%; max-width:300px; aspect-ratio:1; object-fit:contain; background:#EFEFEC; border-radius:var(--radius-sm); border:1px solid var(--line); }
   .detail-img-multi { flex:1; min-width:0; max-width:150px; aspect-ratio:1; object-fit:contain; background:#EFEFEC; border-radius:var(--radius-sm); border:1px solid var(--line); }
+  .detail-quick-actions { display:flex; justify-content:space-around; border-top:1px solid var(--line); padding-top:14px; margin-top:16px; }
+  .detail-quick-btn { display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; width:64px; background:none; border:none; font-family:inherit; padding:0; }
+  .detail-quick-btn:disabled { opacity:0.5; cursor:default; }
+  .detail-quick-icon { width:40px; height:40px; border-radius:50%; background:#EFEFEC; display:flex; align-items:center; justify-content:center; color:var(--ink-soft); flex-shrink:0; }
+  .detail-quick-icon.accent { background:var(--accent); color:#fff; }
+  .detail-quick-label { font-size:10.5px; color:var(--ink-soft); text-align:center; line-height:1.2; }
 
   .profile-section-title { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; gap:10px; }
   .profile-section-title h2 { font-size:16px; margin:0; }
@@ -983,13 +989,13 @@
           <p class="profile-bio" id="profileBio"></p>
           <a class="profile-link" id="profileLink" href="#" target="_blank" rel="noopener" style="display:none;"></a>
           <div class="profile-stats-main">
-            <span><b id="profileHeaderGarmentCount">0</b>prendas</span>
+            <span><b id="profileHeaderGarmentCount">0</b><span id="profileHeaderGarmentLabel">prendas</span></span>
             <span class="stat-divider"></span>
-            <span><b id="profileHeaderOutfitCount">0</b>outfits</span>
+            <span><b id="profileHeaderOutfitCount">0</b><span id="profileHeaderOutfitLabel">outfits</span></span>
           </div>
           <div class="profile-stats">
-            <span><b class="stat-inactive" id="profileFollowers">0</b> seguidores</span>
-            <span><b class="stat-inactive" id="profileFollowing">0</b> siguiendo</span>
+            <span><b id="profileFollowers">0</b> seguidores</span>
+            <span><b id="profileFollowing">0</b> seguidos</span>
             <span class="profile-privacy-badge" id="profilePrivacyBadge" style="display:none;">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
               Armario privado
@@ -1259,17 +1265,6 @@
       <button class="btn btn-outline" data-share-style="flat">Plano</button>
       <button class="btn btn-outline" data-share-style="outline">Contorno blanco</button>
       <button class="btn btn-outline" data-share-style="polaroid">Polaroids</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal-backdrop" id="syncConflictBackdrop">
-  <div class="modal" style="max-width:380px; text-align:center;">
-    <h2 style="font-size:17px; margin-bottom:10px;">Tienes prendas en dos sitios</h2>
-    <p class="sub" id="syncConflictMessage" style="margin-bottom:20px;"></p>
-    <div style="display:flex; flex-direction:column; gap:10px;">
-      <button class="btn btn-primary" id="syncUseAccountBtn">Usar los de mi cuenta</button>
-      <button class="btn btn-outline" id="syncMergeBtn">Fusionar ambos</button>
     </div>
   </div>
 </div>
@@ -4676,25 +4671,6 @@ document.getElementById("deleteAccountConfirmBtn").addEventListener("click", asy
   }
 });
 
-function showSyncConflictModal(mensaje) {
-  return new Promise((resolve) => {
-    const backdrop = document.getElementById("syncConflictBackdrop");
-    document.getElementById("syncConflictMessage").textContent = mensaje;
-    backdrop.classList.add("open");
-    const useBtn = document.getElementById("syncUseAccountBtn");
-    const mergeBtn = document.getElementById("syncMergeBtn");
-    const cleanup = () => {
-      backdrop.classList.remove("open");
-      useBtn.removeEventListener("click", onUse);
-      mergeBtn.removeEventListener("click", onMerge);
-    };
-    const onUse = () => { cleanup(); resolve("cuenta"); };
-    const onMerge = () => { cleanup(); resolve("fusionar"); };
-    useBtn.addEventListener("click", onUse);
-    mergeBtn.addEventListener("click", onMerge);
-  });
-}
-
 const SYNC_COLECCIONES = {
   wardrobe: { key: STORAGE_KEY, sub: "prendas" },
   outfits: { key: OUTFITS_KEY, sub: "outfits" },
@@ -4717,15 +4693,6 @@ function escribirLocalDesdeSync(datos) {
   }
   localStorage.setItem(CUSTOM_CATEGORIES_KEY, JSON.stringify(datos.customCategories || []));
   localStorage.setItem(CATEGORY_LABELS_KEY, JSON.stringify(datos.categoryLabels || {}));
-}
-
-function fusionarListas(local, remoto) {
-  const combinados = [...local];
-  const idsExistentes = new Set(local.map(item => item && item.id));
-  for (const item of remoto) {
-    if (item && !idsExistentes.has(item.id)) combinados.push(item);
-  }
-  return combinados;
 }
 
 async function subirListaATandas(uid, sub, lista) {
@@ -5005,7 +4972,7 @@ function closeVisitorProfile() {
 // Armario de otro usuario, de solo lectura: agrupado exactamente como el dueño
 // organizó el suyo (mismas customCategories/categoryLabels). Sin buscador ni
 // filtros por ahora — es una pantalla de consulta, no de gestión.
-function openForeignWardrobe(meta, prendas) {
+function openForeignWardrobe(meta, prendas, foreignOutfitsArr) {
   const sections = foreignSections(meta)
     .map(sec => ({ ...sec, items: garmentsInSection(prendas, sec) }))
     .filter(sec => sec.items.length > 0);
@@ -5026,7 +4993,7 @@ function openForeignWardrobe(meta, prendas) {
   content.querySelectorAll("[data-id]").forEach(card => {
     card.addEventListener("click", () => {
       const g = prendas.find(p => p.id === card.dataset.id);
-      if (g) openForeignGarmentDetail(g, meta);
+      if (g) openForeignGarmentDetail(g, meta, foreignOutfitsArr || []);
     });
   });
   showForeignSubView("viewForeignWardrobe");
@@ -5056,12 +5023,16 @@ function openForeignOutfits(meta, foreignOutfitsArr) {
   showForeignSubView("viewForeignOutfits");
 }
 
-// Detalle de una prenda ajena: informativo (sin "aparece en X outfits", eso es
-// dato propio), con "Comprobar con mi armario" (evaluatePair contra mis
-// prendas, versión reducida de ¿Me lo compro? sin Añadir/Descartar) y "Guardar".
-function openForeignGarmentDetail(garment, meta) {
+// Detalle de una prenda ajena: imagen grande, chips informativos y una fila
+// compacta de acciones rápidas (Comprobar con mi armario, Sus outfits,
+// Compartir, Guardar) pensada para caber sin scroll en pantallas pequeñas.
+function openForeignGarmentDetail(garment, meta, foreignOutfitsArr) {
   const cat = CATEGORIES.find(c => c.id === garment.category);
   const title = garment.name ? garment.name.charAt(0).toUpperCase() + garment.name.slice(1) : (cat ? cat.label : garment.category);
+  const yaGuardada = isGarmentSaved(garment, meta.username || "");
+  const outfitsConEsta = (foreignOutfitsArr || []).filter(o =>
+    [o.top, o.bottom, o.shoes, ...entryAccessories(o)].some(g => g && g.id === garment.id)
+  );
   document.getElementById("itemDetailTitle").textContent = title;
   document.getElementById("itemDetailImages").innerHTML = `<img src="${garment.image}" class="detail-img" alt="">`;
   document.getElementById("itemDetailSubtitle").textContent = meta.username ? `Del armario de @${meta.username}` : "";
@@ -5070,27 +5041,109 @@ function openForeignGarmentDetail(garment, meta) {
       ${swatchHTML(garment.color, 16)}
       ${metaChipsHTML(garment)}
     </div>
-    <div class="row" style="margin-top:16px; margin-bottom:0;">
-      <button class="btn btn-outline" id="foreignGarmentCheckBtn">Comprobar con mi armario</button>
-      <button class="btn btn-primary" id="foreignGarmentSaveBtn">Guardar</button>
+    <div class="detail-quick-actions">
+      <button class="detail-quick-btn" id="foreignGarmentCheckBtn">
+        <span class="detail-quick-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg></span>
+        <span class="detail-quick-label">Comprobar</span>
+      </button>
+      <button class="detail-quick-btn" id="foreignGarmentOutfitsBtn">
+        <span class="detail-quick-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg></span>
+        <span class="detail-quick-label">Sus outfits</span>
+      </button>
+      <button class="detail-quick-btn" id="foreignGarmentShareBtn">
+        <span class="detail-quick-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg></span>
+        <span class="detail-quick-label">Compartir</span>
+      </button>
+      <button class="detail-quick-btn" id="foreignGarmentSaveBtn" ${yaGuardada ? "disabled" : ""}>
+        <span class="detail-quick-icon ${yaGuardada ? "accent" : ""}"><svg width="18" height="18" viewBox="0 0 24 24" fill="${yaGuardada ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+        <span class="detail-quick-label">${yaGuardada ? "Guardada" : "Guardar"}</span>
+      </button>
     </div>
-    <div id="foreignGarmentCheckResult"></div>`;
+    <div id="foreignGarmentActionResult"></div>`;
   document.getElementById("foreignGarmentCheckBtn").addEventListener("click", (e) => {
-    e.target.closest("button").disabled = true;
+    e.currentTarget.disabled = true;
     renderForeignGarmentCheck(garment);
   });
+  document.getElementById("foreignGarmentOutfitsBtn").addEventListener("click", (e) => {
+    e.currentTarget.disabled = true;
+    renderForeignGarmentOutfits(outfitsConEsta, meta);
+  });
+  document.getElementById("foreignGarmentShareBtn").addEventListener("click", (e) => {
+    shareGarmentAsImage(garment, e.currentTarget);
+  });
   document.getElementById("foreignGarmentSaveBtn").addEventListener("click", (e) => {
-    saveGarmentToGuardados({ ...garment, savedFrom: { username: meta.username || "" } });
-    showAppToast("Prenda guardada.");
+    const btn = e.currentTarget;
+    const añadida = saveGarmentToGuardados({ ...garment, savedFrom: { username: meta.username || "" } });
+    btn.disabled = true;
+    btn.querySelector(".detail-quick-label").textContent = "Guardada";
+    btn.querySelector(".detail-quick-icon").classList.add("accent");
+    btn.querySelector("svg").setAttribute("fill", "currentColor");
+    showAppToast(añadida ? "Prenda guardada." : "Ya tenías esta prenda guardada.");
   });
   document.getElementById("itemDetailBackdrop").classList.add("open");
+}
+
+// Comparte solo la foto de la prenda (ya viene recortada/preparada), sin
+// necesidad de componer un collage como en los outfits.
+async function shareGarmentAsImage(garment, triggerBtn) {
+  const label = triggerBtn.querySelector(".detail-quick-label");
+  const originalLabel = label.textContent;
+  triggerBtn.disabled = true;
+  label.textContent = "…";
+  try {
+    const res = await fetch(garment.image);
+    const blob = await res.blob();
+    const file = new File([blob], "drobr-prenda.jpg", { type: blob.type || "image/jpeg" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: garment.name || "Prenda en DROBR" });
+        return;
+      } catch (shareErr) {
+        if (shareErr && shareErr.name === "AbortError") return;
+      }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "drobr-prenda.jpg";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    console.error(err);
+    showAppToast("No se pudo compartir la prenda.");
+  } finally {
+    triggerBtn.disabled = false;
+    label.textContent = originalLabel;
+  }
+}
+
+// Outfits públicos de esta persona en los que aparece la prenda: inspiración
+// real de cómo la lleva, no un dato de tu propio armario.
+function renderForeignGarmentOutfits(outfitsList, meta) {
+  const resultEl = document.getElementById("foreignGarmentActionResult");
+  if (!outfitsList.length) {
+    resultEl.innerHTML = `<p class="sub" style="text-align:center; margin-top:14px;">Esta prenda no aparece en ningún outfit público suyo.</p>`;
+    return;
+  }
+  resultEl.innerHTML = `
+    <div class="picker-label" style="margin-top:14px; text-align:center;">Aparece en ${outfitsList.length} outfit${outfitsList.length === 1 ? "" : "s"} suyo${outfitsList.length === 1 ? "" : "s"}</div>
+    <div class="outfit-mini-row">${outfitsList.map(o => `
+      <div class="outfit-mini-card" data-result-outfit-id="${o.id}">
+        <div class="outfit-mini-collage">${o.thumbCache ? `<img src="${o.thumbCache}" alt="">` : (o.top && o.top.image ? `<img src="${o.top.image}" alt="">` : "")}</div>
+        <p class="outfit-mini-name">${o.name || "Outfit sin nombre"}</p>
+      </div>`).join("")}</div>`;
+  resultEl.querySelectorAll("[data-result-outfit-id]").forEach(card => {
+    card.addEventListener("click", () => {
+      const o = outfitsList.find(x => x.id === card.dataset.resultOutfitId);
+      if (o) openForeignOutfitDetail(o, meta);
+    });
+  });
 }
 
 // Versión reducida de renderShopView: mismo cálculo (evaluatePair contra cada
 // categoría de mi propio armario) pero sin los botones de añadir/descartar,
 // porque la prenda no es candidata a subir sino de otro usuario.
 function renderForeignGarmentCheck(garment) {
-  const resultEl = document.getElementById("foreignGarmentCheckResult");
+  const resultEl = document.getElementById("foreignGarmentActionResult");
   const otherCats = CATEGORIES.filter(c => c.id !== garment.category);
   const matchesByCat = otherCats.map(cat => ({
     cat,
@@ -5180,7 +5233,9 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
 
   const FOLLOW_BTN_LABELS = { none: "Seguir", request: "Solicitar", pending: "Solicitado", accepted: "Siguiendo" };
   const followState = followStatus === "accepted" ? "accepted" : followStatus === "pending" ? "pending" : (meta.isPrivate ? "request" : "none");
-  const followBtnHTML = followStatus === "self" ? "" : `<button class="btn btn-outline profile-header-action" id="visitorFollowBtn" data-follow-state="${followState}" style="flex-shrink:0; padding:7px 14px; font-size:12.5px;">${FOLLOW_BTN_LABELS[followState]}</button>`;
+  const FOLLOW_BTN_PRIMARY_STATES = new Set(["none", "request"]);
+  const followBtnClass = FOLLOW_BTN_PRIMARY_STATES.has(followState) ? "btn-primary" : "btn-outline";
+  const followBtnHTML = followStatus === "self" ? "" : `<button class="btn ${followBtnClass} profile-header-action" id="visitorFollowBtn" data-follow-state="${followState}" style="flex-shrink:0; padding:7px 14px; font-size:12.5px;">${FOLLOW_BTN_LABELS[followState]}</button>`;
 
   const lockedContentHTML = `
     <div class="section" style="margin-bottom:0;">
@@ -5236,13 +5291,13 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
           ${meta.bio ? `<p class="profile-bio">${meta.bio}</p>` : ""}
           ${linkHTML}
           <div class="profile-stats-main">
-            <span><b>${canSeeContent ? prendas.length : "–"}</b>prendas</span>
+            <span><b>${canSeeContent ? prendas.length : "–"}</b>${!canSeeContent ? "prendas" : (prendas.length === 1 ? "prenda" : "prendas")}</span>
             <span class="stat-divider"></span>
-            <span><b>${canSeeContent ? foreignOutfits.length : "–"}</b>outfits</span>
+            <span><b>${canSeeContent ? foreignOutfits.length : "–"}</b>${!canSeeContent ? "outfits" : (foreignOutfits.length === 1 ? "outfit" : "outfits")}</span>
           </div>
           <div class="profile-stats">
-            <span><b class="stat-inactive" id="visitorFollowerCount">…</b> seguidores</span>
-            <span><b class="stat-inactive" id="visitorFollowingCount">…</b> siguiendo</span>
+            <span><b id="visitorFollowerCount">…</b> seguidores</span>
+            <span><b id="visitorFollowingCount">…</b> seguidos</span>
             ${lockBadge}
           </div>
         </div>
@@ -5270,7 +5325,7 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
     </div>
 
     ${canSeeContent ? `
-    <div class="section">
+    <div class="section" ${(!foreignOutfits.length && !publicCollections.length) ? 'style="margin-bottom:0;"' : ''}>
       <div class="section-header">
         <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="1.2"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/></svg></div>
         <div class="section-header-text">
@@ -5282,18 +5337,20 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
       <div class="category-scroll-row">${sectionsHTML || `<p class="sub">Este usuario aún no tiene prendas.</p>`}</div>
     </div>
 
-    <div class="section">
+    ${foreignOutfits.length ? `
+    <div class="section" ${!publicCollections.length ? 'style="margin-bottom:0;"' : ''}>
       <div class="section-header">
         <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg></div>
         <div class="section-header-text">
           <h2>Outfits</h2>
           <p class="section-header-sub">Sus combinaciones guardadas.</p>
         </div>
-        ${foreignOutfits.length ? `<button class="btn-text" id="visitorViewOutfitsBtn">Ver todos →</button>` : ""}
+        <button class="btn-text" id="visitorViewOutfitsBtn">Ver todos →</button>
       </div>
-      <div class="outfit-mini-row">${outfitsHTML || `<p class="sub">Este usuario aún no tiene outfits.</p>`}</div>
-    </div>
+      <div class="outfit-mini-row">${outfitsHTML}</div>
+    </div>` : ""}
 
+    ${publicCollections.length ? `
     <div class="section" style="margin-bottom:0;">
       <div class="section-header">
         <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
@@ -5302,8 +5359,9 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
           <p class="section-header-sub">Colecciones que ha hecho públicas.</p>
         </div>
       </div>
-      <div class="collection-grid">${collectionsHTML || `<p class="sub">Este usuario no tiene colecciones públicas.</p>`}</div>
-    </div>` : lockedContentHTML}
+      <div class="collection-grid">${collectionsHTML}</div>
+    </div>` : ""}
+  ` : lockedContentHTML}
   `;
 
   getFollowerCount(targetUid).then(n => { const el = document.getElementById("visitorFollowerCount"); if (el) el.textContent = n; }).catch(() => {});
@@ -5320,14 +5378,20 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
           await sendFollowRequest(targetUid, myUid, false);
           followBtn.textContent = "Siguiendo";
           followBtn.dataset.followState = "accepted";
+          followBtn.classList.remove("btn-primary");
+          followBtn.classList.add("btn-outline");
         } else if (state === "request") {
           await sendFollowRequest(targetUid, myUid, true);
           followBtn.textContent = "Solicitado";
           followBtn.dataset.followState = "pending";
+          followBtn.classList.remove("btn-primary");
+          followBtn.classList.add("btn-outline");
         } else {
           await cancelFollow(targetUid, myUid);
           followBtn.textContent = meta.isPrivate ? "Solicitar" : "Seguir";
           followBtn.dataset.followState = meta.isPrivate ? "request" : "none";
+          followBtn.classList.remove("btn-outline");
+          followBtn.classList.add("btn-primary");
         }
         getFollowerCount(targetUid).then(n => { const el = document.getElementById("visitorFollowerCount"); if (el) el.textContent = n; }).catch(() => {});
       } catch (err) {
@@ -5339,13 +5403,13 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
     });
   }
   const viewWardrobeBtn = document.getElementById("visitorViewWardrobeBtn");
-  if (viewWardrobeBtn) viewWardrobeBtn.addEventListener("click", () => openForeignWardrobe(meta, prendas));
+  if (viewWardrobeBtn) viewWardrobeBtn.addEventListener("click", () => openForeignWardrobe(meta, prendas, foreignOutfits));
   const viewOutfitsBtn = document.getElementById("visitorViewOutfitsBtn");
   if (viewOutfitsBtn) viewOutfitsBtn.addEventListener("click", () => openForeignOutfits(meta, foreignOutfits));
   document.querySelectorAll("#visitorProfileContent [data-cat-tile]").forEach(tile => {
     tile.addEventListener("click", () => {
       const g = prendas.find(p => p.id === tile.dataset.catTile);
-      if (g) openForeignGarmentDetail(g, meta);
+      if (g) openForeignGarmentDetail(g, meta, foreignOutfits);
     });
   });
   document.querySelectorAll("#visitorProfileContent [data-outfit-mini]").forEach(card => {
@@ -5367,7 +5431,6 @@ async function sincronizarConFirestore(user) {
   const metaRef = doc(window.__drobrDb, "armarios", user.uid);
   const metaSnap = await getDoc(metaRef);
   const local = leerLocalParaSync();
-  const localTieneDatos = local.wardrobe.length > 0;
 
   if (metaSnap.exists()) {
     const metaData = metaSnap.data();
@@ -5392,38 +5455,17 @@ async function sincronizarConFirestore(user) {
   };
   const remotoTieneDatos = remoto.wardrobe.length > 0;
 
-  async function subirTodo(datos) {
-    await setDoc(metaRef, { customCategories: datos.customCategories, categoryLabels: datos.categoryLabels });
-    for (const [campo, { sub }] of Object.entries(SYNC_COLECCIONES)) {
-      await subirListaATandas(user.uid, sub, datos[campo]);
-    }
-  }
-
+  // La cuenta (Firestore) manda siempre que tenga datos: es la única fuente de
+  // verdad, igual que en cualquier red social. Si la cuenta está vacía, se
+  // sube automáticamente lo que hubiera en este dispositivo, sin preguntar.
   if (!remotoTieneDatos) {
-    await subirTodo(local);
+    await setDoc(metaRef, { customCategories: local.customCategories, categoryLabels: local.categoryLabels });
+    for (const [campo, { sub }] of Object.entries(SYNC_COLECCIONES)) {
+      await subirListaATandas(user.uid, sub, local[campo]);
+    }
     return;
   }
-  if (!localTieneDatos) {
-    escribirLocalDesdeSync(remoto);
-    return;
-  }
-
-  const eleccion = await showSyncConflictModal(
-    "Tienes prendas guardadas tanto en tu cuenta como en este dispositivo. ¿Qué quieres hacer?"
-  );
-  if (eleccion === "cuenta") {
-    escribirLocalDesdeSync(remoto);
-  } else {
-    const fusionado = {
-      wardrobe: fusionarListas(local.wardrobe, remoto.wardrobe),
-      outfits: fusionarListas(local.outfits, remoto.outfits),
-      collections: fusionarListas(local.collections, remoto.collections),
-      customCategories: fusionarListas(local.customCategories, remoto.customCategories),
-      categoryLabels: { ...remoto.categoryLabels, ...local.categoryLabels }
-    };
-    await subirTodo(fusionado);
-    escribirLocalDesdeSync(fusionado);
-  }
+  escribirLocalDesdeSync(remoto);
 }
 
 splashFormEl.addEventListener("submit", async (e) => {
@@ -5670,7 +5712,9 @@ function renderProfile() {
   document.getElementById("profilePrivacyBadge").style.display = profileData.isPrivate ? "inline-flex" : "none";
   refreshOwnFollowCounts();
   document.getElementById("profileHeaderGarmentCount").textContent = garments.length;
+  document.getElementById("profileHeaderGarmentLabel").textContent = garments.length === 1 ? "prenda" : "prendas";
   document.getElementById("profileHeaderOutfitCount").textContent = outfits.length;
+  document.getElementById("profileHeaderOutfitLabel").textContent = outfits.length === 1 ? "outfit" : "outfits";
   renderProfileCategories();
   renderProfileIdentitySliders();
   renderProfileOutfits();
@@ -5915,9 +5959,16 @@ let guardados = loadGuardados();
 // Helpers listos para cuando exista la vista de armario/outfits ajenos: guardan
 // una copia completa de la prenda u outfit ajeno tal cual llega.
 function saveGarmentToGuardados(garmentSnapshot) {
-  guardados.prendas.push({ ...garmentSnapshot, id: `saved-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` });
+  const username = garmentSnapshot.savedFrom?.username || "";
+  const yaGuardada = guardados.prendas.some(g => g.sourceId === garmentSnapshot.id && (g.savedFrom?.username || "") === username);
+  if (yaGuardada) return false;
+  guardados.prendas.push({ ...garmentSnapshot, sourceId: garmentSnapshot.id, id: `saved-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` });
   saveGuardados(guardados);
   if (currentView === "guardados") renderSavedGarments();
+  return true;
+}
+function isGarmentSaved(garment, username) {
+  return guardados.prendas.some(g => g.sourceId === garment.id && (g.savedFrom?.username || "") === (username || ""));
 }
 function saveOutfitToGuardados(outfitSnapshot) {
   guardados.outfits.push({ ...outfitSnapshot, id: `saved-${Date.now()}-${Math.random().toString(36).slice(2, 8)}` });
