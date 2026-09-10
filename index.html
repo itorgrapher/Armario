@@ -115,8 +115,8 @@
 
   .category-section { margin-bottom: 8px; }
   .category-section-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
-  .category-section-title { font-size: 15px; font-weight: 700; color: var(--ink); }
-  .category-section-count { font-size: 12.5px; font-weight: 500; color: var(--ink-soft); }
+  .category-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink); }
+  .category-section-count { font-size: 11.5px; font-weight: 500; color: var(--ink-soft); }
   .category-rename-btn { background: none; border: none; cursor: pointer; color: var(--ink-soft); font-size: 12px; padding: 2px; opacity: 0.7; }
   .category-rename-btn:hover { opacity: 1; }
 
@@ -196,11 +196,18 @@
   @keyframes cardRemove { to { opacity: 0; transform: scale(0.85); } }
   .card-removing { animation: cardRemove 0.25s ease forwards; pointer-events: none; }
   .frame-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--line); }
-  .frame-actions-left { display: flex; align-items: center; gap: 10px; }
+  .frame-actions-left { display: flex; align-items: center; gap: 6px; width: 100%; }
   .frame-action-btn {
     background: none; border: none; padding: 2px; cursor: pointer; color: var(--ink-soft);
     font-size: 13px; line-height: 1; display: flex; align-items: center; justify-content: center;
   }
+  .frame-action-btn.labeled {
+    flex-direction: column; gap: 3px; flex: 1; min-width: 0; padding: 4px 2px;
+  }
+  .frame-action-btn .frame-action-icon { font-size: 13px; line-height: 1; }
+  .frame-action-btn .frame-action-label { font-size: 8.5px; line-height: 1.15; color: var(--ink-soft); text-align: center; }
+  .frame-action-btn.labeled:hover { color: var(--ink); }
+  .frame-action-btn.labeled:hover .frame-action-label { color: var(--ink); }
   .fav-star-btn {
     background: #fff; border: 1.5px solid var(--gold); cursor: pointer; color: var(--gold);
     font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center;
@@ -318,6 +325,15 @@
     font-size: 13px; color: var(--ink); font-family: inherit;
   }
   label.field { font-size: 12px; color: var(--ink-soft); display: block; margin-bottom: 16px; }
+  label.field-primary { font-size: 14px; font-weight: 700; color: var(--ink); display: block; margin-bottom: 10px; }
+  label.field-eyebrow { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-soft); display: block; margin-bottom: 14px; }
+  .pill-checkbox { position: absolute; opacity: 0; width: 1px; height: 1px; pointer-events: none; }
+  .versatile-toggle {
+    display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--line-strong); border-radius: 999px;
+    background: transparent; font-size: 11px; cursor: pointer; color: var(--ink); font-family: inherit;
+  }
+  .versatile-toggle svg { width: 13px; height: 13px; flex-shrink: 0; }
+  #modalVersatile:checked + .versatile-toggle { border-color: var(--accent); background: #EFF4F5; color: var(--accent); font-weight: 600; }
   .color-options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
   .color-btn {
     display: flex; align-items: center; gap: 5px; padding: 6px 11px; border: 1px solid var(--line-strong); border-radius: 999px;
@@ -386,6 +402,12 @@
     #bulkActionBar { bottom: calc(64px + env(safe-area-inset-bottom)); }
     #wardrobeFab { bottom: calc(80px + env(safe-area-inset-bottom)); }
     #viewTabSettings { display: none; }
+    #viewTabShop { display: none; }
+    #viewTabWardrobe { order: 1; }
+    #viewTabOutfits { order: 2; }
+    #viewTabSearchUser { order: 3; }
+    #viewTabGuardados { order: 4; }
+    #viewTabProfile { order: 5; }
     html, .grid-row-collapsed, .picker-scroll, .modal-backdrop {
       scrollbar-width: none; -ms-overflow-style: none;
     }
@@ -409,6 +431,12 @@
     display: flex; align-items: center; justify-content: center;
   }
   .topbar-settings-btn svg { width: 21px; height: 21px; }
+  .topbar-shop-btn {
+    position: absolute; left: 16px; top: calc(50% + env(safe-area-inset-top) / 2); transform: translateY(-50%);
+    background: none; border: none; color: #fff; padding: 4px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .topbar-shop-btn svg { width: 21px; height: 21px; }
   @media (max-width: 720px) and (orientation: portrait) {
     .mobile-topbar { display: flex; }
     .wrap { padding-top: 20px; }
@@ -419,7 +447,7 @@
   .profile-avatar { width:64px; height:64px; border-radius:50%; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; flex-shrink:0; font-family:"Poppins",sans-serif; overflow:hidden; }
   .profile-avatar img { width:100%; height:100%; object-fit:cover; }
   .profile-info { flex:1; min-width:0; }
-  .profile-name { font-size:17px; font-weight:700; margin:0 0 2px; }
+  .profile-name { font-size:20px; font-weight:700; letter-spacing:-0.01em; margin:0 0 2px; }
   .profile-username { font-size:13px; color:var(--ink-soft); margin:0 0 6px; }
   .profile-bio { font-size:13.5px; color:var(--ink); margin:0 0 8px; }
   .profile-stats { display:flex; gap:16px; font-size:11.5px; color:var(--ink-soft); margin-top:6px; }
@@ -447,12 +475,12 @@
   .detail-img-multi { flex:1; min-width:0; max-width:150px; aspect-ratio:1; object-fit:contain; background:#EFEFEC; border-radius:var(--radius-sm); border:1px solid var(--line); }
 
   .profile-section-title { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px; gap:10px; }
-  .profile-section-title h2 { font-size:15px; margin:0; }
+  .profile-section-title h2 { font-size:16px; margin:0; }
   .section-header { display:flex; align-items:flex-start; gap:12px; margin-bottom:18px; }
   .section-icon-badge { width:36px; height:36px; border-radius:50%; background:#EFEFEC; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--ink-soft); }
   .section-icon-badge svg { width:17px; height:17px; }
   .section-header-text { flex:1; min-width:0; }
-  .section-header-text h2 { font-size:15px; margin:0 0 2px; }
+  .section-header-text h2 { font-size:16px; margin:0 0 2px; }
   .section-header-sub { font-size:12px; color:var(--ink-soft); margin:0; }
   .section-header .btn-text { flex-shrink:0; margin-top:3px; }
   .profile-big-number { font-size:32px; font-weight:700; line-height:1; margin:6px 0 2px; font-family:"Poppins",sans-serif; }
@@ -464,14 +492,10 @@
   .category-tile-img img { width:100%; height:100%; object-fit:contain; padding:8px; }
   .category-tile-label { font-size:12px; font-weight:600; margin-top:6px; }
   .category-tile-count { font-size:11.5px; color:var(--ink-soft); }
-  .profile-header-stats { display:flex; gap:22px; margin-left:auto; padding-left:16px; flex-shrink:0; }
-  .profile-header-stat { text-align:center; }
-  .profile-header-stat-num { font-size:26px; font-weight:700; line-height:1; font-family:"Poppins",sans-serif; }
-  .profile-header-stat-label { font-size:11px; color:var(--ink-soft); margin-top:3px; }
   @media (max-width:520px) {
     .profile-header { flex-wrap: wrap; align-items: center; }
     .profile-avatar { order: 1; }
-    .profile-header-stats { order: 2; margin-left: auto; padding-left: 0; width: auto; justify-content: flex-end; gap: 22px; margin-top: 0; }
+    .profile-header-action { order: 2; margin-left: auto; }
     .profile-info { order: 3; flex-basis: 100%; width: 100%; margin-top: 14px; }
   }
 
@@ -627,6 +651,9 @@
 <div class="mobile-topbar">
     <img src="data:image/png;base64,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" alt="">
     <div class="mobile-topbar-text"><span>D</span><span>R</span><span>O</span><span>B</span><span>R</span></div>
+    <button class="topbar-shop-btn" id="topbarShopBtn" aria-label="¿Me lo compro?">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H4.5a1 1 0 0 0-1 1.11l1 9A2 2 0 0 0 6.48 17H16.5a2 2 0 0 0 2-1.83l.85-9.06A1 1 0 0 0 18.35 5H9Z"/><path d="M9 5a3 3 0 0 1 6 0"/><circle cx="9" cy="10" r=".6" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r=".6" fill="currentColor" stroke="none"/></svg>
+    </button>
     <button class="topbar-settings-btn" id="topbarSettingsBtn" aria-label="Configuración">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
     </button>
@@ -647,10 +674,6 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H4.5a1 1 0 0 0-1 1.11l1 9A2 2 0 0 0 6.48 17H16.5a2 2 0 0 0 2-1.83l.85-9.06A1 1 0 0 0 18.35 5H9Z"/><path d="M9 5a3 3 0 0 1 6 0"/><circle cx="9" cy="10" r=".6" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r=".6" fill="currentColor" stroke="none"/></svg>
         ¿Me lo compro?
       </button>
-      <button class="nav-item" id="viewTabProfile">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6"/></svg>
-        Perfil
-      </button>
       <div class="nav-divider"></div>
       <button class="nav-item" id="viewTabSearchUser">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
@@ -659,6 +682,11 @@
       <button class="nav-item" id="viewTabGuardados">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
         Guardados
+      </button>
+      <div class="nav-divider"></div>
+      <button class="nav-item" id="viewTabProfile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-3.6 3.6-6 8-6s8 2.4 8 6"/></svg>
+        Perfil
       </button>
       <button class="nav-item" id="viewTabSettings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -886,7 +914,7 @@
             </span>
           </div>
         </div>
-        <button class="btn btn-outline" id="profileEditBtn" style="flex-shrink:0; padding:7px 14px; font-size:12.5px;">
+        <button class="btn btn-outline profile-header-action" id="profileEditBtn" style="flex-shrink:0; padding:7px 14px; font-size:12.5px;">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
           Editar perfil
         </button>
@@ -907,7 +935,7 @@
 
     <div class="section">
       <div class="section-header">
-        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a1.5 1.5 0 1 1-1.5 1.5"/><path d="M12 6v2"/><path d="M4.5 17 11 12a1.6 1.6 0 0 1 2 0l6.5 5"/><path d="M3 19.5h18"/></svg></div>
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="1.2"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/></svg></div>
         <div class="section-header-text">
           <h2>Mi armario</h2>
           <p class="section-header-sub">Tu ropa, siempre a mano.</p>
@@ -919,7 +947,7 @@
 
     <div class="section">
       <div class="section-header">
-        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg></div>
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg></div>
         <div class="section-header-text">
           <h2>Mis Outfits</h2>
           <p class="section-header-sub">Looks que ya has creado.</p>
@@ -944,25 +972,41 @@
   <div id="viewGuardados" style="display:none;">
     <div class="section">
       <div class="section-header">
-        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a1.5 1.5 0 1 1-1.5 1.5"/><path d="M12 6v2"/><path d="M4.5 17 11 12a1.6 1.6 0 0 1 2 0l6.5 5"/><path d="M3 19.5h18"/></svg></div>
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="1.2"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/></svg></div>
         <div class="section-header-text">
           <h2>Prendas Guardadas</h2>
           <p class="section-header-sub">Prendas que has guardado del armario de otras personas.</p>
         </div>
       </div>
-      <p class="sub" id="savedGarmentsEmpty" style="margin-bottom:0;">Aún no has guardado ninguna prenda del armario de otras personas.</p>
+      <div class="empty" id="savedGarmentsEmpty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--line-strong)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px;"><rect x="5" y="2" width="14" height="20" rx="1.2"/><circle cx="15" cy="12" r="1" fill="var(--line-strong)" stroke="none"/></svg>
+        <p style="margin:0 0 6px; color:var(--ink); font-weight:600;">Aún no has guardado ninguna prenda</p>
+        <p class="sub" style="margin:0 auto 16px; text-align:center;">Explora el armario de otras personas y guarda las prendas que te inspiren, sin necesidad de tenerlas tú.</p>
+        <button class="btn btn-outline" id="savedGarmentsSearchBtn" style="margin:0 auto;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          Buscar personas
+        </button>
+      </div>
       <div class="category-grid" id="savedGarmentsGrid" style="margin-top:14px;"></div>
     </div>
 
     <div class="section" style="margin-bottom:0;">
       <div class="section-header">
-        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg></div>
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg></div>
         <div class="section-header-text">
           <h2>Outfits Guardados</h2>
           <p class="section-header-sub">Outfits que has guardado de otras personas.</p>
         </div>
       </div>
-      <p class="sub" id="savedOutfitsEmpty" style="margin-bottom:0;">Aún no has guardado ningún outfit de otras personas.</p>
+      <div class="empty" id="savedOutfitsEmpty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--line-strong)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:14px;"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>
+        <p style="margin:0 0 6px; color:var(--ink); font-weight:600;">Aún no has guardado ningún outfit</p>
+        <p class="sub" style="margin:0 auto 16px; text-align:center;">Cuando veas un outfit de otra persona que te guste, guárdalo aquí como inspiración para tus propias combinaciones.</p>
+        <button class="btn btn-outline" id="savedOutfitsSearchBtn" style="margin:0 auto;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          Buscar personas
+        </button>
+      </div>
       <div style="display:flex; flex-wrap:wrap; gap:14px; margin-top:14px;" id="savedOutfitsGrid"></div>
     </div>
   </div>
@@ -1241,21 +1285,24 @@
     <div class="modal-body">
       <img class="modal-preview" id="modalPreview" src="" alt="Vista previa">
       <div style="flex:1;" id="modalCategoryField">
-        <label class="field" style="margin-bottom:0;">Tipo de prenda
+        <label class="field-primary" style="margin-bottom:8px;">Tipo de prenda
           <div class="formality-options" id="modalCategory"></div>
         </label>
       </div>
     </div>
 
-    <label class="field" id="modalFormalityField">¿Para qué ocasión la llevarías?
+    <label class="field-eyebrow" id="modalFormalityField">¿Para qué ocasión la llevarías?
       <div class="formality-options" id="modalFormality"></div>
     </label>
-    <label id="modalVersatileField" style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--ink-soft); margin-bottom:16px;">
-      <input type="checkbox" id="modalVersatile">
-      Prenda versátil
-    </label>
+    <div id="modalVersatileField" style="margin-bottom:16px;">
+      <input type="checkbox" id="modalVersatile" class="pill-checkbox">
+      <label for="modalVersatile" class="versatile-toggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="12" r="4"/><circle cx="16" cy="12" r="4"/></svg>
+        Prenda versátil
+      </label>
+    </div>
 
-    <label class="field" id="modalSeasonField">Temporada
+    <label class="field-eyebrow" id="modalSeasonField">Temporada
       <div class="formality-options" id="modalSeason"></div>
     </label>
 
@@ -1267,10 +1314,10 @@
       <div id="modalBgStatus" class="ai-status" style="display:none;"></div>
     </div>
 
-    <label class="field" id="modalColorField">Color
+    <label class="field-eyebrow" id="modalColorField">Color
       <div class="color-options" id="modalColors"></div>
     </label>
-    <label class="field" id="modalNameField">Nombre
+    <label class="field-eyebrow" id="modalNameField">Nombre
       <input type="text" id="modalName" placeholder="p. ej. camiseta lino blanca">
     </label>
     <button class="btn btn-primary" id="modalConfirm" style="width:100%;">Añadir al armario</button>
@@ -1829,9 +1876,9 @@ function frameHTML(g, index, opts = {}) {
           ${hasActions ? `
           <div class="frame-actions">
             <div class="frame-actions-left">
-              ${opts.duplicable ? `<button class="frame-action-btn" data-dup="${g.id}" title="Duplicar prenda">⧉</button>` : ""}
-              ${opts.editable ? `<button class="frame-action-btn" data-edit="${g.id}" title="Editar prenda">✎</button>` : ""}
-              ${opts.editable ? `<button class="frame-action-btn" data-styles="${g.id}" title="Varias formas de llevarla">🎨</button>` : ""}
+              ${opts.duplicable ? `<button class="frame-action-btn labeled" data-dup="${g.id}" title="Duplicar prenda"><span class="frame-action-icon">⧉</span><span class="frame-action-label">Duplicar</span></button>` : ""}
+              ${opts.editable ? `<button class="frame-action-btn labeled" data-edit="${g.id}" title="Editar prenda"><span class="frame-action-icon">✎</span><span class="frame-action-label">Editar</span></button>` : ""}
+              ${opts.editable ? `<button class="frame-action-btn labeled" data-styles="${g.id}" title="Varias formas de llevarla"><span class="frame-action-icon">🎨</span><span class="frame-action-label">Estilos</span></button>` : ""}
             </div>
           </div>` : ""}
         </div>
@@ -4108,6 +4155,8 @@ document.getElementById("viewTabShop").addEventListener("click", () => switchVie
 document.getElementById("viewTabProfile").addEventListener("click", () => switchView("profile"));
 document.getElementById("viewTabGuardados").addEventListener("click", () => switchView("guardados"));
 document.getElementById("viewTabSearchUser").addEventListener("click", openUserSearchModal);
+document.getElementById("savedGarmentsSearchBtn")?.addEventListener("click", openUserSearchModal);
+document.getElementById("savedOutfitsSearchBtn")?.addEventListener("click", openUserSearchModal);
 document.getElementById("userSearchClose").addEventListener("click", closeUserSearchModal);
 document.getElementById("userSearchBackdrop").addEventListener("click", (e) => { if (e.target.id === "userSearchBackdrop") closeUserSearchModal(); });
 document.getElementById("userSearchGoBtn").addEventListener("click", performUserSearch);
@@ -4117,6 +4166,7 @@ document.getElementById("foreignWardrobeBackBtn").addEventListener("click", () =
 document.getElementById("foreignOutfitsBackBtn").addEventListener("click", () => showForeignSubView("viewVisitorProfile"));
 document.getElementById("viewTabSettings").addEventListener("click", () => switchView("settings"));
 document.getElementById("topbarSettingsBtn").addEventListener("click", () => switchView("settings"));
+document.getElementById("topbarShopBtn").addEventListener("click", () => switchView("shop"));
 document.getElementById("profileViewWardrobeBtn").addEventListener("click", () => switchView("wardrobe"));
 document.getElementById("profileViewOutfitsBtn").addEventListener("click", () => switchView("outfits"));
 
@@ -4764,7 +4814,7 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
             ${lockBadge}
           </div>
         </div>
-        <button class="btn btn-outline" id="visitorFollowBtn" style="flex-shrink:0; padding:7px 14px; font-size:12.5px;">Seguir</button>
+        <button class="btn btn-outline profile-header-action" id="visitorFollowBtn" style="flex-shrink:0; padding:7px 14px; font-size:12.5px;">Seguir</button>
       </div>
     </div>
 
@@ -4789,7 +4839,7 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
 
     <div class="section">
       <div class="section-header">
-        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a1.5 1.5 0 1 1-1.5 1.5"/><path d="M12 6v2"/><path d="M4.5 17 11 12a1.6 1.6 0 0 1 2 0l6.5 5"/><path d="M3 19.5h18"/></svg></div>
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="1.2"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/></svg></div>
         <div class="section-header-text">
           <h2>Armario</h2>
           <p class="section-header-sub">Explora su armario.</p>
@@ -4801,7 +4851,7 @@ function renderVisitorProfile(meta, prendas, foreignOutfits, publicCollections) 
 
     <div class="section">
       <div class="section-header">
-        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/></svg></div>
+        <div class="section-icon-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg></div>
         <div class="section-header-text">
           <h2>Outfits</h2>
           <p class="section-header-sub">Sus combinaciones guardadas.</p>
