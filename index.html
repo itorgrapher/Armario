@@ -4999,7 +4999,7 @@ function closeVisitorProfile() {
 // Armario de otro usuario, de solo lectura: agrupado exactamente como el dueño
 // organizó el suyo (mismas customCategories/categoryLabels). Sin buscador ni
 // filtros por ahora — es una pantalla de consulta, no de gestión.
-function openForeignWardrobe(meta, prendas, foreignOutfitsArr) {
+function openForeignWardrobe(targetUid, meta, prendas, foreignOutfitsArr) {
   const sections = foreignSections(meta)
     .map(sec => ({ ...sec, items: garmentsInSection(prendas, sec) }))
     .filter(sec => sec.items.length > 0);
@@ -5011,10 +5011,28 @@ function openForeignWardrobe(meta, prendas, foreignOutfitsArr) {
       </div>
       <div class="grid">${sec.items.map(g => frameHTML(g, 0)).join("")}</div>
     </div>`).join("");
+  const name = meta.name || meta.username || "usuario";
+  const avatarHTML = meta.avatar ? `<img src="${meta.avatar}" alt="">` : name.charAt(0).toUpperCase();
+  const outfitsCount = (foreignOutfitsArr || []).length;
   const content = document.getElementById("foreignWardrobeContent");
   content.innerHTML = `
     <div class="section" style="margin-bottom:0;">
-      <div class="profile-section-title"><h2>Armario de ${meta.name || meta.username || "usuario"}</h2></div>
+      <div class="profile-header" style="margin-bottom:0;">
+        <div class="profile-avatar">${avatarHTML}</div>
+        <div class="profile-info">
+          <p class="profile-name">${name}</p>
+          ${meta.username ? `<p class="profile-username">@${meta.username}</p>` : ""}
+          <div class="profile-stats-main">
+            <span><b>${prendas.length}</b>${prendas.length === 1 ? "prenda" : "prendas"}</span>
+            <span class="stat-divider"></span>
+            <span><b>${outfitsCount}</b>${outfitsCount === 1 ? "outfit" : "outfits"}</span>
+          </div>
+          <div class="profile-stats">
+            <span><b id="foreignWardrobeFollowerCount">…</b> seguidores</span>
+            <span><b id="foreignWardrobeFollowingCount">…</b> seguidos</span>
+          </div>
+        </div>
+      </div>
     </div>
     ${sectionsHTML || `<div class="section"><p class="sub">Este usuario aún no tiene prendas.</p></div>`}`;
   content.querySelectorAll("[data-id]").forEach(card => {
@@ -5023,6 +5041,8 @@ function openForeignWardrobe(meta, prendas, foreignOutfitsArr) {
       if (g) openForeignGarmentDetail(g, meta, foreignOutfitsArr || []);
     });
   });
+  getFollowerCount(targetUid).then(n => { const el = document.getElementById("foreignWardrobeFollowerCount"); if (el) el.textContent = n; }).catch(() => {});
+  getFollowingCount(targetUid).then(n => { const el = document.getElementById("foreignWardrobeFollowingCount"); if (el) el.textContent = n; }).catch(() => {});
   showForeignSubView("viewForeignWardrobe");
 }
 
@@ -5445,7 +5465,7 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
     });
   }
   const viewWardrobeBtn = document.getElementById("visitorViewWardrobeBtn");
-  if (viewWardrobeBtn) viewWardrobeBtn.addEventListener("click", () => openForeignWardrobe(meta, prendas, foreignOutfits));
+  if (viewWardrobeBtn) viewWardrobeBtn.addEventListener("click", () => openForeignWardrobe(targetUid, meta, prendas, foreignOutfits));
   const viewOutfitsBtn = document.getElementById("visitorViewOutfitsBtn");
   if (viewOutfitsBtn) viewOutfitsBtn.addEventListener("click", () => openForeignOutfits(meta, foreignOutfits));
   document.querySelectorAll("#visitorProfileContent [data-cat-tile]").forEach(tile => {
