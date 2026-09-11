@@ -535,18 +535,32 @@
   .foreign-wardrobe-menu-btn { background:none; border:none; color:var(--ink-soft); cursor:pointer; padding:6px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
   .foreign-wardrobe-menu-btn:hover { background:var(--line); }
   .foreign-wardrobe-menu-btn svg { width:19px; height:19px; }
-  .foreign-gallery-identity { margin-bottom:18px; }
-  .foreign-gallery-name { font-size:19px; font-weight:700; letter-spacing:-0.01em; margin:0 0 2px; }
+  .foreign-gallery-avatar { width:52px; height:52px; border-radius:50%; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:600; margin:0 auto 10px; overflow:hidden; font-family:"Poppins",sans-serif; }
+  .foreign-gallery-avatar img { width:100%; height:100%; object-fit:cover; }
+  .foreign-gallery-identity { text-align:center; margin-bottom:16px; }
+  .foreign-gallery-name { font-size:16px; font-weight:700; letter-spacing:-0.01em; margin:0 0 2px; }
   .foreign-gallery-meta { font-size:12.5px; color:var(--ink-soft); margin:0; }
-  .foreign-gallery-controls { display:flex; align-items:center; gap:8px; margin-bottom:20px; }
-  .foreign-filter-scroll { display:flex; gap:8px; overflow-x:auto; flex:1; min-width:0; scrollbar-width:none; padding-bottom:2px; }
+  .foreign-gallery-controls { display:flex; align-items:center; gap:8px; margin-bottom:0; }
+  .foreign-sort-btn { flex-shrink:0; background:none; border:none; color:var(--ink-soft); cursor:pointer; padding:7px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+  .foreign-sort-btn:hover { background:var(--line); }
+  .foreign-sort-btn svg { width:16px; height:16px; }
+  .foreign-sort-dropdown { display:none; position:absolute; right:0; top:38px; background:#fff; border:1px solid var(--line-strong); border-radius:var(--radius-sm); box-shadow:var(--shadow); min-width:170px; z-index:20; overflow:hidden; }
+  .foreign-sort-option { display:block; width:100%; text-align:left; padding:10px 14px; background:none; border:none; font-size:13px; color:var(--ink); cursor:pointer; font-family:inherit; }
+  .foreign-sort-option:hover { background:var(--bg); }
+  .foreign-sort-option.active { font-weight:700; }
+  .foreign-filter-scroll { display:flex; gap:8px; overflow-x:auto; flex:1; min-width:0; scrollbar-width:none; padding-bottom:2px; -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 22px), transparent); mask-image:linear-gradient(to right, #000 calc(100% - 22px), transparent); }
   .foreign-filter-scroll::-webkit-scrollbar { display:none; }
+  @media (max-width:640px) {
+    .foreign-gallery-controls { flex-wrap:wrap; }
+    .foreign-filter-scroll { flex-basis:100%; order:1; -webkit-mask-image:linear-gradient(to right, #000 calc(100% - 22px), transparent), linear-gradient(to left, #000 calc(100% - 22px), transparent); mask-image:linear-gradient(to right, #000 calc(100% - 22px), transparent), linear-gradient(to left, #000 calc(100% - 22px), transparent); mask-composite:intersect; -webkit-mask-composite:source-in; }
+    .foreign-filter-more-btn { order:2; }
+    .foreign-sort-wrap { order:3; margin-left:auto; }
+  }
   .foreign-filter-chip { flex-shrink:0; padding:6px 14px; border-radius:999px; border:1px solid var(--line-strong); background:#fff; font-size:12px; font-weight:600; color:var(--ink-soft); cursor:pointer; font-family:inherit; white-space:nowrap; }
   .foreign-filter-chip.active { background:var(--ink); color:#fff; border-color:var(--ink); }
   .foreign-filter-more-btn { flex-shrink:0; display:flex; align-items:center; gap:5px; padding:6px 12px; border-radius:999px; border:1px solid var(--line-strong); background:#fff; font-size:12px; font-weight:600; color:var(--ink); cursor:pointer; font-family:inherit; white-space:nowrap; }
   .foreign-filter-more-btn svg { width:13px; height:13px; }
   .foreign-filter-more-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
-  .foreign-sort-select { flex-shrink:0; }
   .foreign-gallery-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px 10px; }
   @media (min-width:640px) { .foreign-gallery-grid { grid-template-columns:repeat(4, 1fr); gap:20px 14px; } }
   @media (min-width:960px) { .foreign-gallery-grid { grid-template-columns:repeat(5, 1fr); } }
@@ -5078,29 +5092,48 @@ function openForeignWardrobe(targetUid, meta, prendas, foreignOutfitsArr) {
     categoryFilter: "all", colorFilter: "", formalityFilter: "", seasonFilter: "", sort: "recent",
   };
   const name = meta.name || meta.username || "usuario";
+  const avatarHTML = meta.avatar ? `<img src="${meta.avatar}" alt="">` : name.charAt(0).toUpperCase();
   const outfitsCount = foreignGalleryState.foreignOutfitsArr.length;
   const content = document.getElementById("foreignWardrobeContent");
   content.innerHTML = `
-    <div class="foreign-gallery-identity">
-      <p class="foreign-gallery-name">${name}</p>
-      <p class="foreign-gallery-meta">${prendas.length} ${prendas.length === 1 ? "prenda" : "prendas"} · ${outfitsCount} ${outfitsCount === 1 ? "outfit" : "outfits"}</p>
-    </div>
-    <div class="foreign-gallery-controls">
-      <div class="foreign-filter-scroll" id="foreignFilterChipRow"></div>
-      <button class="foreign-filter-more-btn" id="foreignFilterMoreBtn"></button>
-      <select class="filter-select foreign-sort-select" id="foreignSortSelect">
-        <option value="recent">Más recientes</option>
-        <option value="category">Por categoría</option>
-        <option value="color">Por color</option>
-      </select>
+    <div class="section" style="margin-bottom:20px;">
+      <div class="foreign-gallery-identity">
+        <div class="foreign-gallery-avatar">${avatarHTML}</div>
+        <p class="foreign-gallery-name">${name}</p>
+        <p class="foreign-gallery-meta">${meta.username ? `@${meta.username} · ` : ""}${prendas.length} ${prendas.length === 1 ? "prenda" : "prendas"} · ${outfitsCount} ${outfitsCount === 1 ? "outfit" : "outfits"}</p>
+      </div>
+      <div class="foreign-gallery-controls">
+        <div class="foreign-filter-scroll" id="foreignFilterChipRow"></div>
+        <button class="foreign-filter-more-btn" id="foreignFilterMoreBtn"></button>
+        <div class="foreign-sort-wrap" style="position:relative;">
+          <button class="foreign-sort-btn" id="foreignSortBtn" title="Ordenar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V4M7 4 3 8M7 4l4 4"/><path d="M17 4v16M17 20l4-4M17 20l-4-4"/></svg>
+          </button>
+          <div class="foreign-sort-dropdown" id="foreignSortDropdown">
+            <button class="foreign-sort-option" data-sort="recent">Más recientes</button>
+            <button class="foreign-sort-option" data-sort="category">Por categoría</button>
+            <button class="foreign-sort-option" data-sort="color">Por color</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="foreign-gallery-grid" id="foreignGalleryGrid"></div>`;
   renderForeignFilterChips();
   updateForeignFilterMoreBtn();
   renderForeignGalleryGrid();
-  document.getElementById("foreignSortSelect").addEventListener("change", (e) => {
-    foreignGalleryState.sort = e.target.value;
-    renderForeignGalleryGrid();
+  updateForeignSortDropdown();
+  document.getElementById("foreignSortBtn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const dd = document.getElementById("foreignSortDropdown");
+    dd.style.display = dd.style.display === "block" ? "none" : "block";
+  });
+  document.getElementById("foreignSortDropdown").querySelectorAll("[data-sort]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      foreignGalleryState.sort = btn.dataset.sort;
+      document.getElementById("foreignSortDropdown").style.display = "none";
+      updateForeignSortDropdown();
+      renderForeignGalleryGrid();
+    });
   });
   document.getElementById("foreignFilterMoreBtn").addEventListener("click", openForeignFilterModal);
   showForeignSubView("viewForeignWardrobe");
@@ -5173,6 +5206,12 @@ function updateForeignFilterMoreBtn() {
     Filtrar${active ? `<span class="foreign-filter-more-dot"></span>` : ""}`;
 }
 
+function updateForeignSortDropdown() {
+  const dd = document.getElementById("foreignSortDropdown");
+  if (!dd) return;
+  dd.querySelectorAll("[data-sort]").forEach(b => b.classList.toggle("active", b.dataset.sort === foreignGalleryState.sort));
+}
+
 // Panel de filtros avanzados (color / estilo / temporada). No incluye "marca"
 // porque DROBR todavía no guarda ese dato por prenda.
 function openForeignFilterModal() {
@@ -5224,6 +5263,10 @@ document.addEventListener("click", (e) => {
   const menu = document.getElementById("foreignWardrobeMenuDropdown");
   if (menu && menu.style.display === "block" && !menu.contains(e.target) && e.target.id !== "foreignWardrobeMenuBtn") {
     menu.style.display = "none";
+  }
+  const sortDd = document.getElementById("foreignSortDropdown");
+  if (sortDd && sortDd.style.display === "block" && !sortDd.contains(e.target) && e.target.closest("#foreignSortBtn") == null) {
+    sortDd.style.display = "none";
   }
 });
 document.getElementById("foreignWardrobeShareBtn").addEventListener("click", () => {
