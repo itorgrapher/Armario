@@ -468,28 +468,26 @@
   }
 
   /* ---- Perfil ---- */
-  .profile-header-top { display:flex; align-items:center; gap:18px; margin-bottom:16px; }
-  .profile-stats-ig { display:flex; gap:28px; }
-  .profile-stat-ig { text-align:center; min-width:52px; }
-  .profile-stat-ig b { display:block; font-size:17px; font-weight:700; font-family:"Poppins",sans-serif; color:var(--ink); }
-  .profile-stat-ig span { display:block; font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
-  .profile-actions-row { display:flex; gap:8px; margin-top:12px; }
+  .profile-header-row { display:flex; align-items:center; gap:16px; margin-bottom:14px; }
+  .profile-header-textstack { flex:1; min-width:0; }
+  .profile-stats-row { display:flex; justify-content:space-between; margin:0 0 16px; }
+  .profile-stat { flex:1; text-align:center; }
+  .profile-stat b { display:block; font-size:16px; font-weight:700; font-family:"Poppins",sans-serif; color:var(--ink); }
+  .profile-stat span { display:block; font-size:11px; color:var(--ink-soft); margin-top:2px; }
+  .profile-actions-row { display:flex; gap:8px; }
+  .profile-action-half { flex:1; padding:9px 0; font-size:13px; }
   .profile-action-compact { padding:8px 18px; font-size:12.5px; }
-  .profile-avatar { width:64px; height:64px; border-radius:50%; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:600; flex-shrink:0; font-family:"Poppins",sans-serif; overflow:hidden; }
+  .profile-avatar { width:68px; height:68px; border-radius:50%; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:23px; font-weight:600; flex-shrink:0; font-family:"Poppins",sans-serif; overflow:hidden; }
   .profile-avatar img { width:100%; height:100%; object-fit:cover; }
-  .profile-name { font-size:20px; font-weight:700; letter-spacing:-0.01em; margin:0 0 2px; }
-  .profile-username { font-size:13px; color:var(--ink-soft); margin:0 0 6px; }
-  .profile-bio { font-size:13.5px; color:var(--ink); margin:0 0 8px; }
-  .profile-stats-main { display:flex; align-items:baseline; gap:10px; font-size:13.5px; color:var(--ink-soft); margin:3px 0 0; }
-  .profile-stats-main b { font-size:15px; font-weight:700; color:var(--ink); margin-right:4px; font-family:"Poppins",sans-serif; }
-  .stat-divider { width:1px; height:12px; background:var(--line-strong); align-self:center; }
+  .profile-name { font-size:17px; font-weight:700; letter-spacing:-0.01em; margin:0 0 1px; }
+  .profile-username { font-size:12.5px; color:var(--ink-soft); margin:0 0 4px; }
+  .profile-bio { font-size:13px; color:var(--ink); margin:0; }
+  .profile-privacy-line { display:flex; align-items:center; gap:4px; font-size:12px; color:var(--ink-soft); margin:0 0 14px; }
   .category-scroll-row { display:flex; gap:14px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none; }
   .category-scroll-row::-webkit-scrollbar { display:none; }
   .category-scroll-row > div { flex-shrink:0; }
   .profile-link { display:inline-block; font-size:13px; color:var(--accent); margin:0 0 8px; text-decoration:none; word-break:break-all; }
   .profile-link:hover { text-decoration:underline; }
-  .profile-privacy-badge { display:inline-flex; align-items:center; gap:4px; }
-  .profile-privacy-badge svg { width:13px; height:13px; }
 
   .edit-avatar-row { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
   .edit-avatar-preview { width:72px; height:72px; border-radius:50%; background:var(--ink); color:#fff; display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:600; flex-shrink:0; font-family:"Poppins",sans-serif; overflow:hidden; }
@@ -979,32 +977,31 @@
 
   <div id="viewProfile" style="display:none;">
     <div class="section">
-      <div class="profile-header-top">
+      <div class="profile-header-row">
         <div class="profile-avatar" id="profileAvatar">?</div>
-        <div class="profile-stats-ig">
-          <div class="profile-stat-ig"><b id="profileFollowers">0</b><span>seguidores</span></div>
-          <div class="profile-stat-ig"><b id="profileFollowing">0</b><span>seguidos</span></div>
+        <div class="profile-header-textstack">
+          <p class="profile-name" id="profileName"></p>
+          <p class="profile-username" id="profileUsername"></p>
+          <p class="profile-bio" id="profileBio"></p>
+          <a class="profile-link" id="profileLink" href="#" target="_blank" rel="noopener" style="display:none;"></a>
         </div>
       </div>
-      <p class="profile-name" id="profileName"></p>
-      <p class="profile-username" id="profileUsername"></p>
-      <p class="profile-bio" id="profileBio"></p>
-      <a class="profile-link" id="profileLink" href="#" target="_blank" rel="noopener" style="display:none;"></a>
-      <div class="profile-stats-main">
-        <span><b id="profileHeaderGarmentCount">0</b><span id="profileHeaderGarmentLabel">prendas</span></span>
-        <span class="stat-divider"></span>
-        <span><b id="profileHeaderOutfitCount">0</b><span id="profileHeaderOutfitLabel">outfits</span></span>
-        <span class="profile-privacy-badge" id="profilePrivacyBadge" style="display:none; margin-left:10px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-          Armario privado
-        </span>
+      <div class="profile-stats-row">
+        <div class="profile-stat"><b id="profileHeaderGarmentCount">0</b><span id="profileHeaderGarmentLabel">prendas</span></div>
+        <div class="profile-stat"><b id="profileHeaderOutfitCount">0</b><span id="profileHeaderOutfitLabel">outfits</span></div>
+        <div class="profile-stat"><b id="profileFollowers">0</b><span>seguidores</span></div>
+        <div class="profile-stat"><b id="profileFollowing">0</b><span>seguidos</span></div>
       </div>
+      <p class="profile-privacy-line" id="profilePrivacyBadge" style="display:none;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        Armario privado
+      </p>
       <div class="profile-actions-row">
-        <button class="btn btn-outline profile-action-compact" id="profileEditBtn">
+        <button class="btn btn-outline profile-action-half" id="profileEditBtn">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
           Editar perfil
         </button>
-        <button class="btn btn-outline profile-action-compact" id="profileShareBtn">
+        <button class="btn btn-outline profile-action-half" id="profileShareBtn">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
           Compartir
         </button>
@@ -5018,19 +5015,19 @@ function openForeignWardrobe(targetUid, meta, prendas, foreignOutfitsArr) {
   const content = document.getElementById("foreignWardrobeContent");
   content.innerHTML = `
     <div class="section" style="margin-bottom:0;">
-      <div class="profile-header-top">
+      <div class="profile-header-row">
         <div class="profile-avatar">${avatarHTML}</div>
-        <div class="profile-stats-ig">
-          <div class="profile-stat-ig"><b id="foreignWardrobeFollowerCount">…</b><span>seguidores</span></div>
-          <div class="profile-stat-ig"><b id="foreignWardrobeFollowingCount">…</b><span>seguidos</span></div>
+        <div class="profile-header-textstack">
+          <p class="profile-name">${name}</p>
+          ${meta.username ? `<p class="profile-username">@${meta.username}</p>` : ""}
+          ${meta.bio ? `<p class="profile-bio">${meta.bio}</p>` : ""}
         </div>
       </div>
-      <p class="profile-name">${name}</p>
-      ${meta.username ? `<p class="profile-username">@${meta.username}</p>` : ""}
-      <div class="profile-stats-main">
-        <span><b>${prendas.length}</b>${prendas.length === 1 ? "prenda" : "prendas"}</span>
-        <span class="stat-divider"></span>
-        <span><b>${outfitsCount}</b>${outfitsCount === 1 ? "outfit" : "outfits"}</span>
+      <div class="profile-stats-row">
+        <div class="profile-stat"><b>${prendas.length}</b><span>${prendas.length === 1 ? "prenda" : "prendas"}</span></div>
+        <div class="profile-stat"><b>${outfitsCount}</b><span>${outfitsCount === 1 ? "outfit" : "outfits"}</span></div>
+        <div class="profile-stat"><b id="foreignWardrobeFollowerCount">…</b><span>seguidores</span></div>
+        <div class="profile-stat"><b id="foreignWardrobeFollowingCount">…</b><span>seguidos</span></div>
       </div>
     </div>
     ${sectionsHTML || `<div class="section"><p class="sub">Este usuario aún no tiene prendas.</p></div>`}`;
@@ -5285,10 +5282,10 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
   const identity = meta.identityAxes || (canSeeContent ? computeIdentityAxes(prendas, foreignOutfits) : {});
 
   const lockBadge = meta.isPrivate ? `
-    <span class="profile-privacy-badge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    <p class="profile-privacy-line">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
       Armario privado
-    </span>` : "";
+    </p>` : "";
 
   const linkHTML = meta.link ? `<a class="profile-link" href="${/^https?:\/\//i.test(meta.link) ? meta.link : "https://" + meta.link}" target="_blank" rel="noopener">${meta.link.replace(/^https?:\/\//i, "")}</a>` : "";
 
@@ -5344,23 +5341,22 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
 
   document.getElementById("visitorProfileContent").innerHTML = `
     <div class="section">
-      <div class="profile-header-top">
+      <div class="profile-header-row">
         <div class="profile-avatar">${avatarHTML}</div>
-        <div class="profile-stats-ig">
-          <div class="profile-stat-ig"><b id="visitorFollowerCount">…</b><span>seguidores</span></div>
-          <div class="profile-stat-ig"><b id="visitorFollowingCount">…</b><span>seguidos</span></div>
+        <div class="profile-header-textstack">
+          <p class="profile-name">${name}</p>
+          <p class="profile-username">@${username}</p>
+          ${meta.bio ? `<p class="profile-bio">${meta.bio}</p>` : ""}
+          ${linkHTML}
         </div>
       </div>
-      <p class="profile-name">${name}</p>
-      <p class="profile-username">@${username}</p>
-      ${meta.bio ? `<p class="profile-bio">${meta.bio}</p>` : ""}
-      ${linkHTML}
-      <div class="profile-stats-main">
-        <span><b>${canSeeContent ? prendas.length : "–"}</b>${!canSeeContent ? "prendas" : (prendas.length === 1 ? "prenda" : "prendas")}</span>
-        <span class="stat-divider"></span>
-        <span><b>${canSeeContent ? foreignOutfits.length : "–"}</b>${!canSeeContent ? "outfits" : (foreignOutfits.length === 1 ? "outfit" : "outfits")}</span>
-        ${lockBadge}
+      <div class="profile-stats-row">
+        <div class="profile-stat"><b>${canSeeContent ? prendas.length : "–"}</b><span>${!canSeeContent ? "prendas" : (prendas.length === 1 ? "prenda" : "prendas")}</span></div>
+        <div class="profile-stat"><b>${canSeeContent ? foreignOutfits.length : "–"}</b><span>${!canSeeContent ? "outfits" : (foreignOutfits.length === 1 ? "outfit" : "outfits")}</span></div>
+        <div class="profile-stat"><b id="visitorFollowerCount">…</b><span>seguidores</span></div>
+        <div class="profile-stat"><b id="visitorFollowingCount">…</b><span>seguidos</span></div>
       </div>
+      ${lockBadge}
       ${followBtnHTML ? `<div class="profile-actions-row">${followBtnHTML}</div>` : ""}
     </div>
 
