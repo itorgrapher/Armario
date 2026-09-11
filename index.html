@@ -530,6 +530,36 @@
     .profile-action-half { flex:1; padding:9px 0; }
   }
 
+  /* ---- Armario ajeno: galería editorial ---- */
+  .foreign-wardrobe-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .foreign-wardrobe-menu-btn { background:none; border:none; color:var(--ink-soft); cursor:pointer; padding:6px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+  .foreign-wardrobe-menu-btn:hover { background:var(--line); }
+  .foreign-wardrobe-menu-btn svg { width:19px; height:19px; }
+  .foreign-gallery-identity { margin-bottom:18px; }
+  .foreign-gallery-name { font-size:19px; font-weight:700; letter-spacing:-0.01em; margin:0 0 2px; }
+  .foreign-gallery-meta { font-size:12.5px; color:var(--ink-soft); margin:0; }
+  .foreign-gallery-controls { display:flex; align-items:center; gap:8px; margin-bottom:20px; }
+  .foreign-filter-scroll { display:flex; gap:8px; overflow-x:auto; flex:1; min-width:0; scrollbar-width:none; padding-bottom:2px; }
+  .foreign-filter-scroll::-webkit-scrollbar { display:none; }
+  .foreign-filter-chip { flex-shrink:0; padding:6px 14px; border-radius:999px; border:1px solid var(--line-strong); background:#fff; font-size:12px; font-weight:600; color:var(--ink-soft); cursor:pointer; font-family:inherit; white-space:nowrap; }
+  .foreign-filter-chip.active { background:var(--ink); color:#fff; border-color:var(--ink); }
+  .foreign-filter-more-btn { flex-shrink:0; display:flex; align-items:center; gap:5px; padding:6px 12px; border-radius:999px; border:1px solid var(--line-strong); background:#fff; font-size:12px; font-weight:600; color:var(--ink); cursor:pointer; font-family:inherit; white-space:nowrap; }
+  .foreign-filter-more-btn svg { width:13px; height:13px; }
+  .foreign-filter-more-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
+  .foreign-sort-select { flex-shrink:0; }
+  .foreign-gallery-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px 10px; }
+  @media (min-width:640px) { .foreign-gallery-grid { grid-template-columns:repeat(4, 1fr); gap:20px 14px; } }
+  @media (min-width:960px) { .foreign-gallery-grid { grid-template-columns:repeat(5, 1fr); } }
+  @media (min-width:1300px) { .foreign-gallery-grid { grid-template-columns:repeat(6, 1fr); } }
+  .foreign-gallery-item { cursor:pointer; }
+  .foreign-gallery-img { width:100%; aspect-ratio:3/4; background:#EFEFEC; overflow:hidden; border-radius:6px; }
+  .foreign-gallery-img img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.3s ease; }
+  .foreign-gallery-item:hover .foreign-gallery-img img { transform:scale(1.03); }
+  .foreign-gallery-caption { padding:7px 1px 0; }
+  .foreign-gallery-title { font-size:11.5px; font-weight:600; color:var(--ink); margin:0; line-height:1.25; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .foreign-gallery-sub { font-size:10px; color:var(--ink-soft); margin:1px 0 0; text-transform:uppercase; letter-spacing:0.03em; }
+  .foreign-gallery-empty { grid-column:1/-1; }
+
   .outfit-mini-collage { width:100%; aspect-ratio:4/5; border-radius:6px; background:#EFEFEC; margin-bottom:8px; overflow:hidden; }
   .outfit-mini-collage img { width:100%; height:100%; object-fit:cover; display:block; }
   .outfit-mini-collage-loading { width:100%; height:100%; background:linear-gradient(90deg, #EFEFEC 25%, #E4E2DA 37%, #EFEFEC 63%); background-size:400% 100%; animation:outfitThumbPulse 1.4s ease infinite; }
@@ -1117,11 +1147,19 @@
   </div>
 
   <div id="viewForeignWardrobe" style="display:none;">
-    <div style="margin-bottom:16px;">
+    <div class="foreign-wardrobe-topbar">
       <button class="back-chip" id="foreignWardrobeBackBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
-        Volver
+        Armario
       </button>
+      <div style="position:relative;">
+        <button class="foreign-wardrobe-menu-btn" id="foreignWardrobeMenuBtn" aria-label="Más opciones">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+        </button>
+        <div id="foreignWardrobeMenuDropdown" style="display:none; position:absolute; right:0; top:36px; background:#fff; border:1px solid var(--line-strong); border-radius:var(--radius-sm); box-shadow:var(--shadow); min-width:170px; z-index:20; overflow:hidden;">
+          <button id="foreignWardrobeShareBtn" style="display:block; width:100%; text-align:left; padding:11px 14px; background:none; border:none; font-size:13px; color:var(--ink); cursor:pointer; font-family:inherit;">Compartir armario</button>
+        </div>
+      </div>
     </div>
     <div id="foreignWardrobeContent"></div>
   </div>
@@ -1245,6 +1283,28 @@
         <button class="modal-close" id="garmentOutfitsClose">✕</button>
       </div>
       <div id="garmentOutfitsContent"></div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="foreignFilterBackdrop">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-head"><h2 style="font-size:16px;">Filtrar</h2><button class="modal-close" id="foreignFilterClose">✕</button></div>
+      <div class="picker-row">
+        <div class="picker-label">Color</div>
+        <div class="color-options" id="foreignFilterColorOptions"></div>
+      </div>
+      <div class="picker-row">
+        <div class="picker-label">Estilo</div>
+        <div class="formality-options" id="foreignFilterFormalityOptions"></div>
+      </div>
+      <div class="picker-row">
+        <div class="picker-label">Temporada</div>
+        <div class="formality-options" id="foreignFilterSeasonOptions"></div>
+      </div>
+      <div class="row" style="margin-bottom:0;">
+        <button class="btn btn-outline" id="foreignFilterClearBtn">Limpiar</button>
+        <button class="btn btn-primary" id="foreignFilterApplyBtn">Aplicar</button>
+      </div>
     </div>
   </div>
   </div>
@@ -5002,70 +5062,174 @@ function closeVisitorProfile() {
   switchView(visitorProfilePreviousView);
 }
 
-// Armario de otro usuario, de solo lectura: agrupado exactamente como el dueño
-// organizó el suyo (mismas customCategories/categoryLabels). Sin buscador ni
-// filtros por ahora — es una pantalla de consulta, no de gestión.
-function foreignCategoryIcon(id) {
-  const icons = {
-    top: '<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>',
-    bottom: '<path d="M7 3h10v4l-1 14h-3l-1-11-1 11H8L7 7Z"/>',
-    shoes: '<path d="M4 16V9a1 1 0 0 1 1-1h2.5a1 1 0 0 1 1 1v3l7 2.3c1.2.4 2 1.5 2 2.8v.9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Z"/><path d="M4 16.5h13.5"/>',
-    outer: '<path d="M8 3l4 2 4-2 4 3-2 3v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9L4 6Z"/><path d="M12 5v13"/>',
-    accessory: '<circle cx="7" cy="13" r="3"/><circle cx="17" cy="13" r="3"/><path d="M10 13h4"/><path d="M4 13l-1-5"/><path d="M20 13l1-5"/>',
-  };
-  const inner = icons[id] || '<path d="M4 4h7l9 9-7 7-9-9z"/><circle cx="9" cy="9" r="1.5" fill="currentColor" stroke="none"/>';
-  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
-}
+// Armario de otro usuario, de solo lectura: galería editorial pensada para
+// explorar su estilo (no es el gestor del propietario, así que no repite
+// avatar/bio/seguidores — eso ya se vio en el perfil). Filtros y orden actúan
+// solo sobre datos que el dueño ya hizo públicos (categoría, color, temporada,
+// formalidad); nunca sobre uso privado (veces puesta, historial, organización).
+let foreignGalleryState = null;
+
 function openForeignWardrobe(targetUid, meta, prendas, foreignOutfitsArr) {
   const sections = foreignSections(meta)
     .map(sec => ({ ...sec, items: garmentsInSection(prendas, sec) }))
     .filter(sec => sec.items.length > 0);
-  const sectionsHTML = sections.map(sec => `
-    <div class="section">
-      <div class="section-header" style="margin-bottom:14px;">
-        <div class="section-icon-badge">${foreignCategoryIcon(sec.id)}</div>
-        <div class="section-header-text">
-          <h2 style="font-size:14px;">${sec.label}</h2>
-          <p class="section-header-sub">${sec.items.length} ${sec.items.length === 1 ? "prenda" : "prendas"}</p>
-        </div>
-      </div>
-      <div class="grid grid-row-collapsed">${sec.items.map(g => frameHTML(g, 0)).join("")}</div>
-    </div>`).join("");
+  foreignGalleryState = {
+    targetUid, meta, prendas, foreignOutfitsArr: foreignOutfitsArr || [], sections,
+    categoryFilter: "all", colorFilter: "", formalityFilter: "", seasonFilter: "", sort: "recent",
+  };
   const name = meta.name || meta.username || "usuario";
-  const avatarHTML = meta.avatar ? `<img src="${meta.avatar}" alt="">` : name.charAt(0).toUpperCase();
-  const outfitsCount = (foreignOutfitsArr || []).length;
+  const outfitsCount = foreignGalleryState.foreignOutfitsArr.length;
   const content = document.getElementById("foreignWardrobeContent");
   content.innerHTML = `
-    <div class="section">
-      <div class="profile-header-row">
-        <div class="profile-avatar">${avatarHTML}</div>
-        <div class="profile-header-textstack">
-          <p class="profile-name">${name}</p>
-          ${meta.username ? `<p class="profile-username">@${meta.username}</p>` : ""}
-          ${meta.bio ? `<p class="profile-bio">${meta.bio}</p>` : ""}
-        </div>
-        <div class="profile-stats-row">
-          <div class="profile-stat"><b>${prendas.length}</b><span>${prendas.length === 1 ? "prenda" : "prendas"}</span></div>
-          <span class="stat-divider"></span>
-          <div class="profile-stat"><b>${outfitsCount}</b><span>${outfitsCount === 1 ? "outfit" : "outfits"}</span></div>
-          <span class="stat-divider"></span>
-          <div class="profile-stat"><b id="foreignWardrobeFollowerCount">…</b><span>seguidores</span></div>
-          <span class="stat-divider"></span>
-          <div class="profile-stat"><b id="foreignWardrobeFollowingCount">…</b><span>seguidos</span></div>
-        </div>
-      </div>
+    <div class="foreign-gallery-identity">
+      <p class="foreign-gallery-name">${name}</p>
+      <p class="foreign-gallery-meta">${prendas.length} ${prendas.length === 1 ? "prenda" : "prendas"} · ${outfitsCount} ${outfitsCount === 1 ? "outfit" : "outfits"}</p>
     </div>
-    ${sectionsHTML || `<div class="section"><p class="sub">Este usuario aún no tiene prendas.</p></div>`}`;
-  content.querySelectorAll("[data-id]").forEach(card => {
-    card.addEventListener("click", () => {
-      const g = prendas.find(p => p.id === card.dataset.id);
-      if (g) openForeignGarmentDetail(g, meta, foreignOutfitsArr || []);
-    });
+    <div class="foreign-gallery-controls">
+      <div class="foreign-filter-scroll" id="foreignFilterChipRow"></div>
+      <button class="foreign-filter-more-btn" id="foreignFilterMoreBtn"></button>
+      <select class="filter-select foreign-sort-select" id="foreignSortSelect">
+        <option value="recent">Más recientes</option>
+        <option value="category">Por categoría</option>
+        <option value="color">Por color</option>
+      </select>
+    </div>
+    <div class="foreign-gallery-grid" id="foreignGalleryGrid"></div>`;
+  renderForeignFilterChips();
+  updateForeignFilterMoreBtn();
+  renderForeignGalleryGrid();
+  document.getElementById("foreignSortSelect").addEventListener("change", (e) => {
+    foreignGalleryState.sort = e.target.value;
+    renderForeignGalleryGrid();
   });
-  getFollowerCount(targetUid).then(n => { const el = document.getElementById("foreignWardrobeFollowerCount"); if (el) el.textContent = n; }).catch(() => {});
-  getFollowingCount(targetUid).then(n => { const el = document.getElementById("foreignWardrobeFollowingCount"); if (el) el.textContent = n; }).catch(() => {});
+  document.getElementById("foreignFilterMoreBtn").addEventListener("click", openForeignFilterModal);
   showForeignSubView("viewForeignWardrobe");
 }
+
+function renderForeignFilterChips() {
+  const st = foreignGalleryState;
+  const row = document.getElementById("foreignFilterChipRow");
+  const chips = [{ id: "all", label: "Todo" }, ...st.sections.map(s => ({ id: s.id, label: s.label }))];
+  row.innerHTML = chips.map(c => `<button class="foreign-filter-chip ${st.categoryFilter === c.id ? "active" : ""}" data-cat="${c.id}">${c.label}</button>`).join("");
+  row.querySelectorAll("[data-cat]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      st.categoryFilter = btn.dataset.cat;
+      renderForeignFilterChips();
+      renderForeignGalleryGrid();
+    });
+  });
+}
+
+// "Más recientes" usa el orden de llegada en el propio array (las prendas se
+// añaden al final), ya que no se guarda una fecha de alta por prenda.
+function foreignFilteredSortedGarments() {
+  const st = foreignGalleryState;
+  let list = st.prendas.map((g, i) => ({ g, i }));
+  if (st.categoryFilter !== "all") list = list.filter(({ g }) => g.category === st.categoryFilter);
+  if (st.colorFilter) list = list.filter(({ g }) => g.color === st.colorFilter);
+  if (st.formalityFilter !== "") list = list.filter(({ g }) => (g.formality || 2) === st.formalityFilter);
+  if (st.seasonFilter) list = list.filter(({ g }) => (g.season || "entretiempo") === st.seasonFilter);
+  if (st.sort === "recent") list.sort((a, b) => b.i - a.i);
+  else if (st.sort === "category") list.sort((a, b) => foreignCategoryLabel(a.g.category, st.meta).localeCompare(foreignCategoryLabel(b.g.category, st.meta)));
+  else if (st.sort === "color") list.sort((a, b) => (colorById[a.g.color]?.label || "").localeCompare(colorById[b.g.color]?.label || ""));
+  return list.map(({ g }) => g);
+}
+
+function renderForeignGalleryGrid() {
+  const grid = document.getElementById("foreignGalleryGrid");
+  const list = foreignFilteredSortedGarments();
+  if (!list.length) {
+    grid.innerHTML = `<p class="sub foreign-gallery-empty">Ninguna prenda coincide con estos filtros.</p>`;
+    return;
+  }
+  grid.innerHTML = list.map(g => {
+    const cat = CATEGORIES.find(c => c.id === g.category);
+    const title = g.name ? g.name.charAt(0).toUpperCase() + g.name.slice(1) : (cat ? cat.label : foreignCategoryLabel(g.category, foreignGalleryState.meta));
+    const colorLabel = (colorById[g.color] || {}).label || "";
+    return `
+    <div class="foreign-gallery-item" data-id="${g.id}">
+      <div class="foreign-gallery-img"><img src="${g.image}" alt="${title}" loading="lazy"></div>
+      <div class="foreign-gallery-caption">
+        <p class="foreign-gallery-title">${title}</p>
+        ${colorLabel ? `<p class="foreign-gallery-sub">${colorLabel}</p>` : ""}
+      </div>
+    </div>`;
+  }).join("");
+  grid.querySelectorAll("[data-id]").forEach(card => {
+    card.addEventListener("click", () => {
+      const g = foreignGalleryState.prendas.find(p => p.id === card.dataset.id);
+      if (g) openForeignGarmentDetail(g, foreignGalleryState.meta, foreignGalleryState.foreignOutfitsArr);
+    });
+  });
+}
+
+function updateForeignFilterMoreBtn() {
+  const st = foreignGalleryState;
+  const active = !!(st.colorFilter || st.formalityFilter !== "" || st.seasonFilter);
+  const btn = document.getElementById("foreignFilterMoreBtn");
+  if (!btn) return;
+  btn.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+    Filtrar${active ? `<span class="foreign-filter-more-dot"></span>` : ""}`;
+}
+
+// Panel de filtros avanzados (color / estilo / temporada). No incluye "marca"
+// porque DROBR todavía no guarda ese dato por prenda.
+function openForeignFilterModal() {
+  const st = foreignGalleryState;
+  let pendingColor = st.colorFilter, pendingFormality = st.formalityFilter, pendingSeason = st.seasonFilter;
+  const colorRow = document.getElementById("foreignFilterColorOptions");
+  const formalityRow = document.getElementById("foreignFilterFormalityOptions");
+  const seasonRow = document.getElementById("foreignFilterSeasonOptions");
+  const paintColors = () => colorRow.querySelectorAll("[data-color]").forEach(b => b.classList.toggle("selected", b.dataset.color === pendingColor));
+  const paintFormality = () => formalityRow.querySelectorAll("[data-formality]").forEach(b => b.classList.toggle("selected", Number(b.dataset.formality) === pendingFormality));
+  const paintSeason = () => seasonRow.querySelectorAll("[data-season]").forEach(b => b.classList.toggle("selected", b.dataset.season === pendingSeason));
+  colorRow.innerHTML = COLORS.map(c => `<button class="color-btn" data-color="${c.id}">${swatchHTML(c.id, 11)} ${c.label}</button>`).join("");
+  formalityRow.innerHTML = Object.entries(FORMALITY_LABELS).map(([id, label]) => `<button class="formality-btn" data-formality="${id}">${label}</button>`).join("");
+  seasonRow.innerHTML = SEASONS.map(s => `<button class="formality-btn" data-season="${s.id}">${s.label}</button>`).join("");
+  paintColors(); paintFormality(); paintSeason();
+  colorRow.querySelectorAll("[data-color]").forEach(btn => btn.addEventListener("click", () => {
+    pendingColor = pendingColor === btn.dataset.color ? "" : btn.dataset.color;
+    paintColors();
+  }));
+  formalityRow.querySelectorAll("[data-formality]").forEach(btn => btn.addEventListener("click", () => {
+    const val = Number(btn.dataset.formality);
+    pendingFormality = pendingFormality === val ? "" : val;
+    paintFormality();
+  }));
+  seasonRow.querySelectorAll("[data-season]").forEach(btn => btn.addEventListener("click", () => {
+    pendingSeason = pendingSeason === btn.dataset.season ? "" : btn.dataset.season;
+    paintSeason();
+  }));
+  document.getElementById("foreignFilterApplyBtn").onclick = () => {
+    st.colorFilter = pendingColor; st.formalityFilter = pendingFormality; st.seasonFilter = pendingSeason;
+    updateForeignFilterMoreBtn();
+    renderForeignGalleryGrid();
+    document.getElementById("foreignFilterBackdrop").classList.remove("open");
+  };
+  document.getElementById("foreignFilterClearBtn").onclick = () => {
+    pendingColor = ""; pendingFormality = ""; pendingSeason = "";
+    paintColors(); paintFormality(); paintSeason();
+  };
+  document.getElementById("foreignFilterBackdrop").classList.add("open");
+}
+document.getElementById("foreignFilterClose").addEventListener("click", () => document.getElementById("foreignFilterBackdrop").classList.remove("open"));
+
+document.getElementById("foreignWardrobeMenuBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const menu = document.getElementById("foreignWardrobeMenuDropdown");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+});
+document.addEventListener("click", (e) => {
+  const menu = document.getElementById("foreignWardrobeMenuDropdown");
+  if (menu && menu.style.display === "block" && !menu.contains(e.target) && e.target.id !== "foreignWardrobeMenuBtn") {
+    menu.style.display = "none";
+  }
+});
+document.getElementById("foreignWardrobeShareBtn").addEventListener("click", () => {
+  document.getElementById("foreignWardrobeMenuDropdown").style.display = "none";
+  showAppToast("Muy pronto podrás compartir este armario.");
+});
 
 // Outfits de otro usuario, de solo lectura: lista completa de collages (no se
 // agrupan, no tienen categoría).
