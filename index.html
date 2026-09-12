@@ -843,7 +843,7 @@
         <button class="modal-close" id="suggestionOverlayClose">✕</button>
       </div>
       <p class="sub" style="margin-bottom:10px;">Toca el candado de una prenda para bloquearla antes de regenerar.</p>
-      <div class="row" style="margin-bottom:10px;">
+      <div class="row" id="suggestionFiltersRow" style="margin-bottom:10px;">
         <select id="contextSelect" class="filter-select" style="flex:1; max-width:none;">
           <option value="any">Cualquier estilo</option>
         </select>
@@ -3211,6 +3211,10 @@ async function handleSuggest(contextId, seasonId) {
   const accessoryLabel = document.getElementById("accessoryLabel");
   const accessorySlot = document.getElementById("accessorySlot");
   const addAccessoryBtn = document.getElementById("addAccessoryBtn");
+  const filtersRow = document.getElementById("suggestionFiltersRow");
+  // En modo "Recrear" el estilo/temporada ya vienen fijados por el outfit
+  // original: no tiene sentido dejar que el usuario los cambie aquí.
+  filtersRow.style.display = recreateColorTargets ? "none" : "flex";
 
   accessoryLabel.style.display = "none";
   accessorySlot.style.display = "none";
@@ -3288,10 +3292,17 @@ async function handleSuggest(contextId, seasonId) {
   }
 
   const ctxLabel = contextId && contextId !== "any" ? CONTEXTS.find(c => c.id === contextId).label : null;
-  const badgesHTML = badgeRowHTML(outfitBadges(outfit.top, outfit.bottom, outfit.shoes, ctxLabel));
-  const titleHTML = `<div class="verdict-label">✨ ¿Por qué funciona?</div>`;
-  const text = localOutfitText(outfit.top, outfit.bottom, outfit.shoes, outfit.evalRes);
-  explainEl.innerHTML = titleHTML + `<div class="verdict-text">${text}</div>` + (approximate ? `<div class="fallback-note">(No había ninguna combinación 100% válida para estos filtros; esta es la más cercana)</div>` : "") + badgesHTML;
+  if (recreateColorTargets) {
+    // Modo "Recrear": en vez de la explicación habitual del motor de
+    // sugerencias, un mensaje fijo que refleja lo que de verdad ha pasado
+    // (búsqueda por color/estilo/temporada exactos, no por compatibilidad).
+    explainEl.innerHTML = `<div class="verdict-text">Esta combinación usa prendas de tu armario que coinciden en color, estilo y temporada con el outfit que querías recrear.</div>`;
+  } else {
+    const badgesHTML = badgeRowHTML(outfitBadges(outfit.top, outfit.bottom, outfit.shoes, ctxLabel));
+    const titleHTML = `<div class="verdict-label">✨ ¿Por qué funciona?</div>`;
+    const text = localOutfitText(outfit.top, outfit.bottom, outfit.shoes, outfit.evalRes);
+    explainEl.innerHTML = titleHTML + `<div class="verdict-text">${text}</div>` + (approximate ? `<div class="fallback-note">(No había ninguna combinación 100% válida para estos filtros; esta es la más cercana)</div>` : "") + badgesHTML;
+  }
   const meta = outfit.evalRes.ok ? { label: "Combina", color: "var(--success)" } : { label: "Aproximada (no combina del todo)", color: "var(--warning)" };
   saveBtn.style.display = "inline-flex";
   saveBtn.onclick = async () => {
