@@ -540,7 +540,7 @@
   .foreign-gallery-identity { text-align:center; margin-bottom:16px; }
   .foreign-gallery-name { font-size:16px; font-weight:700; letter-spacing:-0.01em; margin:0 0 2px; }
   .foreign-gallery-meta { font-size:12.5px; color:var(--ink-soft); margin:0; }
-  .foreign-gallery-controls { display:flex; align-items:center; gap:8px; margin-bottom:0; }
+  .foreign-gallery-controls { display:flex; align-items:center; gap:8px; margin-bottom:18px; }
   .foreign-sort-btn { flex-shrink:0; background:none; border:none; color:var(--ink-soft); cursor:pointer; padding:7px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
   .foreign-sort-btn:hover { background:var(--line); }
   .foreign-sort-btn svg { width:16px; height:16px; }
@@ -5096,28 +5096,30 @@ function openForeignWardrobe(targetUid, meta, prendas, foreignOutfitsArr) {
   const outfitsCount = foreignGalleryState.foreignOutfitsArr.length;
   const content = document.getElementById("foreignWardrobeContent");
   content.innerHTML = `
-    <div class="section" style="margin-bottom:20px;">
-      <div class="foreign-gallery-identity">
+    <div class="section" style="margin-bottom:18px;">
+      <div class="foreign-gallery-identity" style="margin-bottom:0;">
         <div class="foreign-gallery-avatar">${avatarHTML}</div>
         <p class="foreign-gallery-name">${name}</p>
         <p class="foreign-gallery-meta">${meta.username ? `@${meta.username} · ` : ""}${prendas.length} ${prendas.length === 1 ? "prenda" : "prendas"} · ${outfitsCount} ${outfitsCount === 1 ? "outfit" : "outfits"}</p>
       </div>
-      <div class="foreign-gallery-controls">
-        <div class="foreign-filter-scroll" id="foreignFilterChipRow"></div>
-        <button class="foreign-filter-more-btn" id="foreignFilterMoreBtn"></button>
-        <div class="foreign-sort-wrap" style="position:relative;">
-          <button class="foreign-sort-btn" id="foreignSortBtn" title="Ordenar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V4M7 4 3 8M7 4l4 4"/><path d="M17 4v16M17 20l4-4M17 20l-4-4"/></svg>
-          </button>
-          <div class="foreign-sort-dropdown" id="foreignSortDropdown">
-            <button class="foreign-sort-option" data-sort="recent">Más recientes</button>
-            <button class="foreign-sort-option" data-sort="category">Por categoría</button>
-            <button class="foreign-sort-option" data-sort="color">Por color</button>
-          </div>
+    </div>
+    <div class="foreign-gallery-controls">
+      <div class="foreign-filter-scroll" id="foreignFilterChipRow"></div>
+      <button class="foreign-filter-more-btn" id="foreignFilterMoreBtn"></button>
+      <div class="foreign-sort-wrap" style="position:relative;">
+        <button class="foreign-sort-btn" id="foreignSortBtn" title="Ordenar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V4M7 4 3 8M7 4l4 4"/><path d="M17 4v16M17 20l4-4M17 20l-4-4"/></svg>
+        </button>
+        <div class="foreign-sort-dropdown" id="foreignSortDropdown">
+          <button class="foreign-sort-option" data-sort="recent">Más recientes</button>
+          <button class="foreign-sort-option" data-sort="category">Por categoría</button>
+          <button class="foreign-sort-option" data-sort="color">Por color</button>
         </div>
       </div>
     </div>
-    <div class="foreign-gallery-grid" id="foreignGalleryGrid"></div>`;
+    <div class="section">
+      <div class="foreign-gallery-grid" id="foreignGalleryGrid"></div>
+    </div>`;
   renderForeignFilterChips();
   updateForeignFilterMoreBtn();
   renderForeignGalleryGrid();
