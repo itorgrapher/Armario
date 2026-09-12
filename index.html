@@ -113,12 +113,6 @@
   }
   .tab.active { background: var(--ink); color: #fff; border-color: var(--ink); font-weight: 600; }
 
-  .category-section { margin-bottom: 8px; }
-  .category-section-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px; }
-  .category-section-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink); }
-  .category-section-count { font-size: 11.5px; font-weight: 500; color: var(--ink-soft); }
-  .category-rename-btn { background: none; border: none; cursor: pointer; color: var(--ink-soft); font-size: 12px; padding: 2px; opacity: 0.7; }
-  .category-rename-btn:hover { opacity: 1; }
 
   .settings-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--line); }
   .settings-row:last-of-type { border-bottom: none; }
@@ -815,13 +809,18 @@
     </div>
   </div>
 
-  <div id="wardrobeToggleAllRow" style="display:none; justify-content:flex-end; margin-bottom:14px;">
-    <button class="btn btn-outline" id="wardrobeToggleAllBtn" style="padding:6px 14px; font-size:12.5px; display:inline-flex; align-items:center; gap:6px;"></button>
-  </div>
-
   <div class="empty" id="emptyState" style="display:none;">Aún no has subido ninguna prenda. Empieza subiendo la foto de una prenda cualquiera.</div>
 
-  <div id="grid"></div>
+  <div class="foreign-gallery-controls" id="wardrobeCategoryChipRow"></div>
+  <div class="section" id="wardrobeGridSection" style="display:none;">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
+      <span style="font-size:12.5px; color:var(--ink-soft);" id="wardrobeGridCount"></span>
+      <button class="foreign-sort-btn" id="wardrobeRenameCategoryBtn" title="Renombrar categoría" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      </button>
+    </div>
+    <div id="grid"></div>
+  </div>
 
   <div id="onboardingBanner" style="display:none; margin-bottom:16px; padding:14px 16px; background:var(--ink); color:#fff; border-radius:var(--radius-sm); font-size:13.5px;"></div>
 
@@ -2116,8 +2115,6 @@ function matchesContextFilter(g) {
 function matchesSeasonFilter(g) { return !seasonFilterValue || (g.season || "entretiempo") === seasonFilterValue; }
 function matchesFavoritesFilter(g) { return !favoritesOnlyFilter || !!g.favorite; }
 
-let expandedSections = new Set();
-const WARDROBE_ROW_MAX = 4;
 
 function fadeSwapGrid(callback) {
   const gridEl = document.getElementById("grid");
@@ -2160,11 +2157,24 @@ function renameSection(id) {
   });
 }
 
+let wardrobeCategoryFilter = "all";
+function renderWardrobeCategoryChips(sections) {
+  const row = document.getElementById("wardrobeCategoryChipRow");
+  if (!row) return;
+  if (garments.length === 0) { row.innerHTML = ""; return; }
+  const chips = [{ id: "all", label: "Todo" }, ...sections.map(s => ({ id: s.id, label: s.label }))];
+  row.innerHTML = chips.map(c => `<button class="foreign-filter-chip ${wardrobeCategoryFilter === c.id ? "active" : ""}" data-wcat="${c.id}">${c.label}</button>`).join("");
+  row.querySelectorAll("[data-wcat]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      wardrobeCategoryFilter = btn.dataset.wcat;
+      renderGrid();
+    });
+  });
+}
+
 function renderGrid() {
   const gridEl = document.getElementById("grid");
   const emptyEl = document.getElementById("emptyState");
-  const toggleAllBtn = document.getElementById("wardrobeToggleAllBtn");
-  const toggleAllRow = document.getElementById("wardrobeToggleAllRow");
   const colorRow = document.getElementById("colorFilterRow");
   const swatchRow = document.getElementById("colorSwatchRow");
   colorRow.style.display = garments.length > 0 ? "flex" : "none";
@@ -2178,61 +2188,25 @@ function renderGrid() {
   const sections = allSections()
     .map(sec => ({ ...sec, items: garmentsInSection(list, sec) }))
     .filter(sec => sec.items.length > 0);
+  renderWardrobeCategoryChips(sections);
 
-  let html = "";
-  sections.forEach((sec, i) => {
-    const isCollapsed = !expandedSections.has(sec.id) && sec.items.length > WARDROBE_ROW_MAX;
-    const visibleItems = isCollapsed ? sec.items.slice(0, WARDROBE_ROW_MAX) : sec.items;
-    const cardsHTML = visibleItems.map(g => frameHTML(g, garments.indexOf(g), { editable: true, selectable: true, favable: true, duplicable: true })).join("") + addCardHTML(`addCardTrigger_${sec.id}`);
-    html += `
-      <div class="category-section" data-section="${sec.id}">
-        <div class="category-section-head">
-          <span class="category-section-title">${sec.label}</span>
-          <span class="category-section-count">(${sec.items.length})</span>
-          <button class="category-rename-btn" data-rename-section="${sec.id}" title="Renombrar categoría">✎</button>
-        </div>
-        <div class="grid${isCollapsed ? " grid-row-collapsed" : ""}">${cardsHTML}</div>
-        ${sec.items.length > WARDROBE_ROW_MAX ? `<button class="btn-text" data-section-toggle="${sec.id}" style="margin:-4px 0 20px;">${isCollapsed ? `Ver más (${sec.items.length}) →` : "Ver menos"}</button>` : ""}
-      </div>`;
-  });
-  if (sections.length === 0 && garments.length > 0) {
-    html += `<div class="grid">${addCardHTML()}</div>`;
-  }
-  gridEl.innerHTML = html;
+  const filteredItems = wardrobeCategoryFilter === "all"
+    ? list
+    : garmentsInSection(list, { id: wardrobeCategoryFilter, isCustom: customCategories.some(c => c.id === wardrobeCategoryFilter) });
+  const cardsHTML = filteredItems.map(g => frameHTML(g, garments.indexOf(g), { editable: true, selectable: true, favable: true, duplicable: true })).join("") + addCardHTML();
 
-  const collapsibleSections = sections.filter(sec => sec.items.length > WARDROBE_ROW_MAX);
-  if (collapsibleSections.length > 0) {
-    const allExpanded = collapsibleSections.every(sec => expandedSections.has(sec.id));
-    toggleAllRow.style.display = "flex";
-    toggleAllBtn.innerHTML = allExpanded
-      ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15 12 9 6 15"/></svg> Cerrar armario`
-      : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9 12 15 18 9"/></svg> Abrir Armario`;
-    toggleAllBtn.onclick = () => {
-      fadeSwapGrid(() => {
-        if (allExpanded) collapsibleSections.forEach(sec => expandedSections.delete(sec.id));
-        else collapsibleSections.forEach(sec => expandedSections.add(sec.id));
-        renderGrid();
-      });
-    };
-  } else {
-    toggleAllRow.style.display = "none";
-  }
+  const gridSection = document.getElementById("wardrobeGridSection");
+  const countEl = document.getElementById("wardrobeGridCount");
+  const renameBtn = document.getElementById("wardrobeRenameCategoryBtn");
+  gridSection.style.display = garments.length > 0 ? "block" : "none";
+  countEl.textContent = `${filteredItems.length} ${filteredItems.length === 1 ? "prenda" : "prendas"}`;
+  renameBtn.style.display = wardrobeCategoryFilter === "all" ? "none" : "flex";
+  renameBtn.onclick = () => renameSection(wardrobeCategoryFilter);
+
+  gridEl.innerHTML = `<div class="grid">${cardsHTML}</div>`;
 
   gridEl.querySelectorAll(".add-card").forEach(addCard => {
     addCard.addEventListener("click", () => document.getElementById("fileInput").click());
-  });
-
-  gridEl.querySelectorAll("[data-section-toggle]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = btn.dataset.sectionToggle;
-      fadeSwapGrid(() => {
-        if (expandedSections.has(id)) expandedSections.delete(id); else expandedSections.add(id);
-        renderGrid();
-      });
-    });
-  });
-  gridEl.querySelectorAll("[data-rename-section]").forEach(btn => {
-    btn.addEventListener("click", (e) => { e.stopPropagation(); renameSection(btn.dataset.renameSection); });
   });
 
   gridEl.querySelectorAll("[data-del]").forEach(btn => {
@@ -4227,7 +4201,6 @@ document.getElementById("colorSwatchRow").addEventListener("click", (e) => {
     document.getElementById("favoritesFilterBtn").classList.remove("active");
     document.getElementById("searchInput").value = "";
   }
-  expandedSections.clear();
   renderGrid();
 });
 
@@ -4276,13 +4249,12 @@ CONTEXTS.forEach(c => {
   opt.value = c.id; opt.textContent = c.label;
   document.getElementById("contextFilterSelect").appendChild(opt);
 });
-document.getElementById("searchInput").addEventListener("input", (e) => { searchQuery = e.target.value.trim().toLowerCase(); expandedSections.clear(); renderGrid(); });
-document.getElementById("contextFilterSelect").addEventListener("change", (e) => { contextFilterValue = e.target.value; expandedSections.clear(); renderGrid(); });
-document.getElementById("seasonFilterSelect").addEventListener("change", (e) => { seasonFilterValue = e.target.value; expandedSections.clear(); renderGrid(); });
+document.getElementById("searchInput").addEventListener("input", (e) => { searchQuery = e.target.value.trim().toLowerCase(); renderGrid(); });
+document.getElementById("contextFilterSelect").addEventListener("change", (e) => { contextFilterValue = e.target.value; renderGrid(); });
+document.getElementById("seasonFilterSelect").addEventListener("change", (e) => { seasonFilterValue = e.target.value; renderGrid(); });
 document.getElementById("favoritesFilterBtn").addEventListener("click", () => {
   favoritesOnlyFilter = !favoritesOnlyFilter;
   document.getElementById("favoritesFilterBtn").classList.toggle("active", favoritesOnlyFilter);
-  expandedSections.clear();
   renderGrid();
 });
 document.getElementById("bulkDeleteChip").addEventListener("click", () => {
