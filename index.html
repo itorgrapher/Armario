@@ -5898,7 +5898,11 @@ function recreateOutfitFromMyWardrobe(entry) {
   // El generador de sugerencias vive dentro de la vista "Mi armario": si
   // veníamos de un armario/outfits ajeno esa vista está oculta y el modal no
   // se vería aunque se abra. Cambiamos primero a Mi armario.
-  if (currentView !== "wardrobe") switchView("wardrobe");
+  // OJO: "currentView" no se actualiza al entrar en vistas ajenas (usan
+  // showForeignSubView, un sistema aparte), así que no sirve para saber si
+  // hay que cambiar de vista — lo hacemos siempre, es seguro aunque ya
+  // estuviéramos en Mi armario.
+  switchView("wardrobe");
   const avg = outfitAvgFormality(entry);
   const ctx = CONTEXTS.find(c => c.target === avg);
   const contextId = ctx ? ctx.id : "any";
