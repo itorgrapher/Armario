@@ -204,18 +204,18 @@
   @keyframes cardRemove { to { opacity: 0; transform: scale(0.85); } }
   .card-removing { animation: cardRemove 0.25s ease forwards; pointer-events: none; }
   .frame-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--line); }
-  .frame-actions-left { display: flex; align-items: center; gap: 6px; width: 100%; }
+  .frame-actions-left { display: flex; align-items: center; gap: 8px; }
   .frame-action-btn {
     background: none; border: none; padding: 2px; cursor: pointer; color: var(--ink-soft);
     font-size: 13px; line-height: 1; display: flex; align-items: center; justify-content: center;
   }
-  .frame-action-btn.labeled {
-    flex-direction: column; gap: 3px; flex: 1; min-width: 0; padding: 4px 2px;
+  .frame-icon-btn {
+    width: 30px; height: 30px; border-radius: 50%; background: #fff; border: 1px solid var(--line-strong);
+    box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center; color: var(--ink);
+    cursor: pointer; flex-shrink: 0; padding: 0;
   }
-  .frame-action-btn .frame-action-icon { font-size: 13px; line-height: 1; }
-  .frame-action-btn .frame-action-label { font-size: 8.5px; line-height: 1.15; color: var(--ink-soft); text-align: center; }
-  .frame-action-btn.labeled:hover { color: var(--ink); }
-  .frame-action-btn.labeled:hover .frame-action-label { color: var(--ink); }
+  .frame-icon-btn svg { width: 14px; height: 14px; }
+  .frame-icon-btn:hover { background: var(--bg); }
   .fav-star-btn {
     background: #fff; border: 1.5px solid var(--gold); cursor: pointer; color: var(--gold);
     font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center;
@@ -778,10 +778,10 @@
   <main class="main">
   <div class="wrap">
   <div class="page-head" id="pageHead">
-    <div id="pageAction" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+    <div id="pageAction" style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:12px; flex-wrap:wrap;">
       <input type="text" id="searchInput" placeholder="Buscar por nombre…" style="margin-top:0; width:220px;">
       <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
-      <button class="btn btn-primary" id="uploadBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Subir prenda</button>
+      <button class="btn btn-primary" id="uploadBtn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Añadir prenda</button>
       <div class="error-msg" id="uploadError" style="display:none;"></div>
     </div>
   </div>
@@ -905,16 +905,11 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" id="styleVariationsBackdrop">
-    <div class="modal" style="max-width:460px;">
-      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
-        <h2 style="font-size:17px;">Una prenda, varias formas</h2>
-        <button class="modal-close" id="styleVariationsClose">✕</button>
-      </div>
-      <p class="sub" style="margin-bottom:14px;">Saca el máximo partido a lo que tienes.</p>
-      <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;" id="styleVariationsGarment"></div>
-      <div id="styleVariationsGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr)); gap:14px;"></div>
-      <p class="sub" id="styleVariationsEmpty" style="display:none;">Aún no tienes suficientes prendas para generar variaciones con esta pieza.</p>
+  <div class="modal-backdrop" id="garmentDetailsBackdrop">
+    <div class="modal" style="max-width:380px;">
+      <div class="modal-head"><h2 id="garmentDetailsTitle" style="font-size:16px;"></h2><button class="modal-close" id="garmentDetailsClose">✕</button></div>
+      <img id="garmentDetailsImg" class="detail-img" style="margin:0 auto 16px; display:block;" alt="">
+      <div id="garmentDetailsFields"></div>
     </div>
   </div>
   </div>
@@ -2108,9 +2103,9 @@ function frameHTML(g, index, opts = {}) {
           ${hasActions ? `
           <div class="frame-actions">
             <div class="frame-actions-left">
-              ${opts.duplicable ? `<button class="frame-action-btn labeled" data-dup="${g.id}" title="Duplicar prenda"><span class="frame-action-icon">⧉</span><span class="frame-action-label">Duplicar</span></button>` : ""}
-              ${opts.editable ? `<button class="frame-action-btn labeled" data-edit="${g.id}" title="Editar prenda"><span class="frame-action-icon">✎</span><span class="frame-action-label">Editar</span></button>` : ""}
-              ${opts.editable ? `<button class="frame-action-btn labeled" data-styles="${g.id}" title="Varias formas de llevarla"><span class="frame-action-icon">🎨</span><span class="frame-action-label">Estilos</span></button>` : ""}
+              ${opts.duplicable ? `<button class="frame-icon-btn" data-dup="${g.id}" title="Duplicar prenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ""}
+              ${opts.editable ? `<button class="frame-icon-btn" data-edit="${g.id}" title="Editar prenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>` : ""}
+              ${opts.editable ? `<button class="frame-icon-btn" data-details="${g.id}" title="Detalles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4.5"/><circle cx="12" cy="8" r=".6" fill="currentColor" stroke="none"/></svg></button>` : ""}
             </div>
           </div>` : ""}
         </div>
@@ -2314,11 +2309,11 @@ function renderGrid() {
       if (garment) openEditModal(garment);
     });
   });
-  gridEl.querySelectorAll("[data-styles]").forEach(btn => {
+  gridEl.querySelectorAll("[data-details]").forEach(btn => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const garment = garments.find(g => g.id === btn.dataset.styles);
-      if (garment) openStyleVariations(garment);
+      const garment = garments.find(g => g.id === btn.dataset.details);
+      if (garment) openGarmentDetailsModal(garment);
     });
   });
   gridEl.querySelectorAll("[data-select]").forEach(btn => {
@@ -6686,46 +6681,28 @@ document.getElementById("editProfileSaveBtn").addEventListener("click", async ()
   }
 });
 
-/* ---- Una prenda, varias formas ---- */
-// Reutiliza el motor de sugerencias existente (buildOutfit) fijando la prenda elegida
-// y variando el contexto (deporte, casual, trabajo, evento, etiqueta) para mostrar
-// distintas formas reales de llevarla con el resto del armario del usuario.
-function openStyleVariations(garment) {
-  const garmentEl = document.getElementById("styleVariationsGarment");
-  garmentEl.innerHTML = `
-    <div style="width:56px; height:56px; border-radius:10px; overflow:hidden; background:#EFEFEC; flex-shrink:0;"><img src="${garment.image}" alt="" style="width:100%; height:100%; object-fit:contain;"></div>
-    <div>
-      <div style="font-size:14px; font-weight:700;">${garment.name || categoryLabel(garment.category)}</div>
-      <div style="font-size:12px; color:var(--ink-soft);">${categoryLabel(garment.category)}</div>
-    </div>`;
-
-  const gridEl = document.getElementById("styleVariationsGrid");
-  const emptyEl = document.getElementById("styleVariationsEmpty");
-  const seen = new Set();
-  const cards = [];
-  CONTEXTS.forEach(ctx => {
-    const locked = { [garment.category]: garment };
-    const { outfit } = buildOutfit(ctx.id, "any", locked);
-    if (!outfit) return;
-    const key = [outfit.top.id, outfit.bottom.id, outfit.shoes.id].sort().join("-");
-    if (seen.has(key)) return;
-    seen.add(key);
-    cards.push(`
-      <div>
-        <div class="outfit-frame-row" style="margin:0 0 6px;">${frameHTML(outfit.top, 0, { minimal: true })}${frameHTML(outfit.bottom, 0, { minimal: true })}${frameHTML(outfit.shoes, 0, { minimal: true })}</div>
-        <div style="font-size:12.5px; font-weight:600;">${ctx.label}</div>
-      </div>`);
-  });
-  if (cards.length === 0) {
-    gridEl.innerHTML = "";
-    emptyEl.style.display = "block";
-  } else {
-    emptyEl.style.display = "none";
-    gridEl.innerHTML = cards.join("");
-  }
-  document.getElementById("styleVariationsBackdrop").classList.add("open");
+/* ---- Detalles de prenda ---- */
+// Ficha de solo lectura con los datos públicos básicos de la prenda
+// (nombre, categoría, estilo, temporada, color).
+function openGarmentDetailsModal(garment) {
+  const cat = CATEGORIES.find(c => c.id === garment.category);
+  const title = garment.name ? garment.name.charAt(0).toUpperCase() + garment.name.slice(1) : (cat ? cat.label : categoryLabel(garment.category));
+  document.getElementById("garmentDetailsTitle").textContent = title;
+  document.getElementById("garmentDetailsImg").src = garment.image;
+  const rows = [
+    ["Categoría", categoryLabel(garment.category)],
+    ["Estilo", FORMALITY_LABELS[garment.formality || 2]],
+    ["Temporada", (SEASONS.find(s => s.id === (garment.season || "entretiempo")) || {}).label || "Entretiempo"],
+    ["Color", (colorById[garment.color] || {}).label || ""],
+  ];
+  document.getElementById("garmentDetailsFields").innerHTML = rows.map(([label, value], i) => `
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; ${i < rows.length - 1 ? "border-bottom:1px solid var(--line);" : ""}">
+      <span style="font-size:12.5px; color:var(--ink-soft);">${label}</span>
+      <span style="font-size:13px; font-weight:600; color:var(--ink);">${value}</span>
+    </div>`).join("");
+  document.getElementById("garmentDetailsBackdrop").classList.add("open");
 }
-document.getElementById("styleVariationsClose").addEventListener("click", () => document.getElementById("styleVariationsBackdrop").classList.remove("open"));
+document.getElementById("garmentDetailsClose").addEventListener("click", () => document.getElementById("garmentDetailsBackdrop").classList.remove("open"));
 </script>
 <script>
 if ("serviceWorker" in navigator) {
