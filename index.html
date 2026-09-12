@@ -1952,6 +1952,9 @@ function addOutfit({ top, bottom, shoes, accessories, label, color, text, name }
   };
   outfits.unshift(entry);
   saveOutfits(outfits);
+  // Genera el collage ya mismo (no de forma diferida) para que el outfit se
+  // guarde directamente con su miniatura lista.
+  generateAndCacheOutfitThumb(entry);
   return entry;
 }
 
@@ -3550,8 +3553,6 @@ function moveOutfit(id, direction) {
 }
 function outfitEntryHTML(entry) {
   const isSelected = selectedOutfits.has(entry.id);
-  const accessories = entryAccessories(entry);
-  const cardsHTML = `${frameHTML(entry.top, 0, { compact: true })}${frameHTML(entry.bottom, 0, { compact: true })}${frameHTML(entry.shoes, 0, { compact: true })}${accessories.map(a => frameHTML(a, 0, { compact: true })).join("")}`;
   const leadControl = outfitsOrganizeMode
     ? `<div style="display:flex; flex-direction:column; gap:1px; flex-shrink:0;">
          <button class="frame-action-btn" data-move-outfit-up="${entry.id}" title="Subir" style="line-height:1;">▲</button>
@@ -3569,11 +3570,11 @@ function outfitEntryHTML(entry) {
         <button class="fav-star-btn ${entry.favorite ? "active" : ""}" data-fav-outfit="${entry.id}" title="${entry.favorite ? "Quitar de favoritos" : "Marcar como favorito"}" style="flex-shrink:0;">${entry.favorite ? "★" : "☆"}</button>
         <button class="btn-text" data-add-to-collection="${entry.id}" title="Añadir a colección" style="flex-shrink:0;">+ Colección</button>
       </div>
-      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
         <span class="verdict-chip" style="background:${entry.color}; display:inline-block;">${entry.label}</span>
         ${outfitTagChipHTML(entry)}
       </div>
-      <div class="outfit-frame-row">${cardsHTML}</div>
+      <div class="outfit-mini-collage" data-thumb-slot="${entry.id}" data-open-outfit-detail="${entry.id}" style="cursor:pointer; max-width:220px; margin-bottom:10px;">${entry.thumbCache ? `<img src="${entry.thumbCache}" alt="">` : `<div class="outfit-mini-collage-loading"></div>`}</div>
       <details class="outfit-details">
         <summary>¿Por qué funciona?</summary>
         <div class="verdict-text" style="margin-top:8px;">${entry.text}</div>
@@ -3704,6 +3705,22 @@ function renderOutfits() {
   const visibleList = isCollapsed ? list.slice(0, OUTFITS_ROW_MAX) : list;
 
   listEl.innerHTML = visibleList.map(outfitEntryHTML).join("");
+
+  listEl.querySelectorAll("[data-open-outfit-detail]").forEach(el => {
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openOutfitDetail(el.dataset.openOutfitDetail);
+    });
+  });
+  // Los outfits antiguos (creados antes de generar el collage al guardar) aún
+  // no tienen thumbCache: se generan aquí en segundo plano, sin bloquear la lista.
+  visibleList.filter(entry => !entry.thumbCache).forEach(entry => {
+    generateAndCacheOutfitThumb(entry).then(url => {
+      if (!url) return;
+      const slot = listEl.querySelector(`[data-thumb-slot="${entry.id}"]`);
+      if (slot) slot.innerHTML = `<img src="${url}" alt="">`;
+    });
+  });
 
   if (list.length > OUTFITS_ROW_MAX) {
     toggleEl.style.display = "block";
