@@ -2644,7 +2644,8 @@ function findCompatibleAccessories(top, bottom, shoes, seasonId) {
     seasonCompatible(a, top) && seasonCompatible(a, bottom) && seasonCompatible(a, shoes)
   );
 }
-function buildOutfit(contextId, seasonId, locked = {}) {
+let recreateColorTargets = null;
+function buildOutfit(contextId, seasonId, locked = {}, colorTargets = null) {
   let pool = garments;
   if (contextId && contextId !== "any") {
     const ctx = CONTEXTS.find(c => c.id === contextId);
@@ -2653,7 +2654,25 @@ function buildOutfit(contextId, seasonId, locked = {}) {
   if (seasonId && seasonId !== "any") {
     pool = pool.filter(g => (g.season || "entretiempo") === seasonId);
   }
-  const poolFor = (cat) => locked[cat] ? [locked[cat]] : pool.filter(g => g.category === cat);
+  // Modo "Recrear": exige el color exacto de cada prenda original. Si falta
+  // alguna, no se completa el outfit con otro color — se informa de qué pieza
+  // falta para que el usuario sepa exactamente qué le falta comprar/subir.
+  if (colorTargets) {
+    const missing = [];
+    ["top", "bottom", "shoes"].forEach(cat => {
+      if (locked[cat] || !colorTargets[cat]) return;
+      const hasMatch = pool.some(g => g.category === cat && g.color === colorTargets[cat]);
+      if (!hasMatch) missing.push({ cat, color: colorTargets[cat] });
+    });
+    if (missing.length) return { outfit: null, missing };
+  }
+  const poolFor = (cat) => {
+    if (locked[cat]) return [locked[cat]];
+    const base = pool.filter(g => g.category === cat);
+    const targetColor = colorTargets && colorTargets[cat];
+    if (targetColor) return base.filter(g => g.color === targetColor);
+    return base;
+  };
   const tops = poolFor("top");
   const bottoms = poolFor("bottom");
   const shoesList = poolFor("shoes");
@@ -3182,7 +3201,7 @@ function closeSuggestionOverlay() {
   document.getElementById("suggestionOverlayBackdrop").classList.remove("open");
 }
 async function handleSuggest(contextId, seasonId) {
-  const { outfit, approximate } = buildOutfit(contextId, seasonId, lockedPieces);
+  const { outfit, approximate, missing } = buildOutfit(contextId, seasonId, lockedPieces, recreateColorTargets);
   const backdrop = document.getElementById("suggestionOverlayBackdrop");
   const gridEl = document.getElementById("suggestionGrid");
   const explainEl = document.getElementById("suggestionExplain");
@@ -3206,8 +3225,14 @@ async function handleSuggest(contextId, seasonId) {
     saveBtn.style.display = "none";
     shareBtnEl.style.display = "none";
     hintEl.style.display = "block";
+    const catLabels = { top: "superior", bottom: "inferior", shoes: "de calzado" };
+    const missingMsg = missing && missing.length
+      ? (missing.length === 1
+        ? `Te falta una prenda ${catLabels[missing[0].cat]} en <b>${(colorById[missing[0].color] || {}).label || missing[0].color}</b> para recrear este outfit.`
+        : `Te faltan estas prendas para recrear este outfit: ${missing.map(m => `${catLabels[m.cat]} en <b>${(colorById[m.color] || {}).label || m.color}</b>`).join(", ")}.`)
+      : "No hemos encontrado prendas que coincidan con lo que buscas. Prueba a cambiar algún filtro o añade más prendas a tu armario.";
     hintEl.innerHTML = `
-      <div style="margin-bottom:10px;">No hemos encontrado prendas que coincidan con lo que buscas. Prueba a cambiar algún filtro o añade más prendas a tu armario.</div>
+      <div style="margin-bottom:10px;">${missingMsg}</div>
       <button class="btn btn-outline" id="hintAddGarmentBtn">+ Añadir prenda</button>`;
     document.getElementById("hintAddGarmentBtn").addEventListener("click", () => {
       closeSuggestionOverlay();
@@ -4358,6 +4383,7 @@ document.getElementById("manualSaveBtnTop").addEventListener("click", async () =
 document.getElementById("againBtn").addEventListener("click", () => handleSuggest(document.getElementById("contextSelect").value, document.getElementById("seasonSuggestSelect").value));
 document.getElementById("generateOutfitBtn").addEventListener("click", () => {
   closeAllActionOverlays();
+  recreateColorTargets = null;
   document.getElementById("contextSelect").value = "any";
   document.getElementById("seasonSuggestSelect").value = "any";
   handleSuggest("any", "any");
@@ -5577,7 +5603,7 @@ function renderForeignOutfitsGrid() {
   grid.querySelectorAll("[data-outfit-id]").forEach(card => {
     card.addEventListener("click", () => {
       const o = st.foreignOutfitsArr.find(x => x.id === card.dataset.outfitId);
-      if (o) openForeignOutfitDetail(o, st.meta);
+      if (o) openForeignOutfitDetail(o, st.meta, st.foreignOutfitsArr);
     });
   });
 }
@@ -5802,25 +5828,88 @@ function renderForeignGarmentCheck(garment) {
 
 // Detalle de un outfit ajeno: mismo desglose que "Mis Outfits"/"Guardados"
 // (outfitDetailContentHTML), con 🔖 para guardarlo.
-function openForeignOutfitDetail(entry, meta) {
+function openForeignOutfitDetail(entry, meta, foreignOutfitsArr = []) {
   document.getElementById("itemDetailTitle").textContent = entry.name || "Outfit sin nombre";
   document.getElementById("itemDetailImages").innerHTML = `<img src="${entry.thumbCache || (entry.top && entry.top.image) || ""}" class="detail-img" alt="">`;
   document.getElementById("itemDetailSubtitle").textContent = meta.username ? `Outfit de @${meta.username}` : (entry.label || "");
-  document.getElementById("itemDetailActions").innerHTML = outfitDetailContentHTML(entry) + `
-    <button class="btn btn-primary" style="width:100%; margin-top:14px;" id="foreignOutfitSaveBtn">Guardar outfit</button>`;
+  const accessories = entryAccessories(entry);
+  const allGarments = [entry.top, entry.bottom, entry.shoes, ...accessories].filter(Boolean);
+  const breakdownHTML = `
+    <div class="outfit-detail-list" style="margin-bottom:4px;">
+      ${allGarments.map(g => {
+        const cat = CATEGORIES.find(c => c.id === g.category);
+        const title = g.name ? g.name.charAt(0).toUpperCase() + g.name.slice(1) : (cat ? cat.label : g.category);
+        return `
+        <div class="outfit-detail-row" data-outfit-garment-id="${g.id}" style="cursor:pointer;">
+          <div class="frame-img"><img src="${g.image}" alt=""></div>
+          <div style="flex:1; min-width:0;">
+            <div class="frame-label">${title}</div>
+            <div style="margin-top:3px;">${metaChipsHTML(g)}</div>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>`;
+  document.getElementById("itemDetailActions").innerHTML = `
+    ${breakdownHTML}
+    <div class="detail-quick-actions">
+      <button class="detail-quick-btn" id="foreignOutfitSaveBtn">
+        <span class="detail-quick-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21 12 16 5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+        <span class="detail-quick-label">Guardar</span>
+      </button>
+      <button class="detail-quick-btn" id="foreignOutfitShareBtn">
+        <span class="detail-quick-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg></span>
+        <span class="detail-quick-label">Compartir</span>
+      </button>
+      <button class="detail-quick-btn" id="foreignOutfitRecreateBtn" title="Recrear este estilo con tu armario">
+        <span class="detail-quick-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg></span>
+        <span class="detail-quick-label">Recrear</span>
+      </button>
+    </div>`;
+  document.getElementById("itemDetailActions").querySelectorAll("[data-outfit-garment-id]").forEach(row => {
+    row.addEventListener("click", () => {
+      const g = allGarments.find(x => x.id === row.dataset.outfitGarmentId);
+      if (g) openForeignGarmentDetail(g, meta, foreignOutfitsArr);
+    });
+  });
   document.getElementById("foreignOutfitSaveBtn").addEventListener("click", async (e) => {
     const btn = e.currentTarget;
     btn.disabled = true;
     if (!entry.thumbCache) {
-      btn.textContent = "Guardando...";
       await generateAndCacheOutfitThumb(entry);
     }
     saveOutfitToGuardados({ ...entry, savedFrom: { username: meta.username || "" } });
     showAppToast("Outfit guardado.");
     btn.disabled = false;
-    btn.textContent = "Guardar outfit";
+  });
+  document.getElementById("foreignOutfitShareBtn").addEventListener("click", (e) => {
+    shareOutfitAsImage(entry.top, entry.bottom, entry.shoes, entry.name, e.currentTarget, accessories);
+  });
+  document.getElementById("foreignOutfitRecreateBtn").addEventListener("click", () => {
+    recreateOutfitFromMyWardrobe(entry);
   });
   document.getElementById("itemDetailBackdrop").classList.add("open");
+}
+
+// "Recrear": toma el estilo (formalidad) y la temporada de un outfit ajeno y
+// genera uno equivalente usando el motor de sugerencias existente, pero con
+// las propias prendas del usuario.
+function recreateOutfitFromMyWardrobe(entry) {
+  document.getElementById("itemDetailBackdrop").classList.remove("open");
+  const avg = outfitAvgFormality(entry);
+  const ctx = CONTEXTS.find(c => c.target === avg);
+  const contextId = ctx ? ctx.id : "any";
+  const season = (entry.top && entry.top.season) || (entry.bottom && entry.bottom.season) || (entry.shoes && entry.shoes.season) || "any";
+  lockedPieces = { top: null, bottom: null, shoes: null };
+  recreateColorTargets = {
+    top: entry.top && entry.top.color,
+    bottom: entry.bottom && entry.bottom.color,
+    shoes: entry.shoes && entry.shoes.color,
+  };
+  const contextSelectEl = document.getElementById("contextSelect");
+  const seasonSelectEl = document.getElementById("seasonSuggestSelect");
+  if (contextSelectEl) contextSelectEl.value = contextId;
+  if (seasonSelectEl) seasonSelectEl.value = season;
+  handleSuggest(contextId, season);
 }
 
 // Detalle de una colección pública ajena: solo lectura, sin botón de eliminar.
@@ -5840,7 +5929,7 @@ function openForeignCollectionDetail(collection, meta, foreignOutfitsArr) {
   document.getElementById("itemDetailActions").querySelectorAll("[data-outfit-id]").forEach(card => {
     card.addEventListener("click", () => {
       const o = items.find(x => x.id === card.dataset.outfitId);
-      if (o) openForeignOutfitDetail(o, meta);
+      if (o) openForeignOutfitDetail(o, meta, foreignOutfitsArr);
     });
   });
   document.getElementById("itemDetailBackdrop").classList.add("open");
@@ -6048,7 +6137,7 @@ function renderVisitorProfile(targetUid, meta, prendas, foreignOutfits, publicCo
   document.querySelectorAll("#visitorProfileContent [data-outfit-mini]").forEach(card => {
     card.addEventListener("click", () => {
       const o = foreignOutfits.find(x => x.id === card.dataset.outfitMini);
-      if (o) openForeignOutfitDetail(o, meta);
+      if (o) openForeignOutfitDetail(o, meta, foreignOutfits);
     });
   });
   document.querySelectorAll("#visitorProfileContent [data-collection-tile]").forEach(tile => {
