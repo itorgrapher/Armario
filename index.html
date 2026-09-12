@@ -537,13 +537,13 @@
   .foreign-gallery-controls { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
   .foreign-sort-btn { position:relative; flex-shrink:0; background:none; border:none; color:var(--ink-soft); cursor:pointer; padding:7px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
   .filter-dot-badge { position:absolute; top:4px; right:4px; width:7px; height:7px; border-radius:50%; background:var(--accent); border:1.5px solid #fff; }
-  .wardrobe-grid-icon-badge { width:36px; height:36px; border-radius:50%; background:#EFEFEC; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--ink-soft); }
-  .wardrobe-grid-icon-badge svg { width:17px; height:17px; }
-  .wardrobe-grid-title { font-size:14px; font-weight:700; color:var(--ink); margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .wardrobe-grid-count { font-size:11.5px; color:var(--ink-soft); margin:1px 0 0; }
-  .wardrobe-sort-text-btn { display:flex; align-items:center; gap:5px; background:none; border:1px solid var(--line-strong); border-radius:999px; padding:7px 12px; font-size:12px; font-weight:600; color:var(--ink); cursor:pointer; font-family:inherit; white-space:nowrap; }
-  .wardrobe-sort-text-btn:hover { background:var(--bg); }
-  .wardrobe-sort-text-btn svg { width:12px; height:12px; flex-shrink:0; }
+  .grid-header-icon-badge { width:36px; height:36px; border-radius:50%; background:#EFEFEC; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--ink-soft); }
+  .grid-header-icon-badge svg { width:17px; height:17px; }
+  .grid-header-title { font-size:14px; font-weight:700; color:var(--ink); margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .grid-header-count { font-size:11.5px; color:var(--ink-soft); margin:1px 0 0; }
+  .sort-text-btn { display:flex; align-items:center; gap:5px; background:none; border:1px solid var(--line-strong); border-radius:999px; padding:7px 12px; font-size:12px; font-weight:600; color:var(--ink); cursor:pointer; font-family:inherit; white-space:nowrap; }
+  .sort-text-btn:hover { background:var(--bg); }
+  .sort-text-btn svg { width:12px; height:12px; flex-shrink:0; }
   .foreign-sort-btn:hover { background:var(--line); }
   .foreign-sort-btn svg { width:16px; height:16px; }
   .foreign-sort-dropdown { display:none; position:absolute; right:0; top:38px; background:#fff; border:1px solid var(--line-strong); border-radius:var(--radius-sm); box-shadow:var(--shadow); min-width:170px; z-index:20; overflow:hidden; }
@@ -554,9 +554,6 @@
   .wardrobe-filter-top-row { display:flex; align-items:flex-start; gap:10px; margin-bottom:18px; }
   .foreign-filter-chip { flex-shrink:0; padding:6px 14px; border-radius:999px; border:1px solid var(--line-strong); background:#fff; font-size:12px; font-weight:600; color:var(--ink-soft); cursor:pointer; font-family:inherit; white-space:nowrap; }
   .foreign-filter-chip.active { background:var(--ink); color:#fff; border-color:var(--ink); }
-  .foreign-filter-more-btn { flex-shrink:0; display:flex; align-items:center; gap:5px; padding:6px 12px; border-radius:999px; border:1px solid var(--line-strong); background:#fff; font-size:12px; font-weight:600; color:var(--ink); cursor:pointer; font-family:inherit; white-space:nowrap; }
-  .foreign-filter-more-btn svg { width:13px; height:13px; }
-  .foreign-filter-more-dot { width:6px; height:6px; border-radius:50%; background:var(--accent); flex-shrink:0; }
   .foreign-gallery-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px 10px; }
   @media (min-width:640px) { .foreign-gallery-grid { grid-template-columns:repeat(4, 1fr); gap:20px 14px; } }
   @media (min-width:960px) { .foreign-gallery-grid { grid-template-columns:repeat(5, 1fr); } }
@@ -814,10 +811,10 @@
   <div class="section" id="wardrobeGridSection" style="display:none;">
     <div class="foreign-gallery-section-controls">
       <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-        <div class="wardrobe-grid-icon-badge" id="wardrobeGridIconBadge"></div>
+        <div class="grid-header-icon-badge" id="wardrobeGridIconBadge"></div>
         <div style="min-width:0;">
-          <p class="wardrobe-grid-title" id="wardrobeGridTitle"></p>
-          <p class="wardrobe-grid-count" id="wardrobeGridCount"></p>
+          <p class="grid-header-title" id="wardrobeGridTitle"></p>
+          <p class="grid-header-count" id="wardrobeGridCount"></p>
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
@@ -829,7 +826,7 @@
           <span class="filter-dot-badge" id="wardrobeFilterDot" style="display:none;"></span>
         </button>
         <div class="foreign-sort-wrap" style="position:relative;">
-          <button class="wardrobe-sort-text-btn" id="wardrobeSortBtn"></button>
+          <button class="sort-text-btn" id="wardrobeSortBtn"></button>
           <div class="foreign-sort-dropdown" id="wardrobeSortDropdown">
             <button class="foreign-sort-option" data-wsort="recent">Más recientes</button>
             <button class="foreign-sort-option" data-wsort="category">Por categoría</button>
@@ -2209,8 +2206,8 @@ function renderWardrobeCategoryChips(sections) {
 }
 
 let wardrobeSort = "recent";
-const WARDROBE_SORT_LABELS = { recent: "Más recientes", category: "Por categoría", color: "Por color" };
-function wardrobeCategoryIcon(id) {
+const SORT_LABELS = { recent: "Más recientes", category: "Por categoría", color: "Por color" };
+function categoryBadgeIcon(id) {
   if (id === "all") return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="1.2"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/></svg>`;
   const icons = {
     top: '<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>',
@@ -2230,7 +2227,7 @@ function updateWardrobeFilterBtn() {
 function updateWardrobeSortDropdown() {
   const dd = document.getElementById("wardrobeSortDropdown");
   const btn = document.getElementById("wardrobeSortBtn");
-  if (btn) btn.innerHTML = `${WARDROBE_SORT_LABELS[wardrobeSort]} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
+  if (btn) btn.innerHTML = `${SORT_LABELS[wardrobeSort]} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
   if (!dd) return;
   dd.querySelectorAll("[data-wsort]").forEach(b => b.classList.toggle("active", b.dataset.wsort === wardrobeSort));
 }
@@ -2299,7 +2296,7 @@ function renderGrid() {
   const renameBtn = document.getElementById("wardrobeRenameCategoryBtn");
   gridSection.style.display = garments.length > 0 ? "block" : "none";
   const activeSection = wardrobeCategoryFilter === "all" ? null : sections.find(s => s.id === wardrobeCategoryFilter);
-  iconBadge.innerHTML = wardrobeCategoryIcon(wardrobeCategoryFilter === "all" ? "all" : wardrobeCategoryFilter);
+  iconBadge.innerHTML = categoryBadgeIcon(wardrobeCategoryFilter === "all" ? "all" : wardrobeCategoryFilter);
   titleEl.textContent = wardrobeCategoryFilter === "all" ? "Todo el armario" : (activeSection ? activeSection.label : categoryLabel(wardrobeCategoryFilter));
   countEl.textContent = `${filteredItems.length} ${filteredItems.length === 1 ? "prenda" : "prendas"}`;
   renameBtn.style.display = wardrobeCategoryFilter === "all" ? "none" : "flex";
@@ -5158,15 +5155,25 @@ function openForeignWardrobe(targetUid, meta, prendas, foreignOutfitsArr) {
     <div class="foreign-gallery-controls" id="foreignFilterChipRow"></div>
     <div class="section">
       <div class="foreign-gallery-section-controls">
-        <button class="foreign-filter-more-btn" id="foreignFilterMoreBtn"></button>
-        <div class="foreign-sort-wrap" style="position:relative;">
-          <button class="foreign-sort-btn" id="foreignSortBtn" title="Ordenar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V4M7 4 3 8M7 4l4 4"/><path d="M17 4v16M17 20l4-4M17 20l-4-4"/></svg>
+        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+          <div class="grid-header-icon-badge" id="foreignGridIconBadge"></div>
+          <div style="min-width:0;">
+            <p class="grid-header-title" id="foreignGridTitle"></p>
+            <p class="grid-header-count" id="foreignGridCount"></p>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+          <button class="foreign-sort-btn" id="foreignFilterMoreBtn" title="Filtrar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            <span class="filter-dot-badge" id="foreignFilterDot" style="display:none;"></span>
           </button>
-          <div class="foreign-sort-dropdown" id="foreignSortDropdown">
-            <button class="foreign-sort-option" data-sort="recent">Más recientes</button>
-            <button class="foreign-sort-option" data-sort="category">Por categoría</button>
-            <button class="foreign-sort-option" data-sort="color">Por color</button>
+          <div class="foreign-sort-wrap" style="position:relative;">
+            <button class="sort-text-btn" id="foreignSortBtn"></button>
+            <div class="foreign-sort-dropdown" id="foreignSortDropdown">
+              <button class="foreign-sort-option" data-sort="recent">Más recientes</button>
+              <button class="foreign-sort-option" data-sort="category">Por categoría</button>
+              <button class="foreign-sort-option" data-sort="color">Por color</button>
+            </div>
           </div>
         </div>
       </div>
@@ -5223,6 +5230,7 @@ function foreignFilteredSortedGarments() {
 }
 
 function renderForeignGalleryGrid() {
+  updateForeignGridHeader();
   const grid = document.getElementById("foreignGalleryGrid");
   const list = foreignFilteredSortedGarments();
   if (!list.length) {
@@ -5250,18 +5258,33 @@ function renderForeignGalleryGrid() {
   });
 }
 
+// Cabecera del contenedor (icono + nombre de categoría activa + contador),
+// mismo patrón visual que "Mi armario" para mantener coherencia entre ambas
+// vistas.
+function updateForeignGridHeader() {
+  const st = foreignGalleryState;
+  const iconBadge = document.getElementById("foreignGridIconBadge");
+  const titleEl = document.getElementById("foreignGridTitle");
+  const countEl = document.getElementById("foreignGridCount");
+  if (!iconBadge) return;
+  const activeSection = st.categoryFilter === "all" ? null : st.sections.find(s => s.id === st.categoryFilter);
+  iconBadge.innerHTML = categoryBadgeIcon(st.categoryFilter === "all" ? "all" : st.categoryFilter);
+  titleEl.textContent = st.categoryFilter === "all" ? "Todo el armario" : (activeSection ? activeSection.label : st.categoryFilter);
+  const count = foreignFilteredSortedGarments().length;
+  countEl.textContent = `${count} ${count === 1 ? "prenda" : "prendas"}`;
+}
+
 function updateForeignFilterMoreBtn() {
   const st = foreignGalleryState;
   const active = !!(st.colorFilter || st.formalityFilter !== "" || st.seasonFilter);
-  const btn = document.getElementById("foreignFilterMoreBtn");
-  if (!btn) return;
-  btn.innerHTML = `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-    Filtrar${active ? `<span class="foreign-filter-more-dot"></span>` : ""}`;
+  const dot = document.getElementById("foreignFilterDot");
+  if (dot) dot.style.display = active ? "block" : "none";
 }
 
 function updateForeignSortDropdown() {
   const dd = document.getElementById("foreignSortDropdown");
+  const btn = document.getElementById("foreignSortBtn");
+  if (btn) btn.innerHTML = `${SORT_LABELS[foreignGalleryState.sort]} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
   if (!dd) return;
   dd.querySelectorAll("[data-sort]").forEach(b => b.classList.toggle("active", b.dataset.sort === foreignGalleryState.sort));
 }
