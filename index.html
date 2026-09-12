@@ -535,7 +535,15 @@
   .foreign-gallery-name { font-size:16px; font-weight:700; letter-spacing:-0.01em; margin:0 0 2px; }
   .foreign-gallery-meta { font-size:12.5px; color:var(--ink-soft); margin:0; }
   .foreign-gallery-controls { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
-  .foreign-sort-btn { flex-shrink:0; background:none; border:none; color:var(--ink-soft); cursor:pointer; padding:7px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+  .foreign-sort-btn { position:relative; flex-shrink:0; background:none; border:none; color:var(--ink-soft); cursor:pointer; padding:7px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+  .filter-dot-badge { position:absolute; top:4px; right:4px; width:7px; height:7px; border-radius:50%; background:var(--accent); border:1.5px solid #fff; }
+  .wardrobe-grid-icon-badge { width:36px; height:36px; border-radius:50%; background:#EFEFEC; display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--ink-soft); }
+  .wardrobe-grid-icon-badge svg { width:17px; height:17px; }
+  .wardrobe-grid-title { font-size:14px; font-weight:700; color:var(--ink); margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .wardrobe-grid-count { font-size:11.5px; color:var(--ink-soft); margin:1px 0 0; }
+  .wardrobe-sort-text-btn { display:flex; align-items:center; gap:5px; background:none; border:1px solid var(--line-strong); border-radius:999px; padding:7px 12px; font-size:12px; font-weight:600; color:var(--ink); cursor:pointer; font-family:inherit; white-space:nowrap; }
+  .wardrobe-sort-text-btn:hover { background:var(--bg); }
+  .wardrobe-sort-text-btn svg { width:12px; height:12px; flex-shrink:0; }
   .foreign-sort-btn:hover { background:var(--line); }
   .foreign-sort-btn svg { width:16px; height:16px; }
   .foreign-sort-dropdown { display:none; position:absolute; right:0; top:38px; background:#fff; border:1px solid var(--line-strong); border-radius:var(--radius-sm); box-shadow:var(--shadow); min-width:170px; z-index:20; overflow:hidden; }
@@ -805,18 +813,23 @@
   </div>
   <div class="section" id="wardrobeGridSection" style="display:none;">
     <div class="foreign-gallery-section-controls">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <button class="foreign-filter-more-btn" id="wardrobeFilterBtn"></button>
-        <span id="wardrobeGridCount" style="font-size:12px; color:var(--ink-soft);"></span>
+      <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+        <div class="wardrobe-grid-icon-badge" id="wardrobeGridIconBadge"></div>
+        <div style="min-width:0;">
+          <p class="wardrobe-grid-title" id="wardrobeGridTitle"></p>
+          <p class="wardrobe-grid-count" id="wardrobeGridCount"></p>
+        </div>
       </div>
-      <div style="display:flex; align-items:center; gap:6px;">
+      <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
         <button class="foreign-sort-btn" id="wardrobeRenameCategoryBtn" title="Renombrar categoría" style="display:none;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
         </button>
+        <button class="foreign-sort-btn" id="wardrobeFilterBtn" title="Filtrar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          <span class="filter-dot-badge" id="wardrobeFilterDot" style="display:none;"></span>
+        </button>
         <div class="foreign-sort-wrap" style="position:relative;">
-          <button class="foreign-sort-btn" id="wardrobeSortBtn" title="Ordenar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V4M7 4 3 8M7 4l4 4"/><path d="M17 4v16M17 20l4-4M17 20l-4-4"/></svg>
-          </button>
+          <button class="wardrobe-sort-text-btn" id="wardrobeSortBtn"></button>
           <div class="foreign-sort-dropdown" id="wardrobeSortDropdown">
             <button class="foreign-sort-option" data-wsort="recent">Más recientes</button>
             <button class="foreign-sort-option" data-wsort="category">Por categoría</button>
@@ -2196,16 +2209,28 @@ function renderWardrobeCategoryChips(sections) {
 }
 
 let wardrobeSort = "recent";
+const WARDROBE_SORT_LABELS = { recent: "Más recientes", category: "Por categoría", color: "Por color" };
+function wardrobeCategoryIcon(id) {
+  if (id === "all") return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="1.2"/><circle cx="15" cy="12" r="1" fill="currentColor" stroke="none"/></svg>`;
+  const icons = {
+    top: '<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>',
+    bottom: '<rect x="7" y="3" width="4" height="18" rx="1"/><rect x="13" y="3" width="4" height="18" rx="1"/>',
+    shoes: '<path d="M4 18h16"/><path d="M5 18v-4l3-4h2v3l6 2v3"/>',
+    outer: '<path d="M8 3l4 2 4-2 4 3-2 3v11a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9L4 6Z"/><path d="M12 5v13"/>',
+    accessory: '<circle cx="7" cy="13" r="3"/><circle cx="17" cy="13" r="3"/><path d="M10 13h4"/><path d="M4 13l-1-5"/><path d="M20 13l1-5"/>',
+  };
+  const inner = icons[id] || '<path d="M4 4h7l9 9-7 7-9-9z"/><circle cx="9" cy="9" r="1.5" fill="currentColor" stroke="none"/>';
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+}
 function updateWardrobeFilterBtn() {
   const active = !!(colorFilterValue || contextFilterValue || seasonFilterValue);
-  const btn = document.getElementById("wardrobeFilterBtn");
-  if (!btn) return;
-  btn.innerHTML = `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-    Filtrar${active ? `<span class="foreign-filter-more-dot"></span>` : ""}`;
+  const dot = document.getElementById("wardrobeFilterDot");
+  if (dot) dot.style.display = active ? "block" : "none";
 }
 function updateWardrobeSortDropdown() {
   const dd = document.getElementById("wardrobeSortDropdown");
+  const btn = document.getElementById("wardrobeSortBtn");
+  if (btn) btn.innerHTML = `${WARDROBE_SORT_LABELS[wardrobeSort]} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`;
   if (!dd) return;
   dd.querySelectorAll("[data-wsort]").forEach(b => b.classList.toggle("active", b.dataset.wsort === wardrobeSort));
 }
@@ -2268,9 +2293,14 @@ function renderGrid() {
   const cardsHTML = filteredItems.map(g => frameHTML(g, garments.indexOf(g), { editable: true, selectable: true, favable: true, duplicable: true })).join("") + addCardHTML();
 
   const gridSection = document.getElementById("wardrobeGridSection");
+  const iconBadge = document.getElementById("wardrobeGridIconBadge");
+  const titleEl = document.getElementById("wardrobeGridTitle");
   const countEl = document.getElementById("wardrobeGridCount");
   const renameBtn = document.getElementById("wardrobeRenameCategoryBtn");
   gridSection.style.display = garments.length > 0 ? "block" : "none";
+  const activeSection = wardrobeCategoryFilter === "all" ? null : sections.find(s => s.id === wardrobeCategoryFilter);
+  iconBadge.innerHTML = wardrobeCategoryIcon(wardrobeCategoryFilter === "all" ? "all" : wardrobeCategoryFilter);
+  titleEl.textContent = wardrobeCategoryFilter === "all" ? "Todo el armario" : (activeSection ? activeSection.label : categoryLabel(wardrobeCategoryFilter));
   countEl.textContent = `${filteredItems.length} ${filteredItems.length === 1 ? "prenda" : "prendas"}`;
   renameBtn.style.display = wardrobeCategoryFilter === "all" ? "none" : "flex";
   renameBtn.onclick = () => renameSection(wardrobeCategoryFilter);
