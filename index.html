@@ -543,6 +543,7 @@
   .foreign-sort-option:hover { background:var(--bg); }
   .foreign-sort-option.active { font-weight:700; }
   .foreign-gallery-section-controls { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .wardrobe-filter-top-row { display:flex; align-items:flex-start; gap:10px; margin-bottom:18px; }
   .foreign-filter-chip { flex-shrink:0; padding:6px 14px; border-radius:999px; border:1px solid var(--line-strong); background:#fff; font-size:12px; font-weight:600; color:var(--ink-soft); cursor:pointer; font-family:inherit; white-space:nowrap; }
   .foreign-filter-chip.active { background:var(--ink); color:#fff; border-color:var(--ink); }
   .foreign-filter-more-btn { flex-shrink:0; display:flex; align-items:center; gap:5px; padding:6px 12px; border-radius:999px; border:1px solid var(--line-strong); background:#fff; font-size:12px; font-weight:600; color:var(--ink); cursor:pointer; font-family:inherit; white-space:nowrap; }
@@ -786,19 +787,6 @@
   </div>
 
   <div id="viewWardrobe">
-  <div class="color-filter-row" id="colorFilterRow" style="display:none; align-items:center; flex-wrap:wrap;">
-    <select id="contextFilterSelect" class="filter-select"><option value="">Cualquier ocasión</option></select>
-    <select id="seasonFilterSelect" class="filter-select">
-      <option value="">Cualquier temporada</option>
-      <option value="verano">Verano</option>
-      <option value="entretiempo">Entretiempo</option>
-      <option value="invierno">Invierno</option>
-    </select>
-  </div>
-  <div class="color-filter-row" id="colorSwatchRow" style="display:none;">
-    <button class="fav-filter-circle" id="favoritesFilterBtn" title="Favoritas">★</button>
-    <button class="color-filter-chip active" data-color-filter="">Todos</button>
-  </div>
   <div id="bulkActionBar" style="flex-wrap:wrap; row-gap:8px; display:none !important;">
     <span id="bulkActionCount" style="font-size:13px; color:var(--ink-soft);"></span>
     <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
@@ -811,13 +799,31 @@
 
   <div class="empty" id="emptyState" style="display:none;">Aún no has subido ninguna prenda. Empieza subiendo la foto de una prenda cualquiera.</div>
 
-  <div class="foreign-gallery-controls" id="wardrobeCategoryChipRow"></div>
+  <div class="wardrobe-filter-top-row" id="wardrobeFilterTopRow" style="display:none;">
+    <button class="fav-filter-circle" id="favoritesFilterBtn" title="Favoritas">★</button>
+    <div class="foreign-gallery-controls" id="wardrobeCategoryChipRow" style="margin-bottom:0; flex:1;"></div>
+  </div>
   <div class="section" id="wardrobeGridSection" style="display:none;">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
-      <span style="font-size:12.5px; color:var(--ink-soft);" id="wardrobeGridCount"></span>
-      <button class="foreign-sort-btn" id="wardrobeRenameCategoryBtn" title="Renombrar categoría" style="display:none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-      </button>
+    <div class="foreign-gallery-section-controls">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button class="foreign-filter-more-btn" id="wardrobeFilterBtn"></button>
+        <span id="wardrobeGridCount" style="font-size:12px; color:var(--ink-soft);"></span>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button class="foreign-sort-btn" id="wardrobeRenameCategoryBtn" title="Renombrar categoría" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        </button>
+        <div class="foreign-sort-wrap" style="position:relative;">
+          <button class="foreign-sort-btn" id="wardrobeSortBtn" title="Ordenar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 20V4M7 4 3 8M7 4l4 4"/><path d="M17 4v16M17 20l4-4M17 20l-4-4"/></svg>
+          </button>
+          <div class="foreign-sort-dropdown" id="wardrobeSortDropdown">
+            <button class="foreign-sort-option" data-wsort="recent">Más recientes</button>
+            <button class="foreign-sort-option" data-wsort="category">Por categoría</button>
+            <button class="foreign-sort-option" data-wsort="color">Por color</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div id="grid"></div>
   </div>
@@ -839,7 +845,7 @@
       <p class="sub" style="margin-bottom:10px;">Toca el candado de una prenda para bloquearla antes de regenerar.</p>
       <div class="row" style="margin-bottom:10px;">
         <select id="contextSelect" class="filter-select" style="flex:1; max-width:none;">
-          <option value="any">Cualquier ocasión</option>
+          <option value="any">Cualquier estilo</option>
         </select>
         <select id="seasonSuggestSelect" class="filter-select" style="flex:1; max-width:none;">
           <option value="any">Cualquier temporada</option>
@@ -1313,6 +1319,28 @@
       </div>
     </div>
   </div>
+
+  <div class="modal-backdrop" id="wardrobeFilterBackdrop">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-head"><h2 style="font-size:16px;">Filtrar</h2><button class="modal-close" id="wardrobeFilterClose">✕</button></div>
+      <div class="picker-row">
+        <div class="picker-label">Color</div>
+        <div class="color-options" id="wardrobeFilterColorOptions"></div>
+      </div>
+      <div class="picker-row">
+        <div class="picker-label">Estilo</div>
+        <div class="formality-options" id="wardrobeFilterStyleOptions"></div>
+      </div>
+      <div class="picker-row">
+        <div class="picker-label">Temporada</div>
+        <div class="formality-options" id="wardrobeFilterSeasonOptions"></div>
+      </div>
+      <div class="row" style="margin-bottom:0;">
+        <button class="btn btn-outline" id="wardrobeFilterClearBtn">Limpiar</button>
+        <button class="btn btn-primary" id="wardrobeFilterApplyBtn">Aplicar</button>
+      </div>
+    </div>
+  </div>
   </div>
   </main>
 </div>
@@ -1489,7 +1517,7 @@
       </div>
     </div>
 
-    <label class="field-eyebrow" id="modalFormalityField">¿Para qué ocasión la llevarías?
+    <label class="field-eyebrow" id="modalFormalityField">¿Qué estilo tiene esta prenda?
       <div class="formality-options" id="modalFormality"></div>
     </label>
     <div id="modalVersatileField" style="margin-bottom:16px;">
@@ -2172,13 +2200,60 @@ function renderWardrobeCategoryChips(sections) {
   });
 }
 
+let wardrobeSort = "recent";
+function updateWardrobeFilterBtn() {
+  const active = !!(colorFilterValue || contextFilterValue || seasonFilterValue);
+  const btn = document.getElementById("wardrobeFilterBtn");
+  if (!btn) return;
+  btn.innerHTML = `
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+    Filtrar${active ? `<span class="foreign-filter-more-dot"></span>` : ""}`;
+}
+function updateWardrobeSortDropdown() {
+  const dd = document.getElementById("wardrobeSortDropdown");
+  if (!dd) return;
+  dd.querySelectorAll("[data-wsort]").forEach(b => b.classList.toggle("active", b.dataset.wsort === wardrobeSort));
+}
+function openWardrobeFilterModal() {
+  let pendingColor = colorFilterValue, pendingContext = contextFilterValue, pendingSeason = seasonFilterValue;
+  const colorRow = document.getElementById("wardrobeFilterColorOptions");
+  const styleRow = document.getElementById("wardrobeFilterStyleOptions");
+  const seasonRow = document.getElementById("wardrobeFilterSeasonOptions");
+  const paintColors = () => colorRow.querySelectorAll("[data-color]").forEach(b => b.classList.toggle("selected", b.dataset.color === pendingColor));
+  const paintStyle = () => styleRow.querySelectorAll("[data-style]").forEach(b => b.classList.toggle("selected", b.dataset.style === pendingContext));
+  const paintSeason = () => seasonRow.querySelectorAll("[data-season]").forEach(b => b.classList.toggle("selected", b.dataset.season === pendingSeason));
+  colorRow.innerHTML = COLORS.map(c => `<button class="color-btn" data-color="${c.id}">${swatchHTML(c.id, 11)} ${c.label}</button>`).join("");
+  styleRow.innerHTML = CONTEXTS.map(c => `<button class="formality-btn" data-style="${c.id}">${c.label}</button>`).join("");
+  seasonRow.innerHTML = SEASONS.map(s => `<button class="formality-btn" data-season="${s.id}">${s.label}</button>`).join("");
+  paintColors(); paintStyle(); paintSeason();
+  colorRow.querySelectorAll("[data-color]").forEach(btn => btn.addEventListener("click", () => {
+    pendingColor = pendingColor === btn.dataset.color ? "" : btn.dataset.color;
+    paintColors();
+  }));
+  styleRow.querySelectorAll("[data-style]").forEach(btn => btn.addEventListener("click", () => {
+    pendingContext = pendingContext === btn.dataset.style ? "" : btn.dataset.style;
+    paintStyle();
+  }));
+  seasonRow.querySelectorAll("[data-season]").forEach(btn => btn.addEventListener("click", () => {
+    pendingSeason = pendingSeason === btn.dataset.season ? "" : btn.dataset.season;
+    paintSeason();
+  }));
+  document.getElementById("wardrobeFilterApplyBtn").onclick = () => {
+    colorFilterValue = pendingColor; contextFilterValue = pendingContext; seasonFilterValue = pendingSeason;
+    renderGrid();
+    document.getElementById("wardrobeFilterBackdrop").classList.remove("open");
+  };
+  document.getElementById("wardrobeFilterClearBtn").onclick = () => {
+    pendingColor = ""; pendingContext = ""; pendingSeason = "";
+    paintColors(); paintStyle(); paintSeason();
+  };
+  document.getElementById("wardrobeFilterBackdrop").classList.add("open");
+}
 function renderGrid() {
   const gridEl = document.getElementById("grid");
   const emptyEl = document.getElementById("emptyState");
-  const colorRow = document.getElementById("colorFilterRow");
-  const swatchRow = document.getElementById("colorSwatchRow");
-  colorRow.style.display = garments.length > 0 ? "flex" : "none";
-  swatchRow.style.display = garments.length > 0 ? "flex" : "none";
+  const filterTopRow = document.getElementById("wardrobeFilterTopRow");
+  filterTopRow.style.display = garments.length > 0 ? "flex" : "none";
   let list = garments.filter(g => matchesSearch(g) && matchesColorFilter(g) && matchesContextFilter(g) && matchesSeasonFilter(g) && matchesFavoritesFilter(g));
   list = list.slice().reverse(); // más recientes primero (se añaden al final del array al subirlas)
   emptyEl.style.display = garments.length === 0 ? "block" : "none";
@@ -2190,9 +2265,11 @@ function renderGrid() {
     .filter(sec => sec.items.length > 0);
   renderWardrobeCategoryChips(sections);
 
-  const filteredItems = wardrobeCategoryFilter === "all"
+  let filteredItems = wardrobeCategoryFilter === "all"
     ? list
     : garmentsInSection(list, { id: wardrobeCategoryFilter, isCustom: customCategories.some(c => c.id === wardrobeCategoryFilter) });
+  if (wardrobeSort === "category") filteredItems = filteredItems.slice().sort((a, b) => categoryLabel(a.category).localeCompare(categoryLabel(b.category)));
+  else if (wardrobeSort === "color") filteredItems = filteredItems.slice().sort((a, b) => (colorById[a.color]?.label || "").localeCompare(colorById[b.color]?.label || ""));
   const cardsHTML = filteredItems.map(g => frameHTML(g, garments.indexOf(g), { editable: true, selectable: true, favable: true, duplicable: true })).join("") + addCardHTML();
 
   const gridSection = document.getElementById("wardrobeGridSection");
@@ -2202,6 +2279,8 @@ function renderGrid() {
   countEl.textContent = `${filteredItems.length} ${filteredItems.length === 1 ? "prenda" : "prendas"}`;
   renameBtn.style.display = wardrobeCategoryFilter === "all" ? "none" : "flex";
   renameBtn.onclick = () => renameSection(wardrobeCategoryFilter);
+  updateWardrobeFilterBtn();
+  updateWardrobeSortDropdown();
 
   gridEl.innerHTML = `<div class="grid">${cardsHTML}</div>`;
 
@@ -4177,36 +4256,6 @@ document.getElementById("seasonSuggestSelect").addEventListener("change", (e) =>
 COLORS.forEach(c => {
   const btn = document.createElement("button");
   btn.className = "color-filter-swatch";
-  btn.dataset.colorFilter = c.id;
-  btn.title = c.label;
-  btn.style.background = c.hex === "pattern"
-    ? "repeating-linear-gradient(45deg, #C9C2AE, #C9C2AE 2px, #8C8465 2px, #8C8465 4px)"
-    : c.hex;
-  document.getElementById("colorSwatchRow").appendChild(btn);
-});
-document.getElementById("colorSwatchRow").addEventListener("click", (e) => {
-  const target = e.target.closest("[data-color-filter]");
-  if (!target) return;
-  colorFilterValue = target.dataset.colorFilter;
-  document.querySelectorAll("#colorSwatchRow [data-color-filter]").forEach(el => {
-    el.classList.toggle("active", el.dataset.colorFilter === colorFilterValue);
-  });
-  if (colorFilterValue === "") {
-    seasonFilterValue = "";
-    contextFilterValue = "";
-    favoritesOnlyFilter = false;
-    searchQuery = "";
-    document.getElementById("seasonFilterSelect").value = "";
-    document.getElementById("contextFilterSelect").value = "";
-    document.getElementById("favoritesFilterBtn").classList.remove("active");
-    document.getElementById("searchInput").value = "";
-  }
-  renderGrid();
-});
-
-COLORS.forEach(c => {
-  const btn = document.createElement("button");
-  btn.className = "color-filter-swatch";
   btn.dataset.outfitColorFilter = c.id;
   btn.title = c.label;
   btn.style.background = c.hex === "pattern"
@@ -4244,14 +4293,27 @@ document.getElementById("outfitFavoritesFilterBtn").addEventListener("click", ()
   renderOutfits();
 });
 
-CONTEXTS.forEach(c => {
-  const opt = document.createElement("option");
-  opt.value = c.id; opt.textContent = c.label;
-  document.getElementById("contextFilterSelect").appendChild(opt);
-});
 document.getElementById("searchInput").addEventListener("input", (e) => { searchQuery = e.target.value.trim().toLowerCase(); renderGrid(); });
-document.getElementById("contextFilterSelect").addEventListener("change", (e) => { contextFilterValue = e.target.value; renderGrid(); });
-document.getElementById("seasonFilterSelect").addEventListener("change", (e) => { seasonFilterValue = e.target.value; renderGrid(); });
+document.getElementById("wardrobeFilterBtn").addEventListener("click", openWardrobeFilterModal);
+document.getElementById("wardrobeFilterClose").addEventListener("click", () => document.getElementById("wardrobeFilterBackdrop").classList.remove("open"));
+document.getElementById("wardrobeSortBtn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  const dd = document.getElementById("wardrobeSortDropdown");
+  dd.style.display = dd.style.display === "block" ? "none" : "block";
+});
+document.getElementById("wardrobeSortDropdown").querySelectorAll("[data-wsort]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    wardrobeSort = btn.dataset.wsort;
+    document.getElementById("wardrobeSortDropdown").style.display = "none";
+    renderGrid();
+  });
+});
+document.addEventListener("click", (e) => {
+  const dd = document.getElementById("wardrobeSortDropdown");
+  if (dd && dd.style.display === "block" && !dd.contains(e.target) && e.target.closest("#wardrobeSortBtn") == null) {
+    dd.style.display = "none";
+  }
+});
 document.getElementById("favoritesFilterBtn").addEventListener("click", () => {
   favoritesOnlyFilter = !favoritesOnlyFilter;
   document.getElementById("favoritesFilterBtn").classList.toggle("active", favoritesOnlyFilter);
