@@ -204,7 +204,7 @@
   @keyframes cardRemove { to { opacity: 0; transform: scale(0.85); } }
   .card-removing { animation: cardRemove 0.25s ease forwards; pointer-events: none; }
   .frame-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 8px; padding-top: 7px; border-top: 1px solid var(--line); }
-  .frame-actions-left { display: flex; align-items: center; gap: 8px; }
+  .frame-actions-left { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; }
   .frame-action-btn {
     background: none; border: none; padding: 2px; cursor: pointer; color: var(--ink-soft);
     font-size: 13px; line-height: 1; display: flex; align-items: center; justify-content: center;
@@ -2099,13 +2099,13 @@ function frameHTML(g, index, opts = {}) {
           <div class="frame-meta">
             ${swatchHTML(g.color)}<span class="frame-label" title="${title}">${title}</span>
           </div>
-          ${opts.compact ? "" : `<div class="frame-chip-row">${metaChipsHTML(g)}</div>`}
+          ${(opts.compact || opts.editable) ? "" : `<div class="frame-chip-row">${metaChipsHTML(g)}</div>`}
           ${hasActions ? `
           <div class="frame-actions">
             <div class="frame-actions-left">
               ${opts.duplicable ? `<button class="frame-icon-btn" data-dup="${g.id}" title="Duplicar prenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ""}
               ${opts.editable ? `<button class="frame-icon-btn" data-edit="${g.id}" title="Editar prenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>` : ""}
-              ${opts.editable ? `<button class="frame-icon-btn" data-details="${g.id}" title="Detalles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 16v-4.5"/><circle cx="12" cy="8" r=".6" fill="currentColor" stroke="none"/></svg></button>` : ""}
+              ${opts.editable ? `<button class="frame-icon-btn" data-details="${g.id}" title="Detalles"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></button>` : ""}
             </div>
           </div>` : ""}
         </div>
@@ -6682,27 +6682,59 @@ document.getElementById("editProfileSaveBtn").addEventListener("click", async ()
 });
 
 /* ---- Detalles de prenda ---- */
-// Ficha de solo lectura con los datos públicos básicos de la prenda
-// (nombre, categoría, estilo, temporada, color).
+// Ficha visual de solo lectura: chips en vez de filas de texto, y un acceso
+// directo a los outfits que usan esta prenda (en una vista aparte, para no
+// obligar a hacer scroll dentro de la propia ficha).
 function openGarmentDetailsModal(garment) {
   const cat = CATEGORIES.find(c => c.id === garment.category);
   const title = garment.name ? garment.name.charAt(0).toUpperCase() + garment.name.slice(1) : (cat ? cat.label : categoryLabel(garment.category));
+  const outfitsConEsta = outfits.filter(o => [o.top, o.bottom, o.shoes, ...entryAccessories(o)].filter(Boolean).some(x => x.id === garment.id));
   document.getElementById("garmentDetailsTitle").textContent = title;
   document.getElementById("garmentDetailsImg").src = garment.image;
-  const rows = [
-    ["Categoría", categoryLabel(garment.category)],
-    ["Estilo", FORMALITY_LABELS[garment.formality || 2]],
-    ["Temporada", (SEASONS.find(s => s.id === (garment.season || "entretiempo")) || {}).label || "Entretiempo"],
-    ["Color", (colorById[garment.color] || {}).label || ""],
-  ];
-  document.getElementById("garmentDetailsFields").innerHTML = rows.map(([label, value], i) => `
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 0; ${i < rows.length - 1 ? "border-bottom:1px solid var(--line);" : ""}">
-      <span style="font-size:12.5px; color:var(--ink-soft);">${label}</span>
-      <span style="font-size:13px; font-weight:600; color:var(--ink);">${value}</span>
-    </div>`).join("");
+  document.getElementById("garmentDetailsFields").innerHTML = `
+    <div style="display:flex; flex-wrap:wrap; gap:7px; justify-content:center; align-items:center; margin-bottom:18px;">
+      <span class="mini-chip" style="background:var(--ink);">${categoryLabel(garment.category)}</span>
+      ${swatchHTML(garment.color, 16)}
+      <span class="mini-chip" style="background:var(--ink-soft);">${(colorById[garment.color] || {}).label || ""}</span>
+      ${metaChipsHTML(garment)}
+    </div>
+    <button class="btn btn-outline ${outfitsConEsta.length ? "" : "btn-disabled"}" id="garmentDetailsOutfitsBtn" style="width:100%; justify-content:center;" ${outfitsConEsta.length ? "" : "disabled"}>
+      ${outfitsConEsta.length ? `Aparece en ${outfitsConEsta.length} outfit${outfitsConEsta.length === 1 ? "" : "s"} →` : "No aparece en ningún outfit"}
+    </button>`;
+  if (outfitsConEsta.length) {
+    document.getElementById("garmentDetailsOutfitsBtn").onclick = () => {
+      document.getElementById("garmentDetailsBackdrop").classList.remove("open");
+      renderOwnGarmentOutfits(outfitsConEsta);
+      document.getElementById("garmentOutfitsBackdrop").classList.add("open");
+    };
+  }
+  document.getElementById("garmentOutfitsBackBtn").onclick = () => {
+    document.getElementById("garmentOutfitsBackdrop").classList.remove("open");
+    openGarmentDetailsModal(garment);
+  };
+  document.getElementById("garmentOutfitsClose").onclick = () => document.getElementById("garmentOutfitsBackdrop").classList.remove("open");
   document.getElementById("garmentDetailsBackdrop").classList.add("open");
 }
 document.getElementById("garmentDetailsClose").addEventListener("click", () => document.getElementById("garmentDetailsBackdrop").classList.remove("open"));
+
+// Lista compacta (mismo patrón visual que los outfits públicos del armario
+// ajeno) de los outfits propios en los que aparece esta prenda.
+function renderOwnGarmentOutfits(list) {
+  const resultEl = document.getElementById("garmentOutfitsContent");
+  resultEl.innerHTML = `
+    <p class="sub" style="text-align:center; margin:0 0 12px;">Aparece en ${list.length} outfit${list.length === 1 ? "" : "s"}</p>
+    <div class="outfit-mini-row">${list.map(o => `
+      <div class="outfit-mini-card" data-own-outfit-id="${o.id}">
+        <div class="outfit-mini-collage">${o.thumbCache ? `<img src="${o.thumbCache}" alt="">` : (o.top && o.top.image ? `<img src="${o.top.image}" alt="">` : "")}</div>
+        <p class="outfit-mini-name">${o.name || "Outfit sin nombre"}</p>
+      </div>`).join("")}</div>`;
+  resultEl.querySelectorAll("[data-own-outfit-id]").forEach(card => {
+    card.addEventListener("click", () => {
+      document.getElementById("garmentOutfitsBackdrop").classList.remove("open");
+      openOutfitDetail(card.dataset.ownOutfitId);
+    });
+  });
+}
 </script>
 <script>
 if ("serviceWorker" in navigator) {
