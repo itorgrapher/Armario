@@ -5895,6 +5895,10 @@ function openForeignOutfitDetail(entry, meta, foreignOutfitsArr = []) {
 // las propias prendas del usuario.
 function recreateOutfitFromMyWardrobe(entry) {
   document.getElementById("itemDetailBackdrop").classList.remove("open");
+  // El generador de sugerencias vive dentro de la vista "Mi armario": si
+  // veníamos de un armario/outfits ajeno esa vista está oculta y el modal no
+  // se vería aunque se abra. Cambiamos primero a Mi armario.
+  if (currentView !== "wardrobe") switchView("wardrobe");
   const avg = outfitAvgFormality(entry);
   const ctx = CONTEXTS.find(c => c.target === avg);
   const contextId = ctx ? ctx.id : "any";
